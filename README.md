@@ -5,11 +5,11 @@ git clone https://github.com/Saishrey/wE-Panchayat.git
 ```
 - Install dependencies
 
--  IDE - Android Studio or VS Code
+  -  IDE - Android Studio or VS Code
 
--  Dart-sdk - https://storage.googleapis.com/dart-archive/channels/stable/release/2.19.2/sdk/dartsdk-windows-x64-release.zip
+  -  Dart-sdk - https://storage.googleapis.com/dart-archive/channels/stable/release/2.19.2/sdk/dartsdk-windows-x64-release.zip
 
--  Flutter - https://storage.googleapis.com/flutter_infra_release/releases/stable/windows/flutter_windows_3.7.5-stable.zip
+  -  Flutter - https://storage.googleapis.com/flutter_infra_release/releases/stable/windows/flutter_windows_3.7.5-stable.zip
 
 ```
 Follow the steps for both the dependencies 
@@ -21,6 +21,6 @@ eg: C:\dart-sdk\bin
 eg: C:\flutter\bin
 ```
 
--  Android Emulator(optional)
+  -  Android Emulator(optional)
 
 

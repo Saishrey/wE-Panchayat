@@ -1,16 +1,14 @@
-# we_panchayat_dev
+# Getting started
+- Clone the repository
+```
+git clone <url>
+```
+- Install dependencies
 
-A new Flutter project.
+-  Dart-sdk - https://storage.googleapis.com/dart-archive/channels/stable/release/2.19.2/sdk/dartsdk-windows-x64-release.zip
 
-## Getting Started
+-  Flutter - https://storage.googleapis.com/flutter_infra_release/releases/stable/windows/flutter_windows_3.7.5-stable.zip
 
-This project is a starting point for a Flutter application.
+-  Android Emulator(optional)
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.

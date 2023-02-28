@@ -1,7 +1,7 @@
 # Getting started
 - Clone the repository
 ```
-git clone <url>
+git clone https://github.com/Saishrey/wE-Panchayat.git
 ```
 - Install dependencies
 

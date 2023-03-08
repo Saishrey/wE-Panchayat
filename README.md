@@ -12,8 +12,8 @@ git clone https://github.com/Saishrey/wE-Panchayat.git
   -  Flutter - https://storage.googleapis.com/flutter_infra_release/releases/stable/windows/flutter_windows_3.7.5-stable.zip
 
 ```
-Follow the steps for both the dependencies
-1) Download the zip file from above link
+Follow the steps for both the dependencies 
+1) Download the zip file from above link 
 2) Extract the folder
 3) Copy the folder to C drive
 4) Set Environment variable path by copying the path of bin folder

@@ -1,16 +1,26 @@
-# we_panchayat_dev
+# Getting started
+- Clone the repository
+```
+git clone https://github.com/Saishrey/wE-Panchayat.git
+```
+- Install dependencies
 
-A new Flutter project.
+  -  IDE - Android Studio or VS Code
 
-## Getting Started
+  -  Dart-sdk - https://storage.googleapis.com/dart-archive/channels/stable/release/2.19.2/sdk/dartsdk-windows-x64-release.zip
 
-This project is a starting point for a Flutter application.
+  -  Flutter - https://storage.googleapis.com/flutter_infra_release/releases/stable/windows/flutter_windows_3.7.5-stable.zip
 
-A few resources to get you started if this is your first Flutter project:
+```
+Follow the steps for both the dependencies
+1) Download the zip file from above link
+2) Extract the folder
+3) Copy the folder to C drive
+4) Set Environment variable path by copying the path of bin folder
+eg: C:\dart-sdk\bin
+eg: C:\flutter\bin
+```
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+  -  Android Emulator(optional)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+

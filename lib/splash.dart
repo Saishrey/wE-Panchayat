@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 
 import 'main.dart';
 
+import 'auth/login.dart';
+import 'auth/signup.dart';
+
 class Splash extends StatefulWidget {
   const Splash({Key? key}) : super(key: key);
 
@@ -19,9 +22,11 @@ class _SplashState extends State<Splash> {
       Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-              builder: (context) => const MyHomePage(
-                    title: 'wE-Panchayat',
-                  )));
+              // builder: (context) => const MyHomePage(
+              //       title: 'wE-Panchayat',
+              //     )
+            builder: (context) => const MyLogin()
+          ));
     });
   }
 
@@ -41,7 +46,7 @@ class _SplashState extends State<Splash> {
   //           Positioned(
   //             top: 0,
   //             left: 0,
-  //             child: Image(image: AssetImage('assets/images/logo.png')),
+  //             child: Image(image: AssetImage('assets/images/icon.png')),
   //           ),
   //         ],
   //       ),
@@ -85,7 +90,7 @@ class _SplashState extends State<Splash> {
   //                 height:  215*fem,
   //                 decoration: BoxDecoration(
   //                   image: DecorationImage(
-  //                     image: AssetImage('assets/images/logo.png'),
+  //                     image: AssetImage('assets/images/icon.png'),
   //                     fit: BoxFit.fill,
   //                   ),
   //                 ),
@@ -159,7 +164,7 @@ class _SplashState extends State<Splash> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
-              'assets/images/logo.png',
+              'assets/images/icon.png',
               height: 200.0,
               width: 200.0,
             ),
@@ -169,6 +174,7 @@ class _SplashState extends State<Splash> {
                 'wE-Panchayat',
                 textAlign: TextAlign.center,
                 style: TextStyle(
+                  fontFamily: 'Poppins-Bold',
                   fontSize: 32,
                   fontWeight: FontWeight.w700,
                   color: Color(0xff21205b),
@@ -176,8 +182,8 @@ class _SplashState extends State<Splash> {
               ),
             ),
             Container(
-                margin: EdgeInsets.fromLTRB(0, 5, 0, 5),
-                child: Text(
+              margin: EdgeInsets.fromLTRB(0, 5, 0, 5),
+              child: Text(
                 'An M-Governance platform of \nPanchayati Raj Instituitions',
                 textAlign: TextAlign.center,
                 style: TextStyle(

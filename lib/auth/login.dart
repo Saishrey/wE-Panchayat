@@ -23,6 +23,9 @@ class _MyLoginState extends State<MyLogin> {
     passwordController.text = "";
 
     return Container(
+      padding: EdgeInsets.only(top: 60.0),
+      width: double.infinity,
+      height: double.infinity,
       decoration: const BoxDecoration(
         image: DecorationImage(
           image: AssetImage('assets/images/bg.png'),
@@ -30,11 +33,12 @@ class _MyLoginState extends State<MyLogin> {
         ),
       ),
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         backgroundColor: Colors.transparent,
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+          children: <Widget>[
             Padding(
               padding: EdgeInsets.only(top: 15.0, bottom: 0),
               child: Image.asset(
@@ -196,30 +200,34 @@ class _MyLoginState extends State<MyLogin> {
                     ],
                   ),
                 )),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Container(
-                  margin: EdgeInsets.symmetric(vertical: 50.0),
+            Expanded(
+              child: Align(
+                alignment: Alignment.bottomCenter,
                   child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Divider(
                         height: 1,
                         thickness: 0.8,
                         color: Colors.black54,
                       ),
-                      Text(
-                        "Don’t have an account? Sign up",
-                        style: TextStyle(
-                          color: Color(0xFF5386E4),
-                          fontWeight: FontWeight.w700,
-                          fontSize: 15,
-                          fontFamily: 'Poppins-Bold',
+                      Padding(
+                        padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
+                        child: Text(
+                          "Don’t have an account? Sign up",
+                          style: TextStyle(
+                            color: Color(0xFF5386E4),
+                            fontWeight: FontWeight.w700,
+                            fontSize: 15,
+                            fontFamily: 'Poppins-Bold',
+                          ),
+                          // Your bottom element goes here
                         ),
-                        // Your bottom element goes here
-                      ),
+                      )
                     ],
-                  )),
-            ),
+                  ),
+                ),
+              ),
           ],
         ),
       ),

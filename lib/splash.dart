@@ -25,7 +25,7 @@ class _SplashState extends State<Splash> {
               // builder: (context) => const MyHomePage(
               //       title: 'wE-Panchayat',
               //     )
-            builder: (context) => const MyLogin()
+            builder: (context) => const Login()
           ));
     });
   }

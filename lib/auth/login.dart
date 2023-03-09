@@ -2,14 +2,16 @@ import 'package:flutter/material.dart';
 
 import 'package:we_panchayat_dev/main.dart';
 
-class MyLogin extends StatefulWidget {
-  const MyLogin({Key? key}) : super(key: key);
+import 'package:we_panchayat_dev/auth/signup.dart';
+
+class Login extends StatefulWidget {
+  const Login({Key? key}) : super(key: key);
 
   @override
-  _MyLoginState createState() => _MyLoginState();
+  _LoginState createState() => _LoginState();
 }
 
-class _MyLoginState extends State<MyLogin> {
+class _LoginState extends State<Login> {
   bool _obscureText = true;
 
   TextEditingController emailController = TextEditingController();
@@ -213,15 +215,23 @@ class _MyLoginState extends State<MyLogin> {
                       ),
                       Padding(
                         padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
-                        child: Text(
-                          "Don’t have an account? Sign up",
-                          style: TextStyle(
-                            color: Color(0xFF5386E4),
-                            fontWeight: FontWeight.w700,
-                            fontSize: 15,
-                            fontFamily: 'Poppins-Bold',
+                        child: GestureDetector(
+                          child: Text(
+                            "Don’t have an account? Sign up",
+                            style: TextStyle(
+                              color: Color(0xFF5386E4),
+                              fontWeight: FontWeight.w700,
+                              fontSize: 15,
+                              fontFamily: 'Poppins-Bold',
+                            ),
+                            // Your bottom element goes here
                           ),
-                          // Your bottom element goes here
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => SignUp()),
+                            );
+                          },
                         ),
                       )
                     ],

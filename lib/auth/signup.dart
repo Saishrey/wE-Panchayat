@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter/services.dart';
 import 'package:we_panchayat_dev/main.dart';
 
 import 'package:we_panchayat_dev/auth/login.dart';
@@ -402,6 +402,72 @@ class _SignUpState extends State<SignUp> {
                                         : Icons.visibility_off,
                                   ),
                                 ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: BorderSide(
+                                    color: Color(0xffBDBDBD),
+                                  ),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: BorderSide(
+                                    color: Color(0xffBDBDBD),
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: BorderSide(
+                                    color: Theme.of(context).primaryColor,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 16),
+                            TextFormField(
+                              inputFormatters: [
+                                new LengthLimitingTextInputFormatter(6),
+                              ],
+                              style: TextStyle(
+                                color: Colors.black54,
+                                fontFamily: 'Poppins-Bold',
+                              ),
+                              decoration: InputDecoration(
+                                labelText: 'Pincode',
+                                filled: true,
+                                fillColor: Color(0xffF6F6F6),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: BorderSide(
+                                    color: Color(0xffBDBDBD),
+                                  ),
+                                ),
+                                enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: BorderSide(
+                                    color: Color(0xffBDBDBD),
+                                  ),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: BorderSide(
+                                    color: Theme.of(context).primaryColor,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: 16),
+                            TextFormField(
+                              inputFormatters: [
+                                new LengthLimitingTextInputFormatter(10),
+                              ],
+                              style: TextStyle(
+                                color: Colors.black54,
+                                fontFamily: 'Poppins-Bold',
+                              ),
+                              decoration: InputDecoration(
+                                labelText: 'Phone Number',
+                                filled: true,
+                                fillColor: Color(0xffF6F6F6),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(10),
                                   borderSide: BorderSide(

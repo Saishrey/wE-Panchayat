@@ -4,6 +4,9 @@ import 'package:we_panchayat_dev/main.dart';
 
 import 'package:we_panchayat_dev/auth/login.dart';
 
+import 'package:dob_input_field/dob_input_field.dart';
+import 'package:flutter/material.dart';
+
 class SignUp extends StatefulWidget {
   const SignUp({Key? key}) : super(key: key);
 
@@ -14,7 +17,7 @@ class SignUp extends StatefulWidget {
 class _SignUpState extends State<SignUp> {
   bool _obscureText = true;
 
-  List<String> talukas = [
+  List<String> _talukas = [
     'Bardez',
     'Bicholim',
     'Canacona',
@@ -29,18 +32,16 @@ class _SignUpState extends State<SignUp> {
     'Tiswadi'
   ];
 
-  List<String> villages = [
-    'Davorlim',
-    'Paliem'
-  ];
+  List<String> _villages = ['Davorlim', 'Paliem'];
 
   String _selectedTaluka = "Bardez";
 
   String _selectedVillage = "Davorlim";
 
-
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
+
+  DateTime _selectedDate = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +49,6 @@ class _SignUpState extends State<SignUp> {
 
     emailController.text = "";
     passwordController.text = "";
-
 
     return Container(
       padding: EdgeInsets.only(top: 60.0),
@@ -206,26 +206,38 @@ class _SignUpState extends State<SignUp> {
                               children: [
                                 Expanded(
                                   child: Container(
-                                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 6),
                                     decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      border: Border.all(color: Color(0xffBDBDBD), width: 1)
-                                    ),
+                                        borderRadius: BorderRadius.circular(10),
+                                        border: Border.all(
+                                            color: Color(0xffBDBDBD),
+                                            width: 1)),
                                     child: DropdownButton(
                                       menuMaxHeight: 200,
                                       isExpanded: true,
-                                      icon: Icon(Icons.arrow_drop_down_outlined, color: Colors.black,),
+                                      icon: Icon(
+                                        Icons.arrow_drop_down_outlined,
+                                        color: Colors.black,
+                                      ),
                                       value: _selectedTaluka,
-                                      items: talukas.map((String option) {
+                                      items: _talukas.map((String option) {
                                         return DropdownMenuItem<String>(
                                           value: option,
-                                          child: Text(option),
+                                          child: Text(
+                                            option,
+                                            style: TextStyle(
+                                              color: Colors.black54,
+                                              fontFamily: 'Poppins-Bold',
+                                            ),
+                                          ),
                                         );
                                       }).toList(),
                                       onChanged: (newValue) {
                                         setState(() {
                                           _selectedTaluka = newValue.toString();
-                                          debugPrint("Selected taluka =  $_selectedTaluka");
+                                          debugPrint(
+                                              "Selected taluka =  $_selectedTaluka");
                                         });
                                       },
                                     ),
@@ -234,32 +246,65 @@ class _SignUpState extends State<SignUp> {
                                 SizedBox(width: 10.0),
                                 Expanded(
                                   child: Container(
-                                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 10, vertical: 6),
                                     decoration: BoxDecoration(
                                         borderRadius: BorderRadius.circular(10),
-                                        border: Border.all(color: Color(0xffBDBDBD), width: 1)
-                                    ),
+                                        border: Border.all(
+                                            color: Color(0xffBDBDBD),
+                                            width: 1)),
                                     child: DropdownButton(
                                       menuMaxHeight: 200,
                                       isExpanded: true,
-                                      icon: Icon(Icons.arrow_drop_down_outlined, color: Colors.black,),
+                                      icon: Icon(
+                                        Icons.arrow_drop_down_outlined,
+                                        color: Colors.black,
+                                      ),
                                       value: _selectedVillage,
-                                      items: villages.map((String option) {
+                                      items: _villages.map((String option) {
                                         return DropdownMenuItem<String>(
                                           value: option,
-                                          child: Text(option),
+                                          child: Text(
+                                            option,
+                                            style: TextStyle(
+                                              color: Colors.black54,
+                                              fontFamily: 'Poppins-Bold',
+                                            ),
+                                          ),
                                         );
                                       }).toList(),
                                       onChanged: (newValue) {
                                         setState(() {
-                                          _selectedVillage = newValue.toString();
-                                          debugPrint("Selected taluka =  $_selectedVillage");
+                                          _selectedVillage =
+                                              newValue.toString();
+                                          debugPrint(
+                                              "Selected taluka =  $_selectedVillage");
                                         });
                                       },
                                     ),
                                   ),
                                 ),
                               ],
+                            ),
+                            SizedBox(height: 16),
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 6),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  border: Border.all(
+                                      color: Color(0xffBDBDBD), width: 1)),
+                              child: ListTile(
+                                title: Text(
+                                  "Date Of Birth:    ${_selectedDate.day}/ ${_selectedDate.month}/ ${_selectedDate.year}",
+                                  style: TextStyle(
+                                    color: Colors.black54,
+                                    fontFamily: 'Poppins-Bold',
+                                  ),
+                                ),
+                                trailing: Icon(Icons.keyboard_arrow_down),
+                                onTap: _pickDate,
+                              ),
                             ),
                             SizedBox(height: 16),
                             TextFormField(
@@ -400,7 +445,7 @@ class _SignUpState extends State<SignUp> {
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.only(top: 100.0),
+                  padding: EdgeInsets.only(top: 20.0),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -439,5 +484,20 @@ class _SignUpState extends State<SignUp> {
         ),
       ),
     );
+  }
+
+  _pickDate() async {
+    DateTime? date = await showDatePicker(
+      context: context,
+      firstDate: DateTime(DateTime(1950).year),
+      lastDate: DateTime(DateTime.now().year + 1),
+      initialDate: _selectedDate,
+    );
+
+    if (date != null) {
+      setState(() {
+        _selectedDate = date;
+      });
+    }
   }
 }

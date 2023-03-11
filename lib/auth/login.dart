@@ -13,6 +13,7 @@ class Login extends StatefulWidget {
 
 class _LoginState extends State<Login> {
   bool _obscureText = true;
+  final _formKey = GlobalKey<FormState>();
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -69,6 +70,7 @@ class _LoginState extends State<Login> {
               child: Padding(
                 padding: EdgeInsets.all(0),
                 child: Form(
+                  key: _formKey,
                   child: Padding(
                     padding: const EdgeInsets.only(right: 15.0, left: 15.0),
                     child: Column(
@@ -77,6 +79,16 @@ class _LoginState extends State<Login> {
                       children: [
                         SizedBox(height: 16),
                         TextFormField(
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return "Please Enter Email";
+                            } else if (!RegExp(
+                                    r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                                .hasMatch(value)) {
+                              return "Please Enter a Valid Email";
+                            }
+                            return null;
+                          },
                           style: TextStyle(
                             color: Colors.black54,
                             fontFamily: 'Poppins-Bold',
@@ -107,6 +119,12 @@ class _LoginState extends State<Login> {
                         ),
                         SizedBox(height: 16),
                         TextFormField(
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return "Enter password ";
+                            }
+                            return null;
+                          },
                           style: TextStyle(
                             color: Colors.black54,
                             fontFamily: 'Poppins-Bold',
@@ -150,7 +168,15 @@ class _LoginState extends State<Login> {
                         ),
                         SizedBox(height: 16),
                         ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => SignUp()),
+                              );
+                            }
+                          },
                           child: Text("Log in",
                               style: TextStyle(
                                 fontSize: 16,
@@ -199,45 +225,45 @@ class _LoginState extends State<Login> {
                         //     );
                         //   },
                       ),
-                    ],
+                    ], 
                   ),
                 )),
             Expanded(
               child: Align(
                 alignment: Alignment.bottomCenter,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Divider(
-                        height: 1,
-                        thickness: 0.8,
-                        color: Colors.black54,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
-                        child: GestureDetector(
-                          child: Text(
-                            "Don’t have an account? Sign up",
-                            style: TextStyle(
-                              color: Color(0xFF5386E4),
-                              fontWeight: FontWeight.w700,
-                              fontSize: 15,
-                              fontFamily: 'Poppins-Bold',
-                            ),
-                            // Your bottom element goes here
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Divider(
+                      height: 1,
+                      thickness: 0.8,
+                      color: Colors.black54,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
+                      child: GestureDetector(
+                        child: Text(
+                          "Don’t have an account? Sign up",
+                          style: TextStyle(
+                            color: Color(0xFF5386E4),
+                            fontWeight: FontWeight.w700,
+                            fontSize: 15,
+                            fontFamily: 'Poppins-Bold',
                           ),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => SignUp()),
-                            );
-                          },
+                          // Your bottom element goes here
                         ),
-                      )
-                    ],
-                  ),
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => SignUp()),
+                          );
+                        },
+                      ),
+                    )
+                  ],
                 ),
               ),
+            ),
           ],
         ),
       ),

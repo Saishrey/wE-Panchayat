@@ -16,6 +16,7 @@ class SignUp extends StatefulWidget {
 
 class _SignUpState extends State<SignUp> {
   bool _obscureText = true;
+  final _formKey = GlobalKey<FormState>();
 
   List<String> _talukas = [
     'Bardez',
@@ -97,6 +98,7 @@ class _SignUpState extends State<SignUp> {
                   child: Padding(
                     padding: EdgeInsets.all(0),
                     child: Form(
+                      key: _formKey,
                       child: Padding(
                         padding: const EdgeInsets.only(right: 15.0, left: 15.0),
                         child: Column(
@@ -108,8 +110,14 @@ class _SignUpState extends State<SignUp> {
                               children: [
                                 Expanded(
                                   child: TextFormField(
+                                    validator: (value) {
+                                      if (value!.isEmpty) {
+                                        return "Enter Name ";
+                                      }
+                                      return null;
+                                    },
                                     style: TextStyle(
-                                      color: Colors.black54,
+                                      color: Colors.black54, //Name
                                       fontFamily: 'Poppins-Bold',
                                     ),
                                     decoration: InputDecoration(
@@ -140,6 +148,12 @@ class _SignUpState extends State<SignUp> {
                                 SizedBox(width: 10.0),
                                 Expanded(
                                   child: TextFormField(
+                                    validator: (value) {
+                                      if (value!.isEmpty) {
+                                        return "Enter  LastName ";
+                                      }
+                                      return null;
+                                    },
                                     style: TextStyle(
                                       color: Colors.black54,
                                       fontFamily: 'Poppins-Bold',
@@ -173,6 +187,12 @@ class _SignUpState extends State<SignUp> {
                             ),
                             SizedBox(height: 16),
                             TextFormField(
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return "Enter Address    ";
+                                }
+                                return null;
+                              },
                               style: TextStyle(
                                 color: Colors.black54,
                                 fontFamily: 'Poppins-Bold',
@@ -308,6 +328,16 @@ class _SignUpState extends State<SignUp> {
                             ),
                             SizedBox(height: 16),
                             TextFormField(
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return "Please Enter Email";
+                                } else if (!RegExp(
+                                        r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                                    .hasMatch(value)) {
+                                  return "Please Enter a Valid Email";
+                                }
+                                return null;
+                              },
                               style: TextStyle(
                                 color: Colors.black54,
                                 fontFamily: 'Poppins-Bold',
@@ -338,6 +368,12 @@ class _SignUpState extends State<SignUp> {
                             ),
                             SizedBox(height: 16),
                             TextFormField(
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return "Enter Password   ";
+                                }
+                                return null;
+                              },
                               style: TextStyle(
                                 color: Colors.black54,
                                 fontFamily: 'Poppins-Bold',
@@ -424,6 +460,12 @@ class _SignUpState extends State<SignUp> {
                             ),
                             SizedBox(height: 16),
                             TextFormField(
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return "Enter 6 Digit Pincode   ";
+                                }
+                                return null;
+                              },
                               keyboardType: TextInputType.number,
                               inputFormatters: [
                                 new LengthLimitingTextInputFormatter(6),
@@ -458,6 +500,12 @@ class _SignUpState extends State<SignUp> {
                             ),
                             SizedBox(height: 16),
                             TextFormField(
+                              validator: (value) {
+                                if (value!.isEmpty || value.length < 10) {
+                                  return "Enter Valid Phone Number ";
+                                }
+                                return null;
+                              },
                               keyboardType: TextInputType.number,
                               inputFormatters: [
                                 new LengthLimitingTextInputFormatter(10),
@@ -492,7 +540,15 @@ class _SignUpState extends State<SignUp> {
                             ),
                             SizedBox(height: 16),
                             ElevatedButton(
-                              onPressed: () {},
+                              onPressed: () {
+                                if (_formKey.currentState!.validate()) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => Login()),
+                                  );
+                                }
+                              },
                               child: Text("Sign up",
                                   style: TextStyle(
                                     fontSize: 16,

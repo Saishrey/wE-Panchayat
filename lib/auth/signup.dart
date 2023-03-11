@@ -61,7 +61,7 @@ class _SignUpState extends State<SignUp> {
         ),
       ),
       child: Scaffold(
-        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: true,
         backgroundColor: Colors.transparent,
         body: SingleChildScrollView(
           child: Container(

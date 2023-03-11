@@ -424,6 +424,7 @@ class _SignUpState extends State<SignUp> {
                             ),
                             SizedBox(height: 16),
                             TextFormField(
+                              keyboardType: TextInputType.number,
                               inputFormatters: [
                                 new LengthLimitingTextInputFormatter(6),
                               ],
@@ -457,6 +458,7 @@ class _SignUpState extends State<SignUp> {
                             ),
                             SizedBox(height: 16),
                             TextFormField(
+                              keyboardType: TextInputType.number,
                               inputFormatters: [
                                 new LengthLimitingTextInputFormatter(10),
                               ],

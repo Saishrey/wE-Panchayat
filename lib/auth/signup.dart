@@ -18,26 +18,225 @@ class _SignUpState extends State<SignUp> {
   bool _obscureText = true;
   final _formKey = GlobalKey<FormState>();
 
-  List<String> _talukas = [
-    'Bardez',
-    'Bicholim',
-    'Canacona',
-    'Dharbandora',
-    'Mormugao',
-    'Pernem',
-    'Ponda',
-    'Quepem',
-    'Salcette',
-    'Sanguem',
-    'Sattari',
-    'Tiswadi'
-  ];
+  final Map<String, List<String>> _mappedTalukaAndVillages = {
+    'Bardez': [
+      'Aldona',
+      'Anjuna',
+      'Arpora-Nagoa',
+      'Assagao',
+      'Assanora',
+      'Bastora',
+      'Calangute',
+      'Camurlim',
+      'Candolim',
+      'Colvale',
+      'Guirim',
+      'Moira',
+      'Nachinola',
+      'Nadora',
+      'Nerul',
+      'Oxel',
+      'Parra',
+      'Penha-De-Franca',
+      'Pilerne',
+      'Pirna',
+      'Pomburpa-Olaulim',
+      'Reis Magos',
+      'Revora',
+      'Saligao',
+      'Salvador-Do-Mundo',
+      'Sangolda',
+      'Siolim-Marna',
+      'Siolim-Sodiem',
+      'Sirsaim',
+      'Socorro',
+      'Tivim',
+      'Ucassaim,Paliem-Punola',
+      'Verla Canca',
+    ],
+    'Bicholim': [
+      'Advalpal',
+      'Amona',
+      'Cudnem',
+      'Harvalem',
+      'Karapur-Sarvan',
+      'Latambarcem',
+      'Maulinguem',
+      'Mayem',
+      'Mencurem',
+      'Mulgao',
+      'Naroa',
+      'Navelim,Bicholim',
+      'Pale,Cotombi',
+      'Piligao',
+      'Salem',
+      'Sirigao',
+      'Surla',
+      'Velguem',
+    ],
+    'Canacona': [
+      'Agonda',
+      'Cola',
+      'Cotigao',
+      'Gaondongri',
+      'Loliem-Polem',
+      'Poinguinim',
+      'Shristhal'
+    ],
+    'Dharbandora': [
+      'Colem',
+      'Dharbandora',
+      'Kirlapal-Dabhal',
+      'Mollem',
+      'Sancordem',
+    ],
+    'Mormugao': [
+      'Cansaulim-Arossim-Cuelim',
+      'Chicalim',
+      'Chicolna-Bogmalo',
+      'Cortalim',
+      'Majorda-Utorda-Calata',
+      'Nagoa',
+      'Quelossim',
+      'Sancoale',
+      'Velsao-Pale',
+      'Verna',
+    ],
+    'Pernem': [
+      'Agarwada,Chopdem',
+      'Alorna',
+      'Arambol',
+      'Casnem, Amberem,Poroscodem',
+      'Chandel Hassapur',
+      'Corgao',
+      'Dhargal',
+      'Ibrampur',
+      'Kasarvanem',
+      'Mandrem',
+      'Morjim',
+      'Ozarim',
+      'Paliem',
+      'Parcem',
+      'Querim-Tiracol',
+      'Tamboxem,Mopa,Uguem',
+      'Torxem',
+      'Tuem',
+      'Varkhand Nagzar',
+      'Virnoda',
+    ],
+    'Ponda': [
+      'Bandora',
+      'Betora-Nirancal',
+      'Betqui, Candola',
+      'Bhoma-Adcolna',
+      'Borim',
+      'Curti-Khandepar',
+      'Durbhat',
+      'Kundaim',
+      'Marcaim',
+      'Panchawadi',
+      'Quela',
+      'Querim',
+      'Shiroda',
+      'Talaulim',
+      'Tivrem-Orgao',
+      'Usgao-Ganjem',
+      'Veling,Priol,Cuncoliem',
+      'Verem,Vaghurme',
+      'Volvoi',
+    ],
+    'Quepem': [
+      'Ambaulim',
+      'Assolda',
+      'Avedem-Cotombi',
+      'Balli-Adnem',
+      'Barcem',
+      'Caurem',
+      'Fatorpa-Quitol',
+      'Molcornem',
+      'Morpirla',
+      'Naqueri-Betul',
+      'Xeldem',
+    ],
+    'Salcete': [
+      'Ambelim',
+      'Aquem Baixo',
+      'Assolna',
+      'Benaulim',
+      'Betalbatim',
+      'Camorlim',
+      'Carmona',
+      'Cavelossim',
+      'Chandor-Cavorim',
+      'Chinchinim- Deussua',
+      'Colva',
+      'Curtorim',
+      'Davorlim,Dicarpale',
+      'Dramapur',
+      'Guirdolim',
+      'Loutulim',
+      'Macasana',
+      'Navelim Salcete',
+      'Nuvem',
+      'Orlim',
+      'Paroda',
+      'Rachol',
+      'Raia',
+      'Rumdamol-Davorlim',
+      'Sarzora',
+      'Seraulim',
+      'St. Jose-De-Areal',
+      'Telaulim',
+      'Varca',
+      'Velim',
+    ],
+    'Sanguem': [
+      'Bhati',
+      'Curdi',
+      'Kalay(Kalem)',
+      'Neturlim',
+      'Rivona',
+      'Sanvordem(Sanguem)',
+      'Uguem',
+    ],
+    'Sattari': [
+      'Birondem',
+      'Cotorem',
+      'Dongurli',
+      'Guleli',
+      'Honda',
+      'Kerim',
+      'Mauxi',
+      'Morlem',
+      'Nagargao',
+      'Pissurlem',
+      'Poriem',
+      'Sanvordem(Sattari)',
+    ],
+    'Tiswadi': [
+      'Batim',
+      'Carambolim',
+      'Chimbel',
+      'Chodan-Madel',
+      'Corlim',
+      'Cumbharjua',
+      'Curca,Bambolim,Talaulim',
+      'Goltim-Navelim',
+      'Merces',
+      'Neura',
+      'Sao Lourence(Agassaim)',
+      'Sao Matias',
+      'Se-Old-Goa',
+      'Siridao-Palem',
+      'St. Andre',
+      'St. Cruz',
+      'St. Estevam',
+      'Taleigao',
+    ],
+  };
 
-  List<String> _villages = ['Davorlim', 'Paliem'];
-
-  String _selectedTaluka = "Bardez";
-
-  String _selectedVillage = "Davorlim";
+  String? _selectedTaluka;
+  String? _selectedVillage;
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
@@ -46,12 +245,59 @@ class _SignUpState extends State<SignUp> {
 
   String _password = "";
 
+  List<DropdownMenuItem<String>> villageMenuItems = [];
+
+  bool disabledVillageMenuItem = true;
+
+  void selected(_value) {
+    villageMenuItems = [];
+    populateVillageMenuItem(_mappedTalukaAndVillages[_value]);
+    setState(() {
+      _selectedTaluka = _value;
+
+      _selectedVillage = _mappedTalukaAndVillages[_value]![0];
+
+
+      debugPrint("Selected One Taluka = $_selectedTaluka");
+      debugPrint("Selected One village = $_selectedVillage");
+
+      disabledVillageMenuItem = false;
+    });
+  }
+
+
+  void populateVillageMenuItem(List<String>? villages) {
+    for (String village in villages!) {
+      villageMenuItems.add(DropdownMenuItem<String>(
+        child: Center(
+          child: Text(village,
+              style: TextStyle(
+                color: Colors.black54,
+                fontFamily: 'Poppins-Bold',
+              )),
+        ),
+        value: village,
+      ));
+    }
+  }
+
+  void secondselected(_value) {
+    setState(() {
+      _selectedVillage = _value;
+      debugPrint("Selected Two Taluka = $_selectedTaluka");
+      debugPrint("Selected Two village = $_selectedVillage");
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     TextStyle textStyle = Theme.of(context).textTheme.titleMedium!;
 
     emailController.text = "";
     passwordController.text = "";
+
+    debugPrint("Selected Two Taluka = $_selectedTaluka");
+    debugPrint("Selected Two village = $_selectedVillage");
 
     return Container(
       padding: EdgeInsets.only(top: 60.0),
@@ -283,7 +529,8 @@ class _SignUpState extends State<SignUp> {
                                         color: Colors.black,
                                       ),
                                       value: _selectedTaluka,
-                                      items: _talukas.map((String option) {
+                                      items:
+                                          _mappedTalukaAndVillages.keys.map((String option) {
                                         return DropdownMenuItem<String>(
                                           value: option,
                                           child: Text(
@@ -295,13 +542,14 @@ class _SignUpState extends State<SignUp> {
                                           ),
                                         );
                                       }).toList(),
-                                      onChanged: (newValue) {
-                                        setState(() {
-                                          _selectedTaluka = newValue.toString();
-                                          debugPrint(
-                                              "Selected taluka =  $_selectedTaluka");
-                                        });
-                                      },
+                                      onChanged: (_value) => selected(_value),
+                                      hint: Text(
+                                        "Select Taluka",
+                                        style: TextStyle(
+                                          color: Colors.black54,
+                                          fontFamily: 'Poppins-Bold',
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -323,26 +571,15 @@ class _SignUpState extends State<SignUp> {
                                         color: Colors.black,
                                       ),
                                       value: _selectedVillage,
-                                      items: _villages.map((String option) {
-                                        return DropdownMenuItem<String>(
-                                          value: option,
-                                          child: Text(
-                                            option,
-                                            style: TextStyle(
-                                              color: Colors.black54,
-                                              fontFamily: 'Poppins-Bold',
-                                            ),
-                                          ),
-                                        );
-                                      }).toList(),
-                                      onChanged: (newValue) {
-                                        setState(() {
-                                          _selectedVillage =
-                                              newValue.toString();
-                                          debugPrint(
-                                              "Selected village =  $_selectedVillage");
-                                        });
-                                      },
+                                      items: villageMenuItems,
+                                      onChanged: disabledVillageMenuItem ? null : (_value) => secondselected(_value),
+                                      disabledHint: Text(
+                                        "Select Village",
+                                        style: TextStyle(
+                                          color: Colors.black54,
+                                          fontFamily: 'Poppins-Bold',
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -453,14 +690,13 @@ class _SignUpState extends State<SignUp> {
                               validator: (value) {
                                 if (value!.isEmpty) {
                                   return "Enter Password   ";
-                                }
-                                else if(!isPasswordValid(value)) {
+                                } else if (!isPasswordValid(value)) {
                                   return "Password must have:\n"
                                       "At least 8 characters long.\n"
-                                  "At least one uppercase letter.\n"
-                                  "At least one lowercase letter.\n"
-                                  "At least one number.\n"
-                                  "At least one special character.";
+                                      "At least one uppercase letter.\n"
+                                      "At least one lowercase letter.\n"
+                                      "At least one number.\n"
+                                      "At least one special character.";
                                 }
                                 _password = value;
                                 return null;
@@ -511,16 +747,14 @@ class _SignUpState extends State<SignUp> {
                               validator: (value) {
                                 if (value!.isEmpty) {
                                   return "Enter Password   ";
-                                }
-                                else if(!isPasswordValid(value)) {
+                                } else if (!isPasswordValid(value)) {
                                   return "Password must have:\n"
                                       "At least 8 characters long.\n"
                                       "At least one uppercase letter.\n"
                                       "At least one lowercase letter.\n"
                                       "At least one number.\n"
                                       "At least one special character.";
-                                }
-                                else if(value != _password) {
+                                } else if (value != _password) {
                                   return "Passwords do not match.";
                                 }
                                 return null;

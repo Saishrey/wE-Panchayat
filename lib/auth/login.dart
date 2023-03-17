@@ -225,7 +225,7 @@ class _LoginState extends State<Login> {
                         //     );
                         //   },
                       ),
-                    ], 
+                    ],
                   ),
                 )),
             Expanded(
@@ -241,23 +241,29 @@ class _LoginState extends State<Login> {
                     ),
                     Padding(
                       padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
-                      child: GestureDetector(
-                        child: Text(
-                          "Don’t have an account? Sign up",
-                          style: TextStyle(
-                            color: Color(0xFF5386E4),
-                            fontWeight: FontWeight.w700,
-                            fontSize: 15,
-                            fontFamily: 'Poppins-Bold',
+                      child: InkWell(
+                        onTap: () {},
+                        child: GestureDetector(
+                          child: Padding(
+                            padding: const EdgeInsets.all(1.0),
+                            child: Text(
+                              "Don’t have an account? Sign up",
+                              style: TextStyle(
+                                color: Color(0xFF5386E4),
+                                fontWeight: FontWeight.w700,
+                                fontSize: 15,
+                                fontFamily: 'Poppins-Bold',
+                              ),
+                              // Your bottom element goes here
+                            ),
                           ),
-                          // Your bottom element goes here
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => SignUp()),
+                            );
+                          },
                         ),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => SignUp()),
-                          );
-                        },
                       ),
                     )
                   ],

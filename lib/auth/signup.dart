@@ -235,6 +235,86 @@ class _SignUpState extends State<SignUp> {
     ],
   };
 
+  final List<String> _validPinCodes = [
+    '403001',
+    '403002',
+    '403003',
+    '403004',
+    '403005',
+    '403006',
+    '403101',
+    '403104',
+    '403107',
+    '403108',
+    '403109',
+    '403110',
+    '403114',
+    '403174',
+    '403201',
+    '403202',
+    '403206',
+    '403401',
+    '403404',
+    '403405',
+    '403406',
+    '403407',
+    '403409',
+    '403410',
+    '403502',
+    '403503',
+    '403504',
+    '403506',
+    '403507',
+    '403508',
+    '403509',
+    '403512',
+    '403513',
+    '403514',
+    '403515',
+    '403516',
+    '403517',
+    '403518',
+    '403519',
+    '403521',
+    '403523',
+    '403524',
+    '403527',
+    '403530',
+    '403531',
+    '403601',
+    '403602',
+    '403603',
+    '403604',
+    '403701',
+    '403702',
+    '403703',
+    '403704',
+    '403706',
+    '403707',
+    '403708',
+    '403710',
+    '403711',
+    '403712',
+    '403713',
+    '403715',
+    '403716',
+    '403717',
+    '403718',
+    '403721',
+    '403722',
+    '403724',
+    '403725',
+    '403726',
+    '403728',
+    '403731',
+    '403801',
+    '403802',
+    '403803',
+    '403806',
+    '403808',
+    '404102'
+  ];
+
   String? _selectedTaluka;
   String? _selectedVillage;
 
@@ -257,14 +337,12 @@ class _SignUpState extends State<SignUp> {
 
       _selectedVillage = _mappedTalukaAndVillages[_value]![0];
 
-
       debugPrint("Selected One Taluka = $_selectedTaluka");
       debugPrint("Selected One village = $_selectedVillage");
 
       disabledVillageMenuItem = false;
     });
   }
-
 
   void populateVillageMenuItem(List<String>? villages) {
     for (String village in villages!) {
@@ -472,8 +550,8 @@ class _SignUpState extends State<SignUp> {
                             SizedBox(height: 16),
                             TextFormField(
                               validator: (value) {
-                                if (value!.isEmpty || value.length < 6) {
-                                  return "Enter 6 Digit Pincode   ";
+                                if (value!.isEmpty || value.length < 6 || !_validPinCodes.contains(value)) {
+                                  return "Enter a valid Pin Code";
                                 }
                                 return null;
                               },
@@ -486,7 +564,7 @@ class _SignUpState extends State<SignUp> {
                                 fontFamily: 'Poppins-Bold',
                               ),
                               decoration: InputDecoration(
-                                labelText: 'Pincode',
+                                labelText: 'Pin Code',
                                 filled: true,
                                 fillColor: Color(0xffF6F6F6),
                                 border: OutlineInputBorder(
@@ -529,8 +607,8 @@ class _SignUpState extends State<SignUp> {
                                         color: Colors.black,
                                       ),
                                       value: _selectedTaluka,
-                                      items:
-                                          _mappedTalukaAndVillages.keys.map((String option) {
+                                      items: _mappedTalukaAndVillages.keys
+                                          .map((String option) {
                                         return DropdownMenuItem<String>(
                                           value: option,
                                           child: Text(
@@ -572,7 +650,9 @@ class _SignUpState extends State<SignUp> {
                                       ),
                                       value: _selectedVillage,
                                       items: villageMenuItems,
-                                      onChanged: disabledVillageMenuItem ? null : (_value) => secondselected(_value),
+                                      onChanged: disabledVillageMenuItem
+                                          ? null
+                                          : (_value) => secondselected(_value),
                                       disabledHint: Text(
                                         "Select Village",
                                         style: TextStyle(

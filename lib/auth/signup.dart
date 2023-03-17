@@ -901,11 +901,12 @@ class _SignUpState extends State<SignUp> {
                                 ElevatedButton(
                                   onPressed: () {
                                     if (_formKey.currentState!.validate()) {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => Login()),
-                                      );
+                                      // Navigator.push(
+                                      //   context,
+                                      //   MaterialPageRoute(
+                                      //       builder: (context) => Login()),
+                                      // );
+                                      print("Navigate to OTP.");
                                     }
                                   },
                                   child: Text("Sign up",

@@ -428,7 +428,8 @@ class _SignUpState extends State<SignUp> {
                         child: Form(
                           key: _formKey,
                           child: Padding(
-                            padding: const EdgeInsets.only(right: 15.0, left: 15.0),
+                            padding:
+                                const EdgeInsets.only(right: 15.0, left: 15.0),
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -453,21 +454,25 @@ class _SignUpState extends State<SignUp> {
                                           filled: true,
                                           fillColor: Color(0xffF6F6F6),
                                           border: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(10),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
                                             borderSide: BorderSide(
                                               color: Color(0xffBDBDBD),
                                             ),
                                           ),
                                           enabledBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(10),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
                                             borderSide: BorderSide(
                                               color: Color(0xffBDBDBD),
                                             ),
                                           ),
                                           focusedBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(10),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
                                             borderSide: BorderSide(
-                                              color: Theme.of(context).primaryColor,
+                                              color: Theme.of(context)
+                                                  .primaryColor,
                                             ),
                                           ),
                                         ),
@@ -491,21 +496,25 @@ class _SignUpState extends State<SignUp> {
                                           filled: true,
                                           fillColor: Color(0xffF6F6F6),
                                           border: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(10),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
                                             borderSide: BorderSide(
                                               color: Color(0xffBDBDBD),
                                             ),
                                           ),
                                           enabledBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(10),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
                                             borderSide: BorderSide(
                                               color: Color(0xffBDBDBD),
                                             ),
                                           ),
                                           focusedBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(10),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
                                             borderSide: BorderSide(
-                                              color: Theme.of(context).primaryColor,
+                                              color: Theme.of(context)
+                                                  .primaryColor,
                                             ),
                                           ),
                                         ),
@@ -552,7 +561,9 @@ class _SignUpState extends State<SignUp> {
                                 SizedBox(height: 16),
                                 TextFormField(
                                   validator: (value) {
-                                    if (value!.isEmpty || value.length < 6 || !_validPinCodes.contains(value)) {
+                                    if (value!.isEmpty ||
+                                        value.length < 6 ||
+                                        !_validPinCodes.contains(value)) {
                                       return "Enter a valid Pin Code";
                                     }
                                     return null;
@@ -597,7 +608,8 @@ class _SignUpState extends State<SignUp> {
                                         padding: EdgeInsets.symmetric(
                                             horizontal: 10, vertical: 6),
                                         decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(10),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
                                             border: Border.all(
                                                 color: Color(0xffBDBDBD),
                                                 width: 1)),
@@ -622,7 +634,8 @@ class _SignUpState extends State<SignUp> {
                                               ),
                                             );
                                           }).toList(),
-                                          onChanged: (_value) => selected(_value),
+                                          onChanged: (_value) =>
+                                              selected(_value),
                                           hint: Text(
                                             "Select Taluka",
                                             style: TextStyle(
@@ -639,7 +652,8 @@ class _SignUpState extends State<SignUp> {
                                         padding: EdgeInsets.symmetric(
                                             horizontal: 10, vertical: 6),
                                         decoration: BoxDecoration(
-                                            borderRadius: BorderRadius.circular(10),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
                                             border: Border.all(
                                                 color: Color(0xffBDBDBD),
                                                 width: 1)),
@@ -654,7 +668,8 @@ class _SignUpState extends State<SignUp> {
                                           items: villageMenuItems,
                                           onChanged: disabledVillageMenuItem
                                               ? null
-                                              : (_value) => secondselected(_value),
+                                              : (_value) =>
+                                                  secondselected(_value),
                                           disabledHint: Text(
                                             "Select Village",
                                             style: TextStyle(
@@ -902,8 +917,8 @@ class _SignUpState extends State<SignUp> {
                                     primary: Color(0xFF5386E4),
                                     onPrimary: Colors.white,
                                     shape: StadiumBorder(),
-                                    padding:
-                                        EdgeInsets.only(top: 15.0, bottom: 15.0),
+                                    padding: EdgeInsets.only(
+                                        top: 15.0, bottom: 15.0),
                                   ),
                                 ),
                                 SizedBox(height: 16),
@@ -913,7 +928,6 @@ class _SignUpState extends State<SignUp> {
                         ),
                       ),
                     ),
-
                   ],
                 ),
               ),

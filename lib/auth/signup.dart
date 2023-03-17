@@ -390,563 +390,566 @@ class _SignUpState extends State<SignUp> {
       child: Scaffold(
         resizeToAvoidBottomInset: true,
         backgroundColor: Colors.transparent,
-        body: SingleChildScrollView(
-          child: Container(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.only(top: 15.0, bottom: 0),
-                  child: Image.asset(
-                    'assets/images/icon.png',
-                    height: 150.0,
-                    width: 150.0,
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: 0, bottom: 15.0),
-                  child: Container(
-                    margin: EdgeInsets.fromLTRB(0, 10, 0, 5),
-                    child: Text(
-                      'wE-Panchayat',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 32,
-                        fontFamily: 'Poppins-Bold',
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xff21205b),
+        body: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Padding(
+                      padding: EdgeInsets.only(top: 15.0, bottom: 0),
+                      child: Image.asset(
+                        'assets/images/icon.png',
+                        height: 150.0,
+                        width: 150.0,
                       ),
                     ),
-                  ),
-                ),
-                Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(0),
-                    child: Form(
-                      key: _formKey,
+                    Padding(
+                      padding: EdgeInsets.only(top: 0, bottom: 15.0),
+                      child: Container(
+                        margin: EdgeInsets.fromLTRB(0, 10, 0, 5),
+                        child: Text(
+                          'wE-Panchayat',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 32,
+                            fontFamily: 'Poppins-Bold',
+                            fontWeight: FontWeight.w700,
+                            color: Color(0xff21205b),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Center(
                       child: Padding(
-                        padding: const EdgeInsets.only(right: 15.0, left: 15.0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            SizedBox(height: 16),
-                            Row(
+                        padding: EdgeInsets.all(0),
+                        child: Form(
+                          key: _formKey,
+                          child: Padding(
+                            padding: const EdgeInsets.only(right: 15.0, left: 15.0),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                Expanded(
-                                  child: TextFormField(
-                                    validator: (value) {
-                                      if (value!.isEmpty) {
-                                        return "Enter Name ";
-                                      }
-                                      return null;
-                                    },
-                                    style: TextStyle(
-                                      color: Colors.black54, //Name
-                                      fontFamily: 'Poppins-Bold',
-                                    ),
-                                    decoration: InputDecoration(
-                                      labelText: 'First Name',
-                                      filled: true,
-                                      fillColor: Color(0xffF6F6F6),
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                        borderSide: BorderSide(
-                                          color: Color(0xffBDBDBD),
+                                SizedBox(height: 16),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: TextFormField(
+                                        validator: (value) {
+                                          if (value!.isEmpty) {
+                                            return "Enter Name ";
+                                          }
+                                          return null;
+                                        },
+                                        style: TextStyle(
+                                          color: Colors.black54, //Name
+                                          fontFamily: 'Poppins-Bold',
                                         ),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                        borderSide: BorderSide(
-                                          color: Color(0xffBDBDBD),
-                                        ),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                        borderSide: BorderSide(
-                                          color: Theme.of(context).primaryColor,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(width: 10.0),
-                                Expanded(
-                                  child: TextFormField(
-                                    validator: (value) {
-                                      if (value!.isEmpty) {
-                                        return "Enter LastName ";
-                                      }
-                                      return null;
-                                    },
-                                    style: TextStyle(
-                                      color: Colors.black54,
-                                      fontFamily: 'Poppins-Bold',
-                                    ),
-                                    decoration: InputDecoration(
-                                      labelText: 'Last Name',
-                                      filled: true,
-                                      fillColor: Color(0xffF6F6F6),
-                                      border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                        borderSide: BorderSide(
-                                          color: Color(0xffBDBDBD),
-                                        ),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                        borderSide: BorderSide(
-                                          color: Color(0xffBDBDBD),
-                                        ),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                        borderSide: BorderSide(
-                                          color: Theme.of(context).primaryColor,
+                                        decoration: InputDecoration(
+                                          labelText: 'First Name',
+                                          filled: true,
+                                          fillColor: Color(0xffF6F6F6),
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(10),
+                                            borderSide: BorderSide(
+                                              color: Color(0xffBDBDBD),
+                                            ),
+                                          ),
+                                          enabledBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(10),
+                                            borderSide: BorderSide(
+                                              color: Color(0xffBDBDBD),
+                                            ),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(10),
+                                            borderSide: BorderSide(
+                                              color: Theme.of(context).primaryColor,
+                                            ),
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            SizedBox(height: 16),
-                            TextFormField(
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return "Enter Address    ";
-                                }
-                                return null;
-                              },
-                              style: TextStyle(
-                                color: Colors.black54,
-                                fontFamily: 'Poppins-Bold',
-                              ),
-                              decoration: InputDecoration(
-                                labelText: 'Address',
-                                filled: true,
-                                fillColor: Color(0xffF6F6F6),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(
-                                    color: Color(0xffBDBDBD),
-                                  ),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(
-                                    color: Color(0xffBDBDBD),
-                                  ),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(
-                                    color: Theme.of(context).primaryColor,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: 16),
-                            TextFormField(
-                              validator: (value) {
-                                if (value!.isEmpty || value.length < 6 || !_validPinCodes.contains(value)) {
-                                  return "Enter a valid Pin Code";
-                                }
-                                return null;
-                              },
-                              keyboardType: TextInputType.number,
-                              inputFormatters: [
-                                new LengthLimitingTextInputFormatter(6),
-                              ],
-                              style: TextStyle(
-                                color: Colors.black54,
-                                fontFamily: 'Poppins-Bold',
-                              ),
-                              decoration: InputDecoration(
-                                labelText: 'Pin Code',
-                                filled: true,
-                                fillColor: Color(0xffF6F6F6),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(
-                                    color: Color(0xffBDBDBD),
-                                  ),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(
-                                    color: Color(0xffBDBDBD),
-                                  ),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(
-                                    color: Theme.of(context).primaryColor,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: 16),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 10, vertical: 6),
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10),
-                                        border: Border.all(
-                                            color: Color(0xffBDBDBD),
-                                            width: 1)),
-                                    child: DropdownButton(
-                                      menuMaxHeight: 200,
-                                      isExpanded: true,
-                                      icon: Icon(
-                                        Icons.arrow_drop_down_outlined,
-                                        color: Colors.black,
+                                    SizedBox(width: 10.0),
+                                    Expanded(
+                                      child: TextFormField(
+                                        validator: (value) {
+                                          if (value!.isEmpty) {
+                                            return "Enter LastName ";
+                                          }
+                                          return null;
+                                        },
+                                        style: TextStyle(
+                                          color: Colors.black54,
+                                          fontFamily: 'Poppins-Bold',
+                                        ),
+                                        decoration: InputDecoration(
+                                          labelText: 'Last Name',
+                                          filled: true,
+                                          fillColor: Color(0xffF6F6F6),
+                                          border: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(10),
+                                            borderSide: BorderSide(
+                                              color: Color(0xffBDBDBD),
+                                            ),
+                                          ),
+                                          enabledBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(10),
+                                            borderSide: BorderSide(
+                                              color: Color(0xffBDBDBD),
+                                            ),
+                                          ),
+                                          focusedBorder: OutlineInputBorder(
+                                            borderRadius: BorderRadius.circular(10),
+                                            borderSide: BorderSide(
+                                              color: Theme.of(context).primaryColor,
+                                            ),
+                                          ),
+                                        ),
                                       ),
-                                      value: _selectedTaluka,
-                                      items: _mappedTalukaAndVillages.keys
-                                          .map((String option) {
-                                        return DropdownMenuItem<String>(
-                                          value: option,
-                                          child: Text(
-                                            option,
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 16),
+                                TextFormField(
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return "Enter Address    ";
+                                    }
+                                    return null;
+                                  },
+                                  style: TextStyle(
+                                    color: Colors.black54,
+                                    fontFamily: 'Poppins-Bold',
+                                  ),
+                                  decoration: InputDecoration(
+                                    labelText: 'Address',
+                                    filled: true,
+                                    fillColor: Color(0xffF6F6F6),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      borderSide: BorderSide(
+                                        color: Color(0xffBDBDBD),
+                                      ),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      borderSide: BorderSide(
+                                        color: Color(0xffBDBDBD),
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      borderSide: BorderSide(
+                                        color: Theme.of(context).primaryColor,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 16),
+                                TextFormField(
+                                  validator: (value) {
+                                    if (value!.isEmpty || value.length < 6 || !_validPinCodes.contains(value)) {
+                                      return "Enter a valid Pin Code";
+                                    }
+                                    return null;
+                                  },
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: [
+                                    new LengthLimitingTextInputFormatter(6),
+                                  ],
+                                  style: TextStyle(
+                                    color: Colors.black54,
+                                    fontFamily: 'Poppins-Bold',
+                                  ),
+                                  decoration: InputDecoration(
+                                    labelText: 'Pin Code',
+                                    filled: true,
+                                    fillColor: Color(0xffF6F6F6),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      borderSide: BorderSide(
+                                        color: Color(0xffBDBDBD),
+                                      ),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      borderSide: BorderSide(
+                                        color: Color(0xffBDBDBD),
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      borderSide: BorderSide(
+                                        color: Theme.of(context).primaryColor,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 16),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 10, vertical: 6),
+                                        decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(10),
+                                            border: Border.all(
+                                                color: Color(0xffBDBDBD),
+                                                width: 1)),
+                                        child: DropdownButton(
+                                          menuMaxHeight: 200,
+                                          isExpanded: true,
+                                          icon: Icon(
+                                            Icons.arrow_drop_down_outlined,
+                                            color: Colors.black,
+                                          ),
+                                          value: _selectedTaluka,
+                                          items: _mappedTalukaAndVillages.keys
+                                              .map((String option) {
+                                            return DropdownMenuItem<String>(
+                                              value: option,
+                                              child: Text(
+                                                option,
+                                                style: TextStyle(
+                                                  color: Colors.black54,
+                                                  fontFamily: 'Poppins-Bold',
+                                                ),
+                                              ),
+                                            );
+                                          }).toList(),
+                                          onChanged: (_value) => selected(_value),
+                                          hint: Text(
+                                            "Select Taluka",
                                             style: TextStyle(
                                               color: Colors.black54,
                                               fontFamily: 'Poppins-Bold',
                                             ),
                                           ),
-                                        );
-                                      }).toList(),
-                                      onChanged: (_value) => selected(_value),
-                                      hint: Text(
-                                        "Select Taluka",
-                                        style: TextStyle(
-                                          color: Colors.black54,
-                                          fontFamily: 'Poppins-Bold',
                                         ),
                                       ),
                                     ),
-                                  ),
-                                ),
-                                SizedBox(width: 10.0),
-                                Expanded(
-                                  child: Container(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 10, vertical: 6),
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(10),
-                                        border: Border.all(
-                                            color: Color(0xffBDBDBD),
-                                            width: 1)),
-                                    child: DropdownButton(
-                                      menuMaxHeight: 200,
-                                      isExpanded: true,
-                                      icon: Icon(
-                                        Icons.arrow_drop_down_outlined,
-                                        color: Colors.black,
-                                      ),
-                                      value: _selectedVillage,
-                                      items: villageMenuItems,
-                                      onChanged: disabledVillageMenuItem
-                                          ? null
-                                          : (_value) => secondselected(_value),
-                                      disabledHint: Text(
-                                        "Select Village",
-                                        style: TextStyle(
-                                          color: Colors.black54,
-                                          fontFamily: 'Poppins-Bold',
+                                    SizedBox(width: 10.0),
+                                    Expanded(
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 10, vertical: 6),
+                                        decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(10),
+                                            border: Border.all(
+                                                color: Color(0xffBDBDBD),
+                                                width: 1)),
+                                        child: DropdownButton(
+                                          menuMaxHeight: 200,
+                                          isExpanded: true,
+                                          icon: Icon(
+                                            Icons.arrow_drop_down_outlined,
+                                            color: Colors.black,
+                                          ),
+                                          value: _selectedVillage,
+                                          items: villageMenuItems,
+                                          onChanged: disabledVillageMenuItem
+                                              ? null
+                                              : (_value) => secondselected(_value),
+                                          disabledHint: Text(
+                                            "Select Village",
+                                            style: TextStyle(
+                                              color: Colors.black54,
+                                              fontFamily: 'Poppins-Bold',
+                                            ),
+                                          ),
                                         ),
                                       ),
                                     ),
+                                  ],
+                                ),
+                                SizedBox(height: 16),
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal: 10, vertical: 6),
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(10),
+                                      border: Border.all(
+                                          color: Color(0xffBDBDBD), width: 1)),
+                                  child: ListTile(
+                                    title: Text(
+                                      "Date Of Birth:    ${_selectedDate.day}/ ${_selectedDate.month}/ ${_selectedDate.year}",
+                                      style: TextStyle(
+                                        color: Colors.black54,
+                                        fontFamily: 'Poppins-Bold',
+                                      ),
+                                    ),
+                                    trailing: Icon(Icons.keyboard_arrow_down),
+                                    onTap: _pickDate,
                                   ),
                                 ),
-                              ],
-                            ),
-                            SizedBox(height: 16),
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 10, vertical: 6),
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(10),
-                                  border: Border.all(
-                                      color: Color(0xffBDBDBD), width: 1)),
-                              child: ListTile(
-                                title: Text(
-                                  "Date Of Birth:    ${_selectedDate.day}/ ${_selectedDate.month}/ ${_selectedDate.year}",
+                                SizedBox(height: 16),
+                                TextFormField(
+                                  validator: (value) {
+                                    if (value!.isEmpty || value.length < 10) {
+                                      return "Enter Valid Phone Number ";
+                                    }
+                                    return null;
+                                  },
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: [
+                                    new LengthLimitingTextInputFormatter(10),
+                                  ],
                                   style: TextStyle(
                                     color: Colors.black54,
                                     fontFamily: 'Poppins-Bold',
                                   ),
-                                ),
-                                trailing: Icon(Icons.keyboard_arrow_down),
-                                onTap: _pickDate,
-                              ),
-                            ),
-                            SizedBox(height: 16),
-                            TextFormField(
-                              validator: (value) {
-                                if (value!.isEmpty || value.length < 10) {
-                                  return "Enter Valid Phone Number ";
-                                }
-                                return null;
-                              },
-                              keyboardType: TextInputType.number,
-                              inputFormatters: [
-                                new LengthLimitingTextInputFormatter(10),
-                              ],
-                              style: TextStyle(
-                                color: Colors.black54,
-                                fontFamily: 'Poppins-Bold',
-                              ),
-                              decoration: InputDecoration(
-                                labelText: 'Phone Number',
-                                filled: true,
-                                fillColor: Color(0xffF6F6F6),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(
-                                    color: Color(0xffBDBDBD),
+                                  decoration: InputDecoration(
+                                    labelText: 'Phone Number',
+                                    filled: true,
+                                    fillColor: Color(0xffF6F6F6),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      borderSide: BorderSide(
+                                        color: Color(0xffBDBDBD),
+                                      ),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      borderSide: BorderSide(
+                                        color: Color(0xffBDBDBD),
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      borderSide: BorderSide(
+                                        color: Theme.of(context).primaryColor,
+                                      ),
+                                    ),
                                   ),
                                 ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(
-                                    color: Color(0xffBDBDBD),
-                                  ),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(
-                                    color: Theme.of(context).primaryColor,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: 16),
-                            TextFormField(
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return "Please Enter Email";
-                                } else if (!RegExp(
-                                        r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                                    .hasMatch(value)) {
-                                  return "Please Enter a Valid Email";
-                                }
-                                return null;
-                              },
-                              style: TextStyle(
-                                color: Colors.black54,
-                                fontFamily: 'Poppins-Bold',
-                              ),
-                              decoration: InputDecoration(
-                                labelText: 'Email',
-                                filled: true,
-                                fillColor: Color(0xffF6F6F6),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(
-                                    color: Color(0xffBDBDBD),
-                                  ),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(
-                                    color: Color(0xffBDBDBD),
-                                  ),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(
-                                    color: Theme.of(context).primaryColor,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: 16),
-                            TextFormField(
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return "Enter Password   ";
-                                } else if (!isPasswordValid(value)) {
-                                  return "Password must have:\n"
-                                      "At least 8 characters long.\n"
-                                      "At least one uppercase letter.\n"
-                                      "At least one lowercase letter.\n"
-                                      "At least one number.\n"
-                                      "At least one special character.";
-                                }
-                                _password = value;
-                                return null;
-                              },
-                              style: TextStyle(
-                                color: Colors.black54,
-                                fontFamily: 'Poppins-Bold',
-                              ),
-                              obscureText: _obscureText,
-                              decoration: InputDecoration(
-                                filled: true,
-                                fillColor: Color(0xffF6F6F6),
-                                labelText: 'Password',
-                                suffixIcon: GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      _obscureText = !_obscureText;
-                                    });
+                                SizedBox(height: 16),
+                                TextFormField(
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return "Please Enter Email";
+                                    } else if (!RegExp(
+                                            r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                                        .hasMatch(value)) {
+                                      return "Please Enter a Valid Email";
+                                    }
+                                    return null;
                                   },
-                                  child: Icon(
-                                    _obscureText
-                                        ? Icons.visibility
-                                        : Icons.visibility_off,
-                                  ),
-                                ),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(
-                                    color: Color(0xffBDBDBD),
-                                  ),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(
-                                    color: Color(0xffBDBDBD),
-                                  ),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(
-                                    color: Theme.of(context).primaryColor,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: 16),
-                            TextFormField(
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return "Enter Password   ";
-                                } else if (!isPasswordValid(value)) {
-                                  return "Password must have:\n"
-                                      "At least 8 characters long.\n"
-                                      "At least one uppercase letter.\n"
-                                      "At least one lowercase letter.\n"
-                                      "At least one number.\n"
-                                      "At least one special character.";
-                                } else if (value != _password) {
-                                  return "Passwords do not match.";
-                                }
-                                return null;
-                              },
-                              style: TextStyle(
-                                color: Colors.black54,
-                                fontFamily: 'Poppins-Bold',
-                              ),
-                              obscureText: _obscureText,
-                              decoration: InputDecoration(
-                                filled: true,
-                                fillColor: Color(0xffF6F6F6),
-                                labelText: 'Confirm Password',
-                                suffixIcon: GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      _obscureText = !_obscureText;
-                                    });
-                                  },
-                                  child: Icon(
-                                    _obscureText
-                                        ? Icons.visibility
-                                        : Icons.visibility_off,
-                                  ),
-                                ),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(
-                                    color: Color(0xffBDBDBD),
-                                  ),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(
-                                    color: Color(0xffBDBDBD),
-                                  ),
-                                ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  borderSide: BorderSide(
-                                    color: Theme.of(context).primaryColor,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            SizedBox(height: 16),
-                            ElevatedButton(
-                              onPressed: () {
-                                if (_formKey.currentState!.validate()) {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => Login()),
-                                  );
-                                }
-                              },
-                              child: Text("Sign up",
                                   style: TextStyle(
-                                    fontSize: 16,
+                                    color: Colors.black54,
                                     fontFamily: 'Poppins-Bold',
-                                  )),
-                              style: ElevatedButton.styleFrom(
-                                primary: Color(0xFF5386E4),
-                                onPrimary: Colors.white,
-                                shape: StadiumBorder(),
-                                padding:
-                                    EdgeInsets.only(top: 15.0, bottom: 15.0),
-                              ),
+                                  ),
+                                  decoration: InputDecoration(
+                                    labelText: 'Email',
+                                    filled: true,
+                                    fillColor: Color(0xffF6F6F6),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      borderSide: BorderSide(
+                                        color: Color(0xffBDBDBD),
+                                      ),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      borderSide: BorderSide(
+                                        color: Color(0xffBDBDBD),
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      borderSide: BorderSide(
+                                        color: Theme.of(context).primaryColor,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 16),
+                                TextFormField(
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return "Enter Password   ";
+                                    } else if (!isPasswordValid(value)) {
+                                      return "Password must have:\n"
+                                          "At least 8 characters long.\n"
+                                          "At least one uppercase letter.\n"
+                                          "At least one lowercase letter.\n"
+                                          "At least one number.\n"
+                                          "At least one special character.";
+                                    }
+                                    _password = value;
+                                    return null;
+                                  },
+                                  style: TextStyle(
+                                    color: Colors.black54,
+                                    fontFamily: 'Poppins-Bold',
+                                  ),
+                                  obscureText: _obscureText,
+                                  decoration: InputDecoration(
+                                    filled: true,
+                                    fillColor: Color(0xffF6F6F6),
+                                    labelText: 'Password',
+                                    suffixIcon: GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          _obscureText = !_obscureText;
+                                        });
+                                      },
+                                      child: Icon(
+                                        _obscureText
+                                            ? Icons.visibility
+                                            : Icons.visibility_off,
+                                      ),
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      borderSide: BorderSide(
+                                        color: Color(0xffBDBDBD),
+                                      ),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      borderSide: BorderSide(
+                                        color: Color(0xffBDBDBD),
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      borderSide: BorderSide(
+                                        color: Theme.of(context).primaryColor,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 16),
+                                TextFormField(
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return "Enter Password   ";
+                                    } else if (!isPasswordValid(value)) {
+                                      return "Password must have:\n"
+                                          "At least 8 characters long.\n"
+                                          "At least one uppercase letter.\n"
+                                          "At least one lowercase letter.\n"
+                                          "At least one number.\n"
+                                          "At least one special character.";
+                                    } else if (value != _password) {
+                                      return "Passwords do not match.";
+                                    }
+                                    return null;
+                                  },
+                                  style: TextStyle(
+                                    color: Colors.black54,
+                                    fontFamily: 'Poppins-Bold',
+                                  ),
+                                  obscureText: _obscureText,
+                                  decoration: InputDecoration(
+                                    filled: true,
+                                    fillColor: Color(0xffF6F6F6),
+                                    labelText: 'Confirm Password',
+                                    suffixIcon: GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          _obscureText = !_obscureText;
+                                        });
+                                      },
+                                      child: Icon(
+                                        _obscureText
+                                            ? Icons.visibility
+                                            : Icons.visibility_off,
+                                      ),
+                                    ),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      borderSide: BorderSide(
+                                        color: Color(0xffBDBDBD),
+                                      ),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      borderSide: BorderSide(
+                                        color: Color(0xffBDBDBD),
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      borderSide: BorderSide(
+                                        color: Theme.of(context).primaryColor,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: 16),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    if (_formKey.currentState!.validate()) {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => Login()),
+                                      );
+                                    }
+                                  },
+                                  child: Text("Sign up",
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontFamily: 'Poppins-Bold',
+                                      )),
+                                  style: ElevatedButton.styleFrom(
+                                    primary: Color(0xFF5386E4),
+                                    onPrimary: Colors.white,
+                                    shape: StadiumBorder(),
+                                    padding:
+                                        EdgeInsets.only(top: 15.0, bottom: 15.0),
+                                  ),
+                                ),
+                                SizedBox(height: 16),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
+
+                  ],
+                ),
+              ),
+            ),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Divider(
+                  height: 1,
+                  thickness: 0.8,
+                  color: Colors.black54,
                 ),
                 Padding(
-                  padding: EdgeInsets.only(top: 20.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Divider(
-                        height: 1,
-                        thickness: 0.8,
-                        color: Colors.black54,
+                  padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
+                  child: GestureDetector(
+                    child: Text(
+                      "Already have an account? Log in",
+                      style: TextStyle(
+                        color: Color(0xFF5386E4),
+                        fontWeight: FontWeight.w700,
+                        fontSize: 15,
+                        fontFamily: 'Poppins-Bold',
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
-                        child: GestureDetector(
-                          child: Text(
-                            "Already have an account? Log in",
-                            style: TextStyle(
-                              color: Color(0xFF5386E4),
-                              fontWeight: FontWeight.w700,
-                              fontSize: 15,
-                              fontFamily: 'Poppins-Bold',
-                            ),
-                            // Your bottom element goes here
-                          ),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => Login()),
-                            );
-                          },
-                        ),
-                      )
-                    ],
+                      // Your bottom element goes here
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Login()),
+                      );
+                    },
                   ),
-                ),
+                )
               ],
             ),
-          ),
+          ],
         ),
       ),
     );

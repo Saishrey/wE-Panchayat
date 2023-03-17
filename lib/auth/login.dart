@@ -36,7 +36,7 @@ class _LoginState extends State<Login> {
         ),
       ),
       child: Scaffold(
-        resizeToAvoidBottomInset: false,
+        resizeToAvoidBottomInset: true,
         backgroundColor: Colors.transparent,
         body: Column(
           children: [
@@ -76,7 +76,8 @@ class _LoginState extends State<Login> {
                         child: Form(
                           key: _formKey,
                           child: Padding(
-                            padding: const EdgeInsets.only(right: 15.0, left: 15.0),
+                            padding:
+                                const EdgeInsets.only(right: 15.0, left: 15.0),
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -190,7 +191,8 @@ class _LoginState extends State<Login> {
                                     primary: Color(0xFF5386E4),
                                     onPrimary: Colors.white,
                                     shape: StadiumBorder(),
-                                    padding: EdgeInsets.only(top: 15.0, bottom: 15.0),
+                                    padding: EdgeInsets.only(
+                                        top: 15.0, bottom: 15.0),
                                   ),
                                 ),
                               ],
@@ -232,7 +234,6 @@ class _LoginState extends State<Login> {
                             ],
                           ),
                         )),
-
                   ],
                 ),
               ),
@@ -268,8 +269,7 @@ class _LoginState extends State<Login> {
                         onTap: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(
-                                builder: (context) => SignUp()),
+                            MaterialPageRoute(builder: (context) => SignUp()),
                           );
                         },
                       ),

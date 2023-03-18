@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:we_panchayat_dev/splash.dart';
+import 'package:we_panchayat_dev/screens/splash.dart';
 
 void main() {
   runApp(const MyApp());

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'package:we_panchayat_dev/main.dart';
+import 'package:we_panchayat_dev/screens/homepage/homepage.dart';
 
-import 'package:we_panchayat_dev/auth/signup.dart';
+import 'package:we_panchayat_dev/screens/auth/signup.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -190,6 +190,11 @@ class _LoginState extends State<Login> {
                                       //   MaterialPageRoute(
                                       //       builder: (context) => SignUp()),
                                       // );
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => Home()),
+                                      );
                                       print("Navigate to Homepage.");
                                     }
                                   },

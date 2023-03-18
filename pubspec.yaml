@@ -40,6 +40,8 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_launcher_icons: ^0.9.2
+  google_fonts: ^2.1.0
+  carousel_slider: ^4.0.0
 
 #flutter_icons:
 #  android: true
@@ -76,6 +78,16 @@ flutter:
     - assets/images/digital_india.png
     - assets/images/bg.png
     - assets/images/bg_with_di.png
+    - assets/images/user.png
+    - assets/images/notification.png
+    - assets/images/birth_&_death.png
+    - assets/images/house_tax.png
+    - assets/images/income.png
+    - assets/images/trade_license.png
+    - assets/carousel_images/carousel_img_0.jpeg
+    - assets/carousel_images/carousel_img_1.jpg
+    - assets/carousel_images/carousel_img_2.jpg
+    - assets/carousel_images/carousel_img_3.jpeg
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

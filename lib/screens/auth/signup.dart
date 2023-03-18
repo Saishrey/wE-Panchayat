@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:we_panchayat_dev/main.dart';
+import 'package:we_panchayat_dev/screens/main.dart';
 
-import 'package:we_panchayat_dev/auth/login.dart';
+import 'package:we_panchayat_dev/screens/auth/login.dart';
 
 import 'package:dob_input_field/dob_input_field.dart';
 import 'package:flutter/material.dart';

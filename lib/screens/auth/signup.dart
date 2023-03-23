@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:we_panchayat_dev/models/register_request_model.dart';
 import 'package:we_panchayat_dev/screens/main.dart';
-
+import 'package:we_panchayat_dev/services/api_service.dart';
 import 'package:we_panchayat_dev/screens/auth/login.dart';
+
+import 'package:intl/intl.dart';
 
 import 'package:dob_input_field/dob_input_field.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +18,8 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
+  bool isAPIcallProcess = false;
+
   bool _obscureText = true;
   final _formKey = GlobalKey<FormState>();
 
@@ -315,15 +320,19 @@ class _SignUpState extends State<SignUp> {
     '404102'
   ];
 
+  String? _firstName;
+  String? _lastName;
+  String? _address;
+  String? _pincode;
   String? _selectedTaluka;
   String? _selectedVillage;
+  DateTime _selectedDate = DateTime.now();
+  String? _phone;
+  String? _email;
+  String _password = "";
 
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-
-  DateTime _selectedDate = DateTime.now();
-
-  String _password = "";
 
   List<DropdownMenuItem<String>> villageMenuItems = [];
 
@@ -441,8 +450,10 @@ class _SignUpState extends State<SignUp> {
                                       child: TextFormField(
                                         validator: (value) {
                                           if (value!.isEmpty) {
-                                            return "Enter Name ";
+                                            return "Required";
                                           }
+                                          _firstName = value;
+                                          print("First Name : $_firstName");
                                           return null;
                                         },
                                         style: TextStyle(
@@ -483,8 +494,10 @@ class _SignUpState extends State<SignUp> {
                                       child: TextFormField(
                                         validator: (value) {
                                           if (value!.isEmpty) {
-                                            return "Enter LastName ";
+                                            return "Required";
                                           }
+                                          _lastName = value;
+                                          print("Last Name : $_lastName");
                                           return null;
                                         },
                                         style: TextStyle(
@@ -526,8 +539,10 @@ class _SignUpState extends State<SignUp> {
                                 TextFormField(
                                   validator: (value) {
                                     if (value!.isEmpty) {
-                                      return "Enter Address    ";
+                                      return "Required";
                                     }
+                                    _address = value;
+                                    print("Address : $_address");
                                     return null;
                                   },
                                   style: TextStyle(
@@ -561,11 +576,14 @@ class _SignUpState extends State<SignUp> {
                                 SizedBox(height: 16),
                                 TextFormField(
                                   validator: (value) {
-                                    if (value!.isEmpty ||
-                                        value.length < 6 ||
+                                    if (value!.isEmpty) {
+                                      return "Required";
+                                    } else if (value.length < 6 ||
                                         !_validPinCodes.contains(value)) {
                                       return "Enter a valid Pin Code";
                                     }
+                                    _pincode = value;
+                                    print("Pin Code : $_pincode");
                                     return null;
                                   },
                                   keyboardType: TextInputType.number,
@@ -613,7 +631,7 @@ class _SignUpState extends State<SignUp> {
                                             border: Border.all(
                                                 color: Color(0xffBDBDBD),
                                                 width: 1)),
-                                        child: DropdownButton(
+                                        child: DropdownButtonFormField(
                                           menuMaxHeight: 200,
                                           isExpanded: true,
                                           icon: Icon(
@@ -643,6 +661,13 @@ class _SignUpState extends State<SignUp> {
                                               fontFamily: 'Poppins-Bold',
                                             ),
                                           ),
+                                          validator: (value) {
+                                            if (value == null) {
+                                              // Add validation to check if a value is selected
+                                              return 'Required';
+                                            }
+                                            return null;
+                                          },
                                         ),
                                       ),
                                     ),
@@ -657,7 +682,7 @@ class _SignUpState extends State<SignUp> {
                                             border: Border.all(
                                                 color: Color(0xffBDBDBD),
                                                 width: 1)),
-                                        child: DropdownButton(
+                                        child: DropdownButtonFormField(
                                           menuMaxHeight: 200,
                                           isExpanded: true,
                                           icon: Icon(
@@ -677,6 +702,13 @@ class _SignUpState extends State<SignUp> {
                                               fontFamily: 'Poppins-Bold',
                                             ),
                                           ),
+                                          validator: (value) {
+                                            if (value == null) {
+                                              // Add validation to check if a value is selected
+                                              return 'Required';
+                                            }
+                                            return null;
+                                          },
                                         ),
                                       ),
                                     ),
@@ -692,25 +724,30 @@ class _SignUpState extends State<SignUp> {
                                           color: Color(0xffBDBDBD), width: 1)),
                                   child: ListTile(
                                     title: Text(
-                                      "Date Of Birth:    ${_selectedDate.day}/ ${_selectedDate.month}/ ${_selectedDate.year}",
+                                      "Date Of Birth:    ${DateFormat('dd-MM-yyyy').format(_selectedDate)}",
                                       style: TextStyle(
                                         color: Colors.black54,
                                         fontFamily: 'Poppins-Bold',
                                       ),
                                     ),
-                                    trailing: Icon(Icons.keyboard_arrow_down),
+                                    trailing: Icon(Icons.calendar_month),
                                     onTap: _pickDate,
                                   ),
                                 ),
                                 SizedBox(height: 16),
                                 TextFormField(
                                   validator: (value) {
-                                    if (value!.isEmpty || value.length < 10) {
-                                      return "Enter Valid Phone Number ";
+                                    if (value!.isEmpty) {
+                                      return "Required";
+                                    } else if (!RegExp(r"^[789]\d{9}$")
+                                        .hasMatch(value)) {
+                                      return "Invalid mobile no.";
                                     }
+                                    _phone = value;
+                                    print("Phone : $_phone");
                                     return null;
                                   },
-                                  keyboardType: TextInputType.number,
+                                  keyboardType: TextInputType.phone,
                                   inputFormatters: [
                                     new LengthLimitingTextInputFormatter(10),
                                   ],
@@ -719,7 +756,7 @@ class _SignUpState extends State<SignUp> {
                                     fontFamily: 'Poppins-Bold',
                                   ),
                                   decoration: InputDecoration(
-                                    labelText: 'Phone Number',
+                                    labelText: 'Mobile No.',
                                     filled: true,
                                     fillColor: Color(0xffF6F6F6),
                                     border: OutlineInputBorder(
@@ -746,12 +783,14 @@ class _SignUpState extends State<SignUp> {
                                 TextFormField(
                                   validator: (value) {
                                     if (value!.isEmpty) {
-                                      return "Please Enter Email";
+                                      return "Required";
                                     } else if (!RegExp(
                                             r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
                                         .hasMatch(value)) {
-                                      return "Please Enter a Valid Email";
+                                      return "Invalid email";
                                     }
+                                    _email = value;
+                                    print("Email : $_email");
                                     return null;
                                   },
                                   style: TextStyle(
@@ -786,7 +825,7 @@ class _SignUpState extends State<SignUp> {
                                 TextFormField(
                                   validator: (value) {
                                     if (value!.isEmpty) {
-                                      return "Enter Password   ";
+                                      return "Required";
                                     } else if (!isPasswordValid(value)) {
                                       return "Password must have:\n"
                                           "At least 8 characters long.\n"
@@ -843,7 +882,7 @@ class _SignUpState extends State<SignUp> {
                                 TextFormField(
                                   validator: (value) {
                                     if (value!.isEmpty) {
-                                      return "Enter Password   ";
+                                      return "Required";
                                     } else if (!isPasswordValid(value)) {
                                       return "Password must have:\n"
                                           "At least 8 characters long.\n"
@@ -899,14 +938,75 @@ class _SignUpState extends State<SignUp> {
                                 ),
                                 SizedBox(height: 16),
                                 ElevatedButton(
-                                  onPressed: () {
+                                  onPressed: () async {
                                     if (_formKey.currentState!.validate()) {
-                                      // Navigator.push(
-                                      //   context,
-                                      //   MaterialPageRoute(
-                                      //       builder: (context) => Login()),
-                                      // );
-                                      print("Navigate to OTP.");
+                                      // String _dob = "${_selectedDate.day}-${_selectedDate.month}-${_selectedDate.year}";
+
+                                      String dob = DateFormat('dd-MM-yyyy')
+                                          .format(_selectedDate);
+
+
+                                      print("DOB actual : ${_selectedDate}");
+                                      print("DOB : $dob");
+                                      print("Taluka : $_selectedTaluka");
+                                      print("Village : $_selectedVillage");
+
+                                      setState(() {
+                                        isAPIcallProcess = true;
+                                      });
+
+                                      RegisterRequestModel model =
+                                          RegisterRequestModel(
+                                        email: _email,
+                                        password: _password,
+                                        fullname: '$_firstName $_lastName',
+                                        address: _address,
+                                        pincode: _pincode,
+                                        phone: _phone,
+                                        taluka: _selectedTaluka,
+                                        village: _selectedVillage,
+                                        dateofbirth: dob,
+                                      );
+
+                                      // Map map = {
+                                      //   "email": _email,
+                                      //   "password": _password,
+                                      //   "fullname": '$_firstName $_lastName',
+                                      //   "address": _address,
+                                      //   "pincode": _pincode,
+                                      //   "phone": _phone,
+                                      //   "taluka": _selectedTaluka,
+                                      //   "village": _selectedVillage,
+                                      //   "date_of_birth": dob,
+                                      // };
+
+                                      APIService.register(model)
+                                          .then((response) {
+                                        setState(() {
+                                          isAPIcallProcess = false;
+                                        });
+                                        if (response) {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(const SnackBar(
+                                                  content: Text(
+                                                      'Registered successfully. Please Log in.')));
+
+                                          Navigator.pushAndRemoveUntil(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) => const Login()),
+                                                (route) => false,
+                                          );
+                                        } else {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(const SnackBar(
+                                                  content: Text(
+                                                      'Failed to Register.')));
+                                        }
+                                        print("Navigate to Log in.");
+                                      });
+
+
                                     }
                                   },
                                   child: Text("Sign up",

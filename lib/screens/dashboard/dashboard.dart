@@ -1,9 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:we_panchayat_dev/models/login_request_model.dart';
+import 'package:we_panchayat_dev/models/login_response_model.dart';
+import '../../services/shared_service.dart';
 import '../dashboard/griddashboard.dart';
 import '../dashboard/searchbar.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-
 
 class DashBoard extends StatefulWidget {
   const DashBoard({super.key});
@@ -13,7 +17,6 @@ class DashBoard extends StatefulWidget {
 }
 
 class DashBoardState extends State<DashBoard> {
-
   final List<String> _carouselImages = [
     'assets/carousel_images/carousel_img_0.jpeg',
     'assets/carousel_images/carousel_img_1.jpg',
@@ -30,6 +33,7 @@ class DashBoardState extends State<DashBoard> {
 
   @override
   Widget build(BuildContext context) {
+
     return Column(
       children: <Widget>[
         SizedBox(
@@ -51,27 +55,25 @@ class DashBoardState extends State<DashBoard> {
                   SizedBox(
                     width: 10,
                   ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 15.0, bottom: 0),
-                    child: Text(
-                      "VP Davorlim",
-                      style: GoogleFonts.openSans(
-                          textStyle: TextStyle(
-                              color: Color(0xff21205b),
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold)),
-                    ),
-                  ),
+                  userName(),
                 ],
               ),
               IconButton(
                 alignment: Alignment.topCenter,
                 padding: EdgeInsets.all(0),
-                icon: Image.asset(
-                  "assets/images/user.png",
-                  width: 75,
+                // icon: Image.asset(
+                //   "assets/images/user.png",
+                //   width: 75,
+                // ),
+                icon: const Icon(
+                  Icons.logout,
+                  color: Colors.black54,
                 ),
-                onPressed: () {},
+                onPressed: () {
+                  SharedService.logout(context);
+                  ScaffoldMessenger.of(context)
+                      .showSnackBar(const SnackBar(content: Text('Logged out.')));
+                },
               )
             ],
           ),
@@ -82,20 +84,6 @@ class DashBoardState extends State<DashBoard> {
         SearchBar(),
         SizedBox(
           height: 10,
-        ),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: Container(
-            padding: EdgeInsets.only(left: 20),
-            child: Text(
-              "Panchayat services",
-              style: GoogleFonts.openSans(
-                  textStyle: TextStyle(
-                      color: Color(0xff21205b),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600)),
-            ),
-          ),
         ),
         SizedBox(
           height: 10,
@@ -126,8 +114,8 @@ class DashBoardState extends State<DashBoard> {
             // height: 200.0,
             autoPlay: true,
             enlargeCenterPage: true,
-            aspectRatio: 20/7,
-            viewportFraction: 0.7,
+            aspectRatio: 20 / 9,
+            viewportFraction: 1,
           ),
           items: _carouselImages.map((imagePath) {
             return Builder(
@@ -145,5 +133,44 @@ class DashBoardState extends State<DashBoard> {
         ),
       ],
     );
+  }
+
+  Widget userName() {
+    return FutureBuilder(
+      future: SharedService.loginDetails(),
+      builder: (BuildContext context,
+          AsyncSnapshot<LoginResponseModel?> model) {
+        if(model.hasData) {
+          return Padding(
+            padding: EdgeInsets.only(top: 15.0, bottom: 0),
+            child: Text(
+              getUserName(model.data)!,
+              style: GoogleFonts.openSans(
+                  textStyle: TextStyle(
+                      color: Color(0xff21205b),
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold)),
+            ),
+          );
+        }
+
+        return Padding(
+          padding: EdgeInsets.only(top: 15.0, bottom: 0),
+          child: Text(
+            "USER NAME",
+            style: GoogleFonts.openSans(
+                textStyle: TextStyle(
+                    color: Color(0xff21205b),
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold)),
+          ),
+        );
+      },
+    );
+  }
+
+  String? getUserName(LoginResponseModel? model) {
+
+    return model?.fullname;
   }
 }

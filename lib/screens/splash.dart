@@ -7,6 +7,8 @@ import 'main.dart';
 import 'auth/login.dart';
 import 'auth/signup.dart';
 
+import 'homepage/homepage.dart';
+
 class Splash extends StatefulWidget {
   const Splash({Key? key}) : super(key: key);
 
@@ -25,7 +27,7 @@ class _SplashState extends State<Splash> {
               // builder: (context) => const MyHomePage(
               //       title: 'wE-Panchayat',
               //     )
-            builder: (context) => const Login()
+            builder: (context) => const Home(),
           ));
     });
   }

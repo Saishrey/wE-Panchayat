@@ -6,40 +6,31 @@ import 'package:we_panchayat_dev/services/api_service.dart';
 
 import 'package:we_panchayat_dev/screens/auth/signup.dart';
 
+import 'package:we_panchayat_dev/screens/auth/login.dart';
+
 import 'package:we_panchayat_dev/screens/otp/otp.dart';
-import 'package:we_panchayat_dev/screens/reset_password/username_input.dart';
 
-
-class Login extends StatefulWidget {
-  const Login({Key? key}) : super(key: key);
+class ResetPassword extends StatefulWidget {
+  const ResetPassword({Key? key}) : super(key: key);
 
   @override
-  _LoginState createState() => _LoginState();
+  _ResetPasswordState createState() => _ResetPasswordState();
 }
 
-class _LoginState extends State<Login> {
+class _ResetPasswordState extends State<ResetPassword> {
   bool isAPIcallProcess = false;
 
   bool _obscureText = true;
+
   final _formKey = GlobalKey<FormState>();
 
-  String? _password;
-  String? _username;
+  String _password = "";
 
-  final Map<String, String> _usernameRegex = {
-    'email': r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
-    'phone': r"^(\+91[\-\s]?)?[0]?(91)?[789]\d{9}$",
-  };
-
-  TextEditingController usernameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     TextStyle textStyle = Theme.of(context).textTheme.titleMedium!;
-
-    usernameController.text = "";
-    passwordController.text = "";
 
     return Container(
       padding: EdgeInsets.only(top: 60.0),
@@ -86,6 +77,23 @@ class _LoginState extends State<Login> {
                         ),
                       ),
                     ),
+                    Text(
+                      'Reset Password',
+                      style: TextStyle(
+                        fontFamily: 'Poppins-Bold',
+                        fontSize: 24,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xff21205b),
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                    Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: const Text(
+                        'Set a new password for your account so that you can login and access all features.',
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
                     Center(
                       child: Padding(
                         padding: EdgeInsets.all(0),
@@ -103,20 +111,38 @@ class _LoginState extends State<Login> {
                                   validator: (value) {
                                     if (value!.isEmpty) {
                                       return "Required";
+                                    } else if (!isPasswordValid(value)) {
+                                      return "Password must have:\n"
+                                          "At least 8 characters long.\n"
+                                          "At least one uppercase letter.\n"
+                                          "At least one lowercase letter.\n"
+                                          "At least one number.\n"
+                                          "At least one special character.";
                                     }
-                                    _username = value;
-                                    print("Username : $_username");
-
+                                    _password = value;
                                     return null;
                                   },
                                   style: TextStyle(
                                     color: Colors.black54,
                                     fontFamily: 'Poppins-Bold',
                                   ),
+                                  obscureText: _obscureText,
                                   decoration: InputDecoration(
-                                    labelText: 'Email or Phone',
                                     filled: true,
                                     fillColor: Color(0xffF6F6F6),
+                                    labelText: 'New Password',
+                                    suffixIcon: GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          _obscureText = !_obscureText;
+                                        });
+                                      },
+                                      child: Icon(
+                                        _obscureText
+                                            ? Icons.visibility
+                                            : Icons.visibility_off,
+                                      ),
+                                    ),
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10),
                                       borderSide: BorderSide(
@@ -142,8 +168,16 @@ class _LoginState extends State<Login> {
                                   validator: (value) {
                                     if (value!.isEmpty) {
                                       return "Required";
+                                    } else if (!isPasswordValid(value)) {
+                                      return "Password must have:\n"
+                                          "At least 8 characters long.\n"
+                                          "At least one uppercase letter.\n"
+                                          "At least one lowercase letter.\n"
+                                          "At least one number.\n"
+                                          "At least one special character.";
+                                    } else if (value != _password) {
+                                      return "Passwords do not match.";
                                     }
-                                    _password = value;
                                     return null;
                                   },
                                   style: TextStyle(
@@ -154,7 +188,7 @@ class _LoginState extends State<Login> {
                                   decoration: InputDecoration(
                                     filled: true,
                                     fillColor: Color(0xffF6F6F6),
-                                    labelText: 'Password',
+                                    labelText: 'Confirm Password',
                                     suffixIcon: GestureDetector(
                                       onTap: () {
                                         setState(() {
@@ -189,40 +223,8 @@ class _LoginState extends State<Login> {
                                 ),
                                 SizedBox(height: 16),
                                 ElevatedButton(
-                                  onPressed: () async {
-                                    if (_formKey.currentState!.validate()) {
-                                      setState(() {
-                                        isAPIcallProcess = true;
-                                      });
-
-                                      LoginRequestModel model =
-                                          LoginRequestModel(
-                                              username: _username!,
-                                              password: _password!);
-
-                                      APIService.login(model).then((response) {
-                                        setState(() {
-                                          isAPIcallProcess = false;
-                                        });
-                                        if (response) {
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      const Otp()));
-                                        } else {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            const SnackBar(
-                                              content:
-                                                  Text('Invalid credentials.'),
-                                            ),
-                                          );
-                                        }
-                                      });
-                                    }
-                                  },
-                                  child: Text("Log in",
+                                  onPressed: () {},
+                                  child: Text("Submit",
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontFamily: 'Poppins-Bold',
@@ -241,83 +243,43 @@ class _LoginState extends State<Login> {
                         ),
                       ),
                     ),
-                    Padding(
-                      padding: EdgeInsets.only(
-                          top: 20.0, bottom: 20.0, right: 10.0, left: 10.0),
-                      child: Divider(
-                        height: 1,
-                        thickness: 0.8,
-                        color: Colors.black54,
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(right: 10.0, left: 10.0),
-                      child: TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => UsernameInput()),
-                          );
-                        },
-                        child: Text(
-                          "Forgot your password?",
-                          style: TextStyle(
-                            color: Color(0xFF5386E4),
-                            fontWeight: FontWeight.w700,
-                            fontSize: 15,
-                            fontFamily: 'Poppins-Bold',
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ),
                   ],
                 ),
-              ),
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Divider(
-                    height: 1,
-                    thickness: 0.8,
-                    color: Colors.black54,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
-                    child: InkWell(
-                      onTap: () {},
-                      child: GestureDetector(
-                        child: Padding(
-                          padding: const EdgeInsets.all(1.0),
-                          child: Text(
-                            "Don’t have an account? Sign up",
-                            style: TextStyle(
-                              color: Color(0xFF5386E4),
-                              fontWeight: FontWeight.w700,
-                              fontSize: 15,
-                              fontFamily: 'Poppins-Bold',
-                            ),
-                            // Your bottom element goes here
-                          ),
-                        ),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => SignUp()),
-                          );
-                        },
-                      ),
-                    ),
-                  )
-                ],
               ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  bool isPasswordValid(String password) {
+    // Check if password is at least 8 characters long
+    if (password.length < 8) {
+      return false;
+    }
+
+    // Check if password contains at least one uppercase letter
+    if (password.toLowerCase() == password) {
+      return false;
+    }
+
+    // Check if password contains at least one lowercase letter
+    if (password.toUpperCase() == password) {
+      return false;
+    }
+
+    // Check if password contains at least one number
+    if (!password.contains(new RegExp(r'[0-9]'))) {
+      return false;
+    }
+
+    // Check if password contains at least one special character
+    if (!password.contains(new RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) {
+      return false;
+    }
+
+    // If all checks pass, the password is valid
+    return true;
   }
 }

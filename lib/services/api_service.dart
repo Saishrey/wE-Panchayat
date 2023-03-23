@@ -39,6 +39,7 @@ class APIService {
       print("Redirect to OTP page");
 
       await SharedService.setLoginDetails(loginResponseJson(response.body));
+      await SharedService.setCookie(_headers);
 
       getOtp();
 
@@ -46,6 +47,23 @@ class APIService {
     }
 
     print("Failed to log in.");
+    return false;
+  }
+
+  static Future<bool> logout() async {
+    final url = Uri.http(Config.apiURL, Config.logoutAPI);
+    print(url);
+
+    print("COOKIE DETAILS");
+    Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
+    print(cookieHeaders);
+
+    var response = await client.post(url, headers: cookieHeaders);
+
+    if (response.statusCode == 200) {
+      print("Logged out.");
+      return true;
+    }
     return false;
   }
 
@@ -59,7 +77,7 @@ class APIService {
     final url = Uri.http(Config.apiURL, Config.otpAPI);
     print(url);
 
-    http.Response response = await http.get(url, headers: cookieHeader);
+    http.Response response = await http.get(url, headers: _headers);
 
     // updateCookie(response);
 
@@ -84,7 +102,7 @@ class APIService {
     print(url);
 
     http.Response response =
-        await http.post(url, body: body, headers: cookieHeader);
+        await http.post(url, body: body, headers: _headers);
 
     // updateCookie(response);
 
@@ -176,9 +194,11 @@ class APIService {
       _headers['cookie'] = _generateCookieHeader();
     }
 
+    print("HEADERS");
     print(_headers);
-    print(_cookies);
-    print(_cookiesList);
+    print(jsonEncode(_headers));
+    // print(_cookies);
+    // print(_cookiesList);
   }
 
   static void _setCookie(String rawCookie) {

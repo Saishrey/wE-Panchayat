@@ -27,22 +27,39 @@ class SharedService {
     }
   }
 
+  static Future<Map<String, String>?> cookieDetails() async {
+    var isKeyExist =
+    await APICacheManager().isAPICacheKeyExist("cookie_headers");
+
+    if (isKeyExist) {
+      var cacheData = await APICacheManager().getCacheData("cookie_headers");
+
+      Map<String, dynamic>? dynamicMap = jsonDecode(cacheData.syncData);
+
+      Map<String, String>? stringMap = dynamicMap?.map((key, value) => MapEntry(key, value.toString()));
+
+      return stringMap;
+    }
+  }
+
   static Future<void> setLoginDetails(LoginResponseModel model) async {
     APICacheDBModel cacheDBModel = APICacheDBModel(
         key: "login_details", syncData: jsonEncode(model.toJson()));
 
+
     await APICacheManager().addCacheData(cacheDBModel);
   }
 
-  static Future<void> setCookie(LoginResponseModel model) async {
+  static Future<void> setCookie(Map<String, String> cookieHeaders) async {
     APICacheDBModel cacheDBModel = APICacheDBModel(
-        key: "login_details", syncData: jsonEncode(model.toJson()));
+        key: "cookie_headers", syncData: jsonEncode(cookieHeaders));
 
     await APICacheManager().addCacheData(cacheDBModel);
   }
 
   static Future<void> logout(BuildContext context) async {
     await APICacheManager().deleteCache("login_details");
+    await APICacheManager().deleteCache("cookie_headers");
 
     Navigator.pushAndRemoveUntil(
       context,

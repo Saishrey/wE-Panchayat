@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:we_panchayat_dev/models/login_request_model.dart';
 import 'package:we_panchayat_dev/models/login_response_model.dart';
+import '../../services/api_service.dart';
 import '../../services/shared_service.dart';
 import '../dashboard/griddashboard.dart';
 import '../dashboard/searchbar.dart';
@@ -69,7 +70,8 @@ class DashBoardState extends State<DashBoard> {
                   Icons.logout,
                   color: Colors.black54,
                 ),
-                onPressed: () {
+                onPressed: () async {
+                  await APIService.logout();
                   SharedService.logout(context);
                   ScaffoldMessenger.of(context)
                       .showSnackBar(const SnackBar(content: Text('Logged out.')));

@@ -4,4 +4,5 @@ class Config {
   static const String loginAPI = "/auth/login";
   static const String signupAPI = "/auth/signup";
   static const String otpAPI = "/auth/otp";
+  static const String logoutAPI = "/auth/logout";
 }

@@ -1,3 +1,4 @@
+import 'package:api_cache_manager/utils/cache_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:we_panchayat_dev/screens/auth/login.dart';
@@ -17,6 +18,9 @@ Future<void> main() async {
 
   if(_result) {
     _defaultHome = const Splash();
+  }
+  else {
+    await APICacheManager().deleteCache("cookie_headers");
   }
 
   runApp(const MyApp());

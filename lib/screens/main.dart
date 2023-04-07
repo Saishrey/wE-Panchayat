@@ -17,9 +17,11 @@ Future<void> main() async {
   bool _result = await SharedService.isLoggedIn();
 
   if(_result) {
+    print("User ALREADY logged in.");
     _defaultHome = const Splash();
   }
   else {
+    print("User NOT logged in");
     await APICacheManager().deleteCache("cookie_headers");
   }
 

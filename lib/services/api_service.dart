@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:core';
 
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:we_panchayat_dev/config.dart';
 import 'package:we_panchayat_dev/models/login_request_model.dart';
@@ -14,6 +16,8 @@ class APIService {
   static List<String> _cookiesList = [];
 
   static var client = http.Client();
+
+  static var loginResponse;
 
   static Future<bool> login(LoginRequestModel model) async {
     // 'username':'abc@gmail.com', 'password':'Asdfg@123',
@@ -30,18 +34,20 @@ class APIService {
 
     var response = await client.post(url, body: model.toJson());
 
-    updateCookie(response);
-
     print("${response.statusCode}");
     print("${response.body}");
 
     if (response.statusCode == 200) {
+
+      loginResponse = response;
+
+      updateCookie(response);
+
       print("Redirect to OTP page");
 
-      await SharedService.setLoginDetails(loginResponseJson(response.body));
       await SharedService.setCookie(_headers);
 
-      getOtp();
+      // getOtp();
 
       return true;
     }
@@ -50,34 +56,77 @@ class APIService {
     return false;
   }
 
-  static Future<bool> logout() async {
+
+  static Future<int> forgotPassword(Map<String, String> body) async {
+    // 'username':'abc@gmail.com', 'password':'Asdfg@123',
+
+    Map<String, String> requestHeaders = {
+      "Content-Type": "application/json",
+    };
+
+    final url = Uri.http(Config.apiURL, Config.otpAPI);
+    print(url);
+
+    print(body);
+
+    // jsonEncode(model.toJson())
+
+    var response = await client.post(url, body: body);
+
+    print("${response.statusCode}");
+    print("${response.body}");
+
+    if (response.statusCode == 200) {
+
+      print("Redirect to OTP page reset password");
+
+      updateCookie(response);
+
+      await SharedService.setCookie(_headers);
+
+    }
+    else if(response.statusCode == 409) {
+
+      var msg = jsonDecode(response.body);
+      print("${msg['message']}");
+    }
+
+    return response.statusCode;
+  }
+
+  static Future<bool> logout(BuildContext context) async {
     final url = Uri.http(Config.apiURL, Config.logoutAPI);
     print(url);
 
-    print("COOKIE DETAILS");
+    print("COOKIE DETAILS Logout");
     Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
     print(cookieHeaders);
 
     var response = await client.post(url, headers: cookieHeaders);
 
     if (response.statusCode == 200) {
+      SharedService.logout(context);
       print("Logged out.");
       return true;
     }
     return false;
   }
 
-  static Future<Map> getOtp() async {
-    print("GET otp");
+  static Future<Map> resendOtp() async {
+    print("RESEND otp");
 
-    Map<String, String> cookieHeader = getCookieHeader();
+    // Map<String, String> cookieHeader = getCookieHeader();
+    //
+    // print(cookieHeader);
 
-    print(cookieHeader);
+    print("COOKIE DETAILS resendOTP");
+    Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
+    print(cookieHeaders);
 
-    final url = Uri.http(Config.apiURL, Config.otpAPI);
+    final url = Uri.http(Config.apiURL, Config.resendOtpAPI);
     print(url);
 
-    http.Response response = await http.get(url, headers: _headers);
+    http.Response response = await http.post(url, headers: cookieHeaders);
 
     // updateCookie(response);
 
@@ -94,28 +143,86 @@ class APIService {
 
     print(body);
 
-    Map<String, String> cookieHeader = getCookieHeader();
+    print("COOKIE DETAILS resendOTP");
+    Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
+    print(cookieHeaders);
 
-    print(cookieHeader);
-
-    final url = Uri.http(Config.apiURL, Config.otpAPI);
+    final url = Uri.http(Config.apiURL, Config.verifyOtpAPI);
     print(url);
 
     http.Response response =
-        await http.post(url, body: body, headers: _headers);
+        await http.post(url, body: body, headers: cookieHeaders);
 
     // updateCookie(response);
 
-    Map resBody = json.decode(response.body);
-
+    print("${response.body}");
     if (response.statusCode == 200) {
       print("OTP verified.");
-      print(resBody);
+
+      await SharedService.setLoginDetails(loginResponseJson(loginResponse.body));
 
       return true;
     }
 
     print("Incorrect OTP.");
+    return false;
+  }
+
+
+  static Future<bool> verifyOtpResetPassword(Map body) async {
+    print("Verify otp Reset Password");
+
+    print(body);
+
+    print("COOKIE DETAILS resendOTP");
+    Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
+    print(cookieHeaders);
+
+    final url = Uri.http(Config.apiURL, Config.verifyOtpAPI);
+    print(url);
+
+    http.Response response =
+    await http.post(url, body: body, headers: cookieHeaders);
+
+    // updateCookie(response);
+
+    print("${response.body}");
+    if (response.statusCode == 200) {
+      print("OTP verified.");
+
+      // await SharedService.setLoginDetails(loginResponseJson(loginResponse.body));
+
+      return true;
+    }
+
+    print("Incorrect OTP.");
+    return false;
+  }
+
+  static Future<bool> updateNewPassword(Map body, BuildContext context) async {
+    print("Update New Password");
+
+    print(body);
+
+    print("COOKIE DETAILS update password");
+    Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
+    print(cookieHeaders);
+
+    final url = Uri.http(Config.apiURL, Config.resetPassAPI);
+    print(url);
+
+    http.Response response =
+    await http.post(url, body: body, headers: cookieHeaders);
+
+
+    print("${response.body}");
+    if (response.statusCode == 200) {
+      print("Successfully reset password.");
+      SharedService.logout(context);
+      return true;
+    }
+
+    print("Password reset failed.");
     return false;
   }
 
@@ -125,6 +232,13 @@ class APIService {
     };
 
     final url = Uri.http(Config.apiURL, Config.signupAPI);
+    print(url);
+
+    print("COOKIE DETAILS Signup");
+    Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
+    requestHeaders['cookie'] = cookieHeaders!['cookie']!;
+
+    print(requestHeaders);
 
     print(model.toJson());
 
@@ -147,6 +261,13 @@ class APIService {
 
     if (response.statusCode == 200) {
       print("Sign up successful.");
+
+      updateCookie(response);
+
+      await SharedService.setLoginDetails(loginResponseJson(response.body));
+      await SharedService.setCookie(_headers);
+
+
       return true;
     }
 

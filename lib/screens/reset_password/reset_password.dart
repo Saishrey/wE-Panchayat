@@ -10,6 +10,8 @@ import 'package:we_panchayat_dev/screens/auth/login.dart';
 
 import 'package:we_panchayat_dev/screens/otp/otp.dart';
 
+import '../../services/shared_service.dart';
+
 class ResetPassword extends StatefulWidget {
   const ResetPassword({Key? key}) : super(key: key);
 
@@ -223,7 +225,35 @@ class _ResetPasswordState extends State<ResetPassword> {
                                 ),
                                 SizedBox(height: 16),
                                 ElevatedButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    if (_formKey.currentState!.validate()) {
+
+                                      Map<String, String> body = {
+                                        "password" : _password,
+                                      };
+
+                                      APIService.updateNewPassword(body, context)
+                                          .then((response) {
+                                            if(response) {
+                                              SharedService.logout(context);
+                                              ScaffoldMessenger.of(context).showSnackBar(
+                                                  const SnackBar(
+                                                      content: Text('New password set successfully. Please Log in.')));
+                                              Navigator.pushAndRemoveUntil(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) => const Login()),
+                                                    (route) => false,
+                                              );
+                                            }
+                                            else {
+                                              ScaffoldMessenger.of(context).showSnackBar(
+                                                  const SnackBar(
+                                                      content: Text('Failed to reset password.')));
+                                            }
+                                      });
+                                    }
+                                  },
                                   child: Text("Submit",
                                       style: TextStyle(
                                         fontSize: 16,

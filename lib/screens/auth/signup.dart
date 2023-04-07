@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:we_panchayat_dev/models/register_request_model.dart';
+import 'package:we_panchayat_dev/screens/homepage/homepage.dart';
 import 'package:we_panchayat_dev/screens/main.dart';
 import 'package:we_panchayat_dev/services/api_service.dart';
 import 'package:we_panchayat_dev/screens/auth/login.dart';
@@ -11,7 +12,12 @@ import 'package:dob_input_field/dob_input_field.dart';
 import 'package:flutter/material.dart';
 
 class SignUp extends StatefulWidget {
-  const SignUp({Key? key}) : super(key: key);
+
+  final String phone;
+
+  // const SignUp({Key? key}) : super(key: key);
+
+  SignUp({super.key, this.phone = ""});
 
   @override
   _SignUpState createState() => _SignUpState();
@@ -444,6 +450,54 @@ class _SignUpState extends State<SignUp> {
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
                                 SizedBox(height: 16),
+                                TextFormField(
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return "Required";
+                                    } else if (!RegExp(r"^[789]\d{9}$")
+                                        .hasMatch(value)) {
+                                      return "Invalid mobile no.";
+                                    }
+                                    _phone = value;
+                                    print("Phone : $_phone");
+                                    return null;
+                                  },
+                                  keyboardType: TextInputType.phone,
+                                  inputFormatters: [
+                                    new LengthLimitingTextInputFormatter(10),
+                                  ],
+                                  controller: TextEditingController(text: widget.phone),
+                                  enabled: false,
+                                  style: TextStyle(
+                                    color: Colors.black54,
+                                    fontFamily: 'Poppins-Bold',
+                                  ),
+                                  decoration: InputDecoration(
+                                    labelText: 'Mobile No.',
+                                    filled: true,
+                                    fillColor: Color(0xffF6F6F6),
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      borderSide: BorderSide(
+                                        color: Color(0xffBDBDBD),
+                                      ),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      borderSide: BorderSide(
+                                        color: Color(0xffBDBDBD),
+                                      ),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(10),
+                                      borderSide: BorderSide(
+                                        color: Theme.of(context).primaryColor,
+                                      ),
+                                    ),
+                                  ),
+
+                                ),
+                                SizedBox(height: 16),
                                 Row(
                                   children: [
                                     Expanded(
@@ -739,51 +793,6 @@ class _SignUpState extends State<SignUp> {
                                   validator: (value) {
                                     if (value!.isEmpty) {
                                       return "Required";
-                                    } else if (!RegExp(r"^[789]\d{9}$")
-                                        .hasMatch(value)) {
-                                      return "Invalid mobile no.";
-                                    }
-                                    _phone = value;
-                                    print("Phone : $_phone");
-                                    return null;
-                                  },
-                                  keyboardType: TextInputType.phone,
-                                  inputFormatters: [
-                                    new LengthLimitingTextInputFormatter(10),
-                                  ],
-                                  style: TextStyle(
-                                    color: Colors.black54,
-                                    fontFamily: 'Poppins-Bold',
-                                  ),
-                                  decoration: InputDecoration(
-                                    labelText: 'Mobile No.',
-                                    filled: true,
-                                    fillColor: Color(0xffF6F6F6),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                        color: Color(0xffBDBDBD),
-                                      ),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                        color: Color(0xffBDBDBD),
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                        color: Theme.of(context).primaryColor,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(height: 16),
-                                TextFormField(
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return "Required";
                                     } else if (!RegExp(
                                             r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
                                         .hasMatch(value)) {
@@ -937,92 +946,6 @@ class _SignUpState extends State<SignUp> {
                                   ),
                                 ),
                                 SizedBox(height: 16),
-                                ElevatedButton(
-                                  onPressed: () async {
-                                    if (_formKey.currentState!.validate()) {
-                                      // String _dob = "${_selectedDate.day}-${_selectedDate.month}-${_selectedDate.year}";
-
-                                      String dob = DateFormat('dd-MM-yyyy')
-                                          .format(_selectedDate);
-
-
-                                      print("DOB actual : ${_selectedDate}");
-                                      print("DOB : $dob");
-                                      print("Taluka : $_selectedTaluka");
-                                      print("Village : $_selectedVillage");
-
-                                      setState(() {
-                                        isAPIcallProcess = true;
-                                      });
-
-                                      RegisterRequestModel model =
-                                          RegisterRequestModel(
-                                        email: _email,
-                                        password: _password,
-                                        fullname: '$_firstName $_lastName',
-                                        address: _address,
-                                        pincode: _pincode,
-                                        phone: _phone,
-                                        taluka: _selectedTaluka,
-                                        village: _selectedVillage,
-                                        dateofbirth: dob,
-                                      );
-
-                                      // Map map = {
-                                      //   "email": _email,
-                                      //   "password": _password,
-                                      //   "fullname": '$_firstName $_lastName',
-                                      //   "address": _address,
-                                      //   "pincode": _pincode,
-                                      //   "phone": _phone,
-                                      //   "taluka": _selectedTaluka,
-                                      //   "village": _selectedVillage,
-                                      //   "date_of_birth": dob,
-                                      // };
-
-                                      APIService.register(model)
-                                          .then((response) {
-                                        setState(() {
-                                          isAPIcallProcess = false;
-                                        });
-                                        if (response) {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(const SnackBar(
-                                                  content: Text(
-                                                      'Registered successfully. Please Log in.')));
-
-                                          Navigator.pushAndRemoveUntil(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) => const Login()),
-                                                (route) => false,
-                                          );
-                                        } else {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(const SnackBar(
-                                                  content: Text(
-                                                      'Failed to Register.')));
-                                        }
-                                        print("Navigate to Log in.");
-                                      });
-
-
-                                    }
-                                  },
-                                  child: Text("Sign up",
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontFamily: 'Poppins-Bold',
-                                      )),
-                                  style: ElevatedButton.styleFrom(
-                                    primary: Color(0xFF5386E4),
-                                    onPrimary: Colors.white,
-                                    shape: StadiumBorder(),
-                                    padding: EdgeInsets.only(
-                                        top: 15.0, bottom: 15.0),
-                                  ),
-                                ),
-                                SizedBox(height: 16),
                               ],
                             ),
                           ),
@@ -1033,37 +956,123 @@ class _SignUpState extends State<SignUp> {
                 ),
               ),
             ),
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Divider(
-                  height: 1,
-                  thickness: 0.8,
-                  color: Colors.black54,
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
-                  child: GestureDetector(
-                    child: Text(
-                      "Already have an account? Log in",
-                      style: TextStyle(
-                        color: Color(0xFF5386E4),
-                        fontWeight: FontWeight.w700,
-                        fontSize: 15,
-                        fontFamily: 'Poppins-Bold',
-                      ),
-                      // Your bottom element goes here
-                    ),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => Login()),
-                      );
-                    },
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20.0),
+                    topRight: Radius.circular(20.0),
                   ),
-                )
-              ],
+                ),
+                padding: EdgeInsets.all(20.0),
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () async {
+                    if (_formKey.currentState!.validate()) {
+                      // String _dob = "${_selectedDate.day}-${_selectedDate.month}-${_selectedDate.year}";
+
+                      String dob = DateFormat('dd-MM-yyyy')
+                          .format(_selectedDate);
+
+
+                      print("DOB actual : ${_selectedDate}");
+                      print("DOB : $dob");
+                      print("Taluka : $_selectedTaluka");
+                      print("Village : $_selectedVillage");
+
+                      setState(() {
+                        isAPIcallProcess = true;
+                      });
+
+                      RegisterRequestModel model =
+                      RegisterRequestModel(
+                        email: _email,
+                        password: _password,
+                        fullname: '$_firstName $_lastName',
+                        address: _address,
+                        pincode: _pincode,
+                        phone: _phone,
+                        taluka: _selectedTaluka,
+                        village: _selectedVillage,
+                        dateofbirth: dob,
+                      );
+
+
+                      APIService.register(model)
+                          .then((response) {
+                        setState(() {
+                          isAPIcallProcess = false;
+                        });
+                        if (response) {
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(const SnackBar(
+                              content: Text(
+                                  'Registered successfully. Welcome to wE-Panchayat.')));
+
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const Home()),
+                                (route) => false,
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(const SnackBar(
+                              content: Text(
+                                  'Failed to Register.')));
+                        }
+                        print("Navigate to Home Page.");
+                      });
+
+
+                    }
+                  },
+                  child: Text("Sign up",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontFamily: 'Poppins-Bold',
+                      )),
+                  style: ElevatedButton.styleFrom(
+                    primary: Color(0xFF5386E4),
+                    onPrimary: Colors.white,
+                    shape: StadiumBorder(),
+                    padding: EdgeInsets.only(top: 15.0, bottom: 15.0),
+                  ),
+                ),
+              ),
             ),
+            // Column(
+            //   mainAxisSize: MainAxisSize.min,
+            //   children: [
+            //     Divider(
+            //       height: 1,
+            //       thickness: 0.8,
+            //       color: Colors.black54,
+            //     ),
+            //     Padding(
+            //       padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
+            //       child: GestureDetector(
+            //         child: Text(
+            //           "Already have an account? Log in",
+            //           style: TextStyle(
+            //             color: Color(0xFF5386E4),
+            //             fontWeight: FontWeight.w700,
+            //             fontSize: 15,
+            //             fontFamily: 'Poppins-Bold',
+            //           ),
+            //           // Your bottom element goes here
+            //         ),
+            //         onTap: () {
+            //           Navigator.push(
+            //             context,
+            //             MaterialPageRoute(builder: (context) => Login()),
+            //           );
+            //         },
+            //       ),
+            //     )
+            //   ],
+            // ),
           ],
         ),
       ),

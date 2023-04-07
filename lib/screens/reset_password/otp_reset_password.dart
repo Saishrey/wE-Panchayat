@@ -2,17 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:we_panchayat_dev/screens/otp/otptimer.dart';
 import 'package:we_panchayat_dev/screens/homepage/homepage.dart';
+import 'package:we_panchayat_dev/screens/reset_password/reset_password.dart';
 import 'package:we_panchayat_dev/services/api_service.dart';
 
-class Otp extends StatefulWidget {
-  const Otp({super.key});
+class OtpResetPassword extends StatefulWidget {
+  const OtpResetPassword({super.key});
 
   @override
-  OtpState createState() => new OtpState();
+  OtpResetPasswordState createState() => new OtpResetPasswordState();
 }
 
-class OtpState extends State<Otp> {
-  String? _otpText;
+class OtpResetPasswordState extends State<OtpResetPassword> {
+  String? _otpResetPasswordText;
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +81,7 @@ class OtpState extends State<Otp> {
                             ),
                             SizedBox(height: 16),
                             Text(
-                              'Enter the OTP sent on your Mobile number',
+                              'Enter the 6 digit code that you received.',
                               textAlign: TextAlign.center,
                             ),
                             SizedBox(height: 16),
@@ -108,8 +109,8 @@ class OtpState extends State<Otp> {
                                 ),
                                 onCompleted: (value) {
                                   // Handle the completed OTP code
-                                  _otpText = value;
-                                  print('Entered OTP : $_otpText');
+                                  _otpResetPasswordText = value;
+                                  print('Entered OTP : $_otpResetPasswordText');
                                 },
                                 appContext: context,
                                 onChanged: (String value) {},
@@ -166,19 +167,19 @@ class OtpState extends State<Otp> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    if (_otpText != null && _otpText?.length == 6) {
-                      Map body = {"otp": _otpText};
+                    if (_otpResetPasswordText != null && _otpResetPasswordText?.length == 6) {
+                      Map body = {"otp": _otpResetPasswordText};
 
-                      APIService.verifyOtp(body).then((response) {
+                      APIService.verifyOtpResetPassword(body).then((response) {
                         if (response) {
                           ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
-                                  content: Text('Logged in successfully.')));
+                                  content: Text('OTP Verified. Enter new password.')));
                           Navigator.pushAndRemoveUntil(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const Home()),
-                            (route) => false,
+                                builder: (context) => const ResetPassword()),
+                                (route) => false,
                           );
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -186,6 +187,20 @@ class OtpState extends State<Otp> {
                         }
                       });
                     }
+                    // if (_otpResetPasswordText != null && _otpResetPasswordText?.length == 6) {
+                    //   if(_otpResetPasswordText == "111111") {
+                    //           ScaffoldMessenger.of(context).showSnackBar(
+                    //               const SnackBar(
+                    //                   content: Text('OTP Verified. Enter new password.')));
+                    //           Navigator.pushAndRemoveUntil(
+                    //             context,
+                    //             MaterialPageRoute(
+                    //                 builder: (context) => const ResetPassword()),
+                    //                 (route) => false,
+                    //           );
+                    //   }
+                    // }
+
                   },
                   child: Text("Verify",
                       style: TextStyle(

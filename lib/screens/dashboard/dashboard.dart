@@ -71,8 +71,7 @@ class DashBoardState extends State<DashBoard> {
                   color: Colors.black54,
                 ),
                 onPressed: () async {
-                  await APIService.logout();
-                  SharedService.logout(context);
+                  await APIService.logout(context);
                   ScaffoldMessenger.of(context)
                       .showSnackBar(const SnackBar(content: Text('Logged out.')));
                 },
@@ -172,7 +171,11 @@ class DashBoardState extends State<DashBoard> {
   }
 
   String? getUserName(LoginResponseModel? model) {
+    print("Username: ${model?.fullname}");
 
+    if(model?.fullname == null) {
+      return "NULL";
+    }
     return model?.fullname;
   }
 }

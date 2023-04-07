@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:we_panchayat_dev/models/login_request_model.dart';
 
 import 'package:we_panchayat_dev/screens/homepage/homepage.dart';
+import 'package:we_panchayat_dev/screens/reset_password/otp_reset_password.dart';
 import 'package:we_panchayat_dev/screens/reset_password/reset_password.dart';
 import 'package:we_panchayat_dev/services/api_service.dart';
 
 import 'package:we_panchayat_dev/screens/auth/signup.dart';
 
 import 'package:we_panchayat_dev/screens/auth/login.dart';
-
 
 import 'package:we_panchayat_dev/screens/otp/otp.dart';
 
@@ -26,10 +27,10 @@ class _UsernameInputState extends State<UsernameInput> {
 
   final _formKey = GlobalKey<FormState>();
 
-  String? _username;
+  String? _phone;
 
   final Map<String, String> _usernameRegex = {
-    'email': r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
+    // 'email': r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
     'phone': r"^(\+91[\-\s]?)?[0]?(91)?[789]\d{9}$",
   };
 
@@ -99,7 +100,7 @@ class _UsernameInputState extends State<UsernameInput> {
                     Padding(
                       padding: const EdgeInsets.all(15.0),
                       child: const Text(
-                        'Enter your email or mobile number for verification process, we will send you a 6 digits code.',
+                        'Enter your mobile number for verification process, we will send you a 6 digits code.',
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -121,17 +122,25 @@ class _UsernameInputState extends State<UsernameInput> {
                                     if (value!.isEmpty) {
                                       return "Required";
                                     }
-                                    _username = value;
-                                    print("Username : $_username");
+                                    else if (!RegExp(r"^[789]\d{9}$")
+                                        .hasMatch(value)) {
+                                      return "Invalid mobile no.";
+                                    }
+                                    _phone = value;
+                                    print("Phone : $_phone");
 
                                     return null;
                                   },
+                                  keyboardType: TextInputType.phone,
+                                  inputFormatters: [
+                                    new LengthLimitingTextInputFormatter(10),
+                                  ],
                                   style: TextStyle(
                                     color: Colors.black54,
                                     fontFamily: 'Poppins-Bold',
                                   ),
                                   decoration: InputDecoration(
-                                    labelText: 'Email or Phone',
+                                    labelText: 'Mobile No.',
                                     filled: true,
                                     fillColor: Color(0xffF6F6F6),
                                     border: OutlineInputBorder(
@@ -157,12 +166,55 @@ class _UsernameInputState extends State<UsernameInput> {
                                 SizedBox(height: 16),
                                 ElevatedButton(
                                   onPressed: () {
+                                    if (_formKey.currentState!.validate()) {
+                                      setState(() {
+                                        isAPIcallProcess = true;
+                                      });
 
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                            const ResetPassword()));
+                                      Map<String, String> body = {
+                                        "phone": _phone!,
+                                        "password": "password",
+                                        "isSignUp" : "false",
+                                      };
+
+                                      APIService.forgotPassword(body)
+                                          .then((response) {
+                                        setState(() {
+                                          isAPIcallProcess = false;
+                                        });
+                                        if (response == 200) {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      const OtpResetPassword()));
+                                        }
+                                        else if(response == 404) {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            const SnackBar(
+                                              content:
+                                              Text('User does not exist.'),
+                                            ),
+                                          );
+                                        } else {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            const SnackBar(
+                                              content:
+                                                  Text('Invalid mobile number.'),
+                                            ),
+                                          );
+                                        }
+                                      });
+                                    }
+                                  // if (_formKey.currentState!.validate()) {
+                                  //   Navigator.push(
+                                  //       context,
+                                  //       MaterialPageRoute(
+                                  //           builder: (context) =>
+                                  //           const OtpResetPassword()));
+                                  // }
                                   },
                                   child: Text("Submit",
                                       style: TextStyle(
@@ -220,7 +272,7 @@ class _UsernameInputState extends State<UsernameInput> {
                             context,
                             MaterialPageRoute(
                                 builder: (context) => const Login()),
-                                (route) => false,
+                            (route) => false,
                           );
                         },
                       ),

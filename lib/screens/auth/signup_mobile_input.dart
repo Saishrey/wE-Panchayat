@@ -1,46 +1,47 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:we_panchayat_dev/models/login_request_model.dart';
-import 'package:we_panchayat_dev/screens/auth/signup_mobile_input.dart';
+import 'package:we_panchayat_dev/screens/auth/signup_otp.dart';
 
 import 'package:we_panchayat_dev/screens/homepage/homepage.dart';
+import 'package:we_panchayat_dev/screens/reset_password/otp_reset_password.dart';
+import 'package:we_panchayat_dev/screens/reset_password/reset_password.dart';
 import 'package:we_panchayat_dev/services/api_service.dart';
 
 import 'package:we_panchayat_dev/screens/auth/signup.dart';
 
+import 'package:we_panchayat_dev/screens/auth/login.dart';
+
 import 'package:we_panchayat_dev/screens/otp/otp.dart';
-import 'package:we_panchayat_dev/screens/reset_password/username_input.dart';
 
-
-class Login extends StatefulWidget {
-  const Login({Key? key}) : super(key: key);
+class SignUpMobileInput extends StatefulWidget {
+  const SignUpMobileInput({Key? key}) : super(key: key);
 
   @override
-  _LoginState createState() => _LoginState();
+  _SignUpMobileInputState createState() => _SignUpMobileInputState();
 }
 
-class _LoginState extends State<Login> {
+class _SignUpMobileInputState extends State<SignUpMobileInput> {
   bool isAPIcallProcess = false;
 
   bool _obscureText = true;
+
   final _formKey = GlobalKey<FormState>();
 
-  String? _password;
-  String? _username;
+  String? _phone;
 
   final Map<String, String> _usernameRegex = {
-    'email': r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
+    // 'email': r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+",
     'phone': r"^(\+91[\-\s]?)?[0]?(91)?[789]\d{9}$",
   };
 
   TextEditingController usernameController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     TextStyle textStyle = Theme.of(context).textTheme.titleMedium!;
 
     usernameController.text = "";
-    passwordController.text = "";
 
     return Container(
       padding: EdgeInsets.only(top: 60.0),
@@ -87,6 +88,23 @@ class _LoginState extends State<Login> {
                         ),
                       ),
                     ),
+                    Text(
+                      'Sign Up',
+                      style: TextStyle(
+                        fontFamily: 'Poppins-Bold',
+                        fontSize: 24,
+                        fontWeight: FontWeight.w700,
+                        color: Color(0xff21205b),
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                    Padding(
+                      padding: const EdgeInsets.all(15.0),
+                      child: const Text(
+                        'Enter your mobile number for verification process, we will send you a 6 digits code.',
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
                     Center(
                       child: Padding(
                         padding: EdgeInsets.all(0),
@@ -94,7 +112,7 @@ class _LoginState extends State<Login> {
                           key: _formKey,
                           child: Padding(
                             padding:
-                                const EdgeInsets.only(right: 15.0, left: 15.0),
+                            const EdgeInsets.only(right: 15.0, left: 15.0),
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -105,69 +123,27 @@ class _LoginState extends State<Login> {
                                     if (value!.isEmpty) {
                                       return "Required";
                                     }
-                                    _username = value;
-                                    print("Username : $_username");
+                                    else if (!RegExp(r"^[789]\d{9}$")
+                                        .hasMatch(value)) {
+                                      return "Invalid mobile no.";
+                                    }
+                                    _phone = value;
+                                    print("Phone : $_phone");
 
                                     return null;
                                   },
+                                  keyboardType: TextInputType.phone,
+                                  inputFormatters: [
+                                    new LengthLimitingTextInputFormatter(10),
+                                  ],
                                   style: TextStyle(
                                     color: Colors.black54,
                                     fontFamily: 'Poppins-Bold',
                                   ),
                                   decoration: InputDecoration(
-                                    labelText: 'Email or Phone',
+                                    labelText: 'Mobile No.',
                                     filled: true,
                                     fillColor: Color(0xffF6F6F6),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                        color: Color(0xffBDBDBD),
-                                      ),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                        color: Color(0xffBDBDBD),
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                        color: Theme.of(context).primaryColor,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(height: 16),
-                                TextFormField(
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return "Required";
-                                    }
-                                    _password = value;
-                                    return null;
-                                  },
-                                  style: TextStyle(
-                                    color: Colors.black54,
-                                    fontFamily: 'Poppins-Bold',
-                                  ),
-                                  obscureText: _obscureText,
-                                  decoration: InputDecoration(
-                                    filled: true,
-                                    fillColor: Color(0xffF6F6F6),
-                                    labelText: 'Password',
-                                    suffixIcon: GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          _obscureText = !_obscureText;
-                                        });
-                                      },
-                                      child: Icon(
-                                        _obscureText
-                                            ? Icons.visibility
-                                            : Icons.visibility_off,
-                                      ),
-                                    ),
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10),
                                       borderSide: BorderSide(
@@ -190,40 +166,57 @@ class _LoginState extends State<Login> {
                                 ),
                                 SizedBox(height: 16),
                                 ElevatedButton(
-                                  onPressed: () async {
+                                  onPressed: () {
                                     if (_formKey.currentState!.validate()) {
                                       setState(() {
                                         isAPIcallProcess = true;
                                       });
 
-                                      LoginRequestModel model =
-                                          LoginRequestModel(
-                                              username: _username!,
-                                              password: _password!);
+                                      Map<String, String> body = {
+                                        "phone": _phone!,
+                                        "password": "password",
+                                        "isSignUp" : "true",
+                                      };
 
-                                      APIService.login(model).then((response) {
+                                      APIService.forgotPassword(body)
+                                          .then((response) {
                                         setState(() {
                                           isAPIcallProcess = false;
                                         });
-                                        if (response) {
+                                        if (response == 200) {
                                           Navigator.push(
                                               context,
                                               MaterialPageRoute(
                                                   builder: (context) =>
-                                                      const Otp()));
-                                        } else {
+                                                  SignUpOtp(phone: _phone!,)));
+                                        } else if(response == 409) {
                                           ScaffoldMessenger.of(context)
                                               .showSnackBar(
                                             const SnackBar(
                                               content:
-                                                  Text('Invalid credentials.'),
+                                              Text('User already exist.'),
+                                            ),
+                                          );
+                                        }else {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            const SnackBar(
+                                              content:
+                                              Text('Invalid username.'),
                                             ),
                                           );
                                         }
                                       });
                                     }
+                                    // if (_formKey.currentState!.validate()) {
+                                    //   Navigator.push(
+                                    //       context,
+                                    //       MaterialPageRoute(
+                                    //           builder: (context) =>
+                                    //           const OtpResetPassword()));
+                                    // }
                                   },
-                                  child: Text("Log in",
+                                  child: Text("Submit",
                                       style: TextStyle(
                                         fontSize: 16,
                                         fontFamily: 'Poppins-Bold',
@@ -239,36 +232,6 @@ class _LoginState extends State<Login> {
                               ],
                             ),
                           ),
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(
-                          top: 20.0, bottom: 20.0, right: 10.0, left: 10.0),
-                      child: Divider(
-                        height: 1,
-                        thickness: 0.8,
-                        color: Colors.black54,
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(right: 10.0, left: 10.0),
-                      child: TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => UsernameInput()),
-                          );
-                        },
-                        child: Text(
-                          "Forgot your password?",
-                          style: TextStyle(
-                            color: Color(0xFF5386E4),
-                            fontWeight: FontWeight.w700,
-                            fontSize: 15,
-                            fontFamily: 'Poppins-Bold',
-                          ),
-                          textAlign: TextAlign.center,
                         ),
                       ),
                     ),
@@ -294,7 +257,7 @@ class _LoginState extends State<Login> {
                         child: Padding(
                           padding: const EdgeInsets.all(1.0),
                           child: Text(
-                            "Don’t have an account? Sign up",
+                            "Already have an account? Log in",
                             style: TextStyle(
                               color: Color(0xFF5386E4),
                               fontWeight: FontWeight.w700,
@@ -305,9 +268,11 @@ class _LoginState extends State<Login> {
                           ),
                         ),
                         onTap: () {
-                          Navigator.push(
+                          Navigator.pushAndRemoveUntil(
                             context,
-                            MaterialPageRoute(builder: (context) => const SignUpMobileInput()),
+                            MaterialPageRoute(
+                                builder: (context) => const Login()),
+                                (route) => false,
                           );
                         },
                       ),

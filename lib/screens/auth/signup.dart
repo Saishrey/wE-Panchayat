@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:we_panchayat_dev/models/register_request_model.dart';
 import 'package:we_panchayat_dev/screens/homepage/homepage.dart';
-import 'package:we_panchayat_dev/screens/main.dart';
+import 'package:we_panchayat_dev/main.dart';
 import 'package:we_panchayat_dev/services/api_service.dart';
 import 'package:we_panchayat_dev/screens/auth/login.dart';
 

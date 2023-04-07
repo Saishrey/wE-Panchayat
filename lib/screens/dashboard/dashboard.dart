@@ -37,48 +37,45 @@ class DashBoardState extends State<DashBoard> {
 
     return Column(
       children: <Widget>[
-        SizedBox(
-          height: 50,
-        ),
-        Padding(
-          padding: EdgeInsets.only(left: 16, right: 16),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Image.asset(
-                    'assets/images/icon.png',
-                    height: 60.0,
-                    width: 60.0,
-                  ),
-                  SizedBox(
-                    width: 10,
-                  ),
-                  userName(),
-                ],
-              ),
-              IconButton(
-                alignment: Alignment.topCenter,
-                padding: EdgeInsets.all(0),
-                // icon: Image.asset(
-                //   "assets/images/user.png",
-                //   width: 75,
-                // ),
-                icon: const Icon(
-                  Icons.logout,
-                  color: Colors.black54,
-                ),
-                onPressed: () async {
-                  await APIService.logout(context);
-                  ScaffoldMessenger.of(context)
-                      .showSnackBar(const SnackBar(content: Text('Logged out.')));
-                },
-              )
-            ],
-          ),
-        ),
+        // Padding(
+        //   padding: EdgeInsets.only(left: 16, right: 16),
+        //   child: Row(
+        //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        //     children: <Widget>[
+        //       Row(
+        //         crossAxisAlignment: CrossAxisAlignment.start,
+        //         children: <Widget>[
+        //           Image.asset(
+        //             'assets/images/icon.png',
+        //             height: 60.0,
+        //             width: 60.0,
+        //           ),
+        //           SizedBox(
+        //             width: 10,
+        //           ),
+        //           userName(),
+        //         ],
+        //       ),
+        //       IconButton(
+        //         alignment: Alignment.topCenter,
+        //         padding: EdgeInsets.all(0),
+        //         // icon: Image.asset(
+        //         //   "assets/images/user.png",
+        //         //   width: 75,
+        //         // ),
+        //         icon: const Icon(
+        //           Icons.logout,
+        //           color: Colors.black54,
+        //         ),
+        //         onPressed: () async {
+        //           await APIService.logout(context);
+        //           ScaffoldMessenger.of(context)
+        //               .showSnackBar(const SnackBar(content: Text('Logged out.')));
+        //         },
+        //       )
+        //     ],
+        //   ),
+        // ),
         SizedBox(
           height: 10,
         ),
@@ -134,48 +131,5 @@ class DashBoardState extends State<DashBoard> {
         ),
       ],
     );
-  }
-
-  Widget userName() {
-    return FutureBuilder(
-      future: SharedService.loginDetails(),
-      builder: (BuildContext context,
-          AsyncSnapshot<LoginResponseModel?> model) {
-        if(model.hasData) {
-          return Padding(
-            padding: EdgeInsets.only(top: 15.0, bottom: 0),
-            child: Text(
-              getUserName(model.data)!,
-              style: GoogleFonts.openSans(
-                  textStyle: TextStyle(
-                      color: Color(0xff21205b),
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold)),
-            ),
-          );
-        }
-
-        return Padding(
-          padding: EdgeInsets.only(top: 15.0, bottom: 0),
-          child: Text(
-            "USER NAME",
-            style: GoogleFonts.openSans(
-                textStyle: TextStyle(
-                    color: Color(0xff21205b),
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold)),
-          ),
-        );
-      },
-    );
-  }
-
-  String? getUserName(LoginResponseModel? model) {
-    print("Username: ${model?.fullname}");
-
-    if(model?.fullname == null) {
-      return "NULL";
-    }
-    return model?.fullname;
   }
 }

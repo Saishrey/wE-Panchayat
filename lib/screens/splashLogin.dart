@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import 'main.dart';
+import '../main.dart';
 
 import 'auth/login.dart';
 import 'auth/signup.dart';

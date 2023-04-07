@@ -87,6 +87,7 @@ flutter:
     - assets/images/bg.png
     - assets/images/bg_with_di.png
     - assets/images/user.png
+    - assets/images/user_icon.jpeg
     - assets/images/notification.png
     - assets/images/birth_&_death.png
     - assets/images/house_tax.png

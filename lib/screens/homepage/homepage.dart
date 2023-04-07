@@ -4,6 +4,10 @@ import 'package:we_panchayat_dev/services/shared_service.dart';
 import '../dashboard/dashboard.dart';
 import '../menu/menu.dart';
 import '../settings/settings.dart';
+import '../dashboard/navbar.dart';
+import 'custom_appbar.dart';
+
+
 import 'package:fluttertoast/fluttertoast.dart';
 
 
@@ -47,6 +51,13 @@ class HomeState extends State<Home> {
           ),
         ),
         child: Scaffold(
+          appBar: CustomAppBar(
+            imageUrl: 'assets/images/icon.png',
+            onDrawerIconTap: () {
+              // Open the drawer
+            },
+          ),
+          drawer: NavBar(),
           backgroundColor: Colors.transparent,
           body: WillPopScope(
             onWillPop: () async {

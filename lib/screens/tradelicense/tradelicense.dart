@@ -376,8 +376,6 @@ class _TradeLicenseState extends State<TradeLicense> {
   WidgetState _widgetState =
       WidgetState.disabled; // for signboard details yes or no
 
-  bool _onStepContinueEnabled = false;
-  bool _onStepCancelEnabled = false;
 
   @override
   Widget build(BuildContext context) {
@@ -387,7 +385,8 @@ class _TradeLicenseState extends State<TradeLicense> {
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
           title: const Text('Trade License & Signboard'),
-          backgroundColor: Color(0xffDDF0FF),
+          // backgroundColor: Color(0xffDDF0FF),
+          backgroundColor: Color(0xffDAF5FF),
           foregroundColor: Color(0xff22215B),
           elevation: 0,
         ),

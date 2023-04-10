@@ -7,28 +7,28 @@ class GridDashboard extends StatelessWidget {
   Items item1 = new Items(
     title: "Trade License\n  & Signboard",
     img: "assets/images/trade_license.png",
-    backgroundColor: 0xffEEF7FE,
+    backgroundColor: 0xffDAF5FF,
     textColor: 0xff415EB6,
     formClass: TradeLicense(),);
 
   Items item2 = new Items(
       title: "Birth & Death\n   Certificate",
       img: "assets/images/birth_&_death.png",
-      backgroundColor: 0xffFFFBEC,
+      backgroundColor: 0xffFBFACD,
       textColor: 0xffFFB110,
     formClass: TradeLicense(),);
 
   Items item3 = new Items(
       title: "Income Certificate",
       img: "assets/images/income.png",
-      backgroundColor: 0xffFEEEEE,
+      backgroundColor: 0xffFAD4D4,
       textColor: 0xffF45656,
     formClass: TradeLicense(),);
 
   Items item4 = new Items(
       title: "Pay House Tax",
       img: "assets/images/house_tax.png",
-      backgroundColor: 0xffF0FFFF,
+      backgroundColor: 0xffCDF0EA,
       textColor: 0xff23B0B0,
     formClass: TradeLicense(),);
 

@@ -1,6 +1,10 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'dart:io';
+
+import 'package:open_file/open_file.dart';
 
 enum WidgetState { enabled, disabled }
 
@@ -14,6 +18,23 @@ class TradeLicense extends StatefulWidget {
 class _TradeLicenseState extends State<TradeLicense> {
   int _currentStep = 0;
   bool isCompleted = false; //check completeness of inputs
+
+  final List<File?> _pdfFiles = List.generate(12, (_) => null);
+  final int _maxFileSize = 2 * 1024 * 1024;
+
+  final List<bool> _isChecked = [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+  ];
+
+  bool declaration = false;
 
   final List<GlobalKey<FormState>> _formKeys = [
     GlobalKey<FormState>(),
@@ -376,9 +397,10 @@ class _TradeLicenseState extends State<TradeLicense> {
   WidgetState _widgetState =
       WidgetState.disabled; // for signboard details yes or no
 
-
   @override
   Widget build(BuildContext context) {
+    print(_pdfFiles);
+
     return WillPopScope(
       onWillPop: () => _showCancelConfirmationDialog(context, false),
       child: Scaffold(
@@ -401,37 +423,31 @@ class _TradeLicenseState extends State<TradeLicense> {
             type: StepperType.horizontal,
             currentStep: _currentStep,
             onStepTapped: (step) {
-              if (step <= _currentStep) {
-                setState(() {
-                  _currentStep = step;
-                });
-              } else if (_validateStep(_currentStep) &&
-                  step == _currentStep + 1) {
-                setState(() {
-                  _currentStep = step;
-                });
-              }
+              // if (step <= _currentStep) {
+              //   setState(() {
+              //     _currentStep = step;
+              //   });
+              // } else if (_validateStep(_currentStep) &&
+              //     step == _currentStep + 1) {
+              //   setState(() {
+              //     _currentStep = step;
+              //   });
+              // }
+              setState(() {
+                _currentStep = step;
+              });
             },
             onStepContinue: () {
-              // _formKey.currentState!.validate();
-              // _stepperKey.currentState.
-              // bool isDetailValid = isDetailComplete(); //this check if ok to move on to next screen
-              //
-              // if (_formKey.currentState!.validate()) {
-              //   if (isLastStep) {
-              //     setState(() {
-              //       isCompleted = true;
-              //     });
-              //   } else {
-              //     setState(() {
-              //       currentStep += 1;
-              //     });
-              //   }
+              // if (_currentStep == getSteps().length - 1) {
+              //   // Perform submit operation
+              // } else if (_validateStep(_currentStep)) {
+              //   setState(() {
+              //     _currentStep += 1;
+              //   });
               // }
-
               if (_currentStep == getSteps().length - 1) {
                 // Perform submit operation
-              } else if (_validateStep(_currentStep)) {
+              } else {
                 setState(() {
                   _currentStep += 1;
                 });
@@ -564,49 +580,49 @@ class _TradeLicenseState extends State<TradeLicense> {
     return result ?? false;
   }
 
-  bool _validateStep(int step) {
-    return _formKeys[step].currentState?.validate() ?? false;
-  }
+  // bool _validateStep(int step) {
+  //   return _formKeys[step].currentState?.validate() ?? false;
+  // }
 
   // // define the function to move to the next step
   // void next() {
   //   currentStep + 1 != getSteps().length ? goTo(currentStep + 1) : submit();
   // }
 
-  bool isDetailComplete() {
-    if (_currentStep == 0) {
-      //check sender fields
-      if (applicantPhoneNoController.text.isEmpty ||
-          applicantAddressController.text.isEmpty ||
-          applicantNameController.text.isEmpty ||
-          applicantWardNoController.text.isEmpty ||
-          applicantShopController.text.isEmpty) {
-        return false;
-      } else {
-        return true; //if all fields are not empty
-      }
-    } else if (_currentStep == 1) {
-      //check receiver fields
-      if (applicantOwnerController.text.isEmpty ||
-          applicantTradeController.text.isEmpty ||
-          applicantTradeAddressController.text.isEmpty ||
-          applicantRelationController.text.isEmpty ||
-          applicantTypeofTradeController.text.isEmpty ||
-          applicantBusinessController.text.isEmpty ||
-          applicantTradeAreaController.text.isEmpty ||
-          applicantEmployeesController.text.isEmpty ||
-          //applicantWasteManagement.text.isEmpty ||
-          // applicantLeasePay.text.isEmpty ||
-          applicantSignContentOnBoardController.text.isEmpty ||
-          applicantSignAreaController.text.isEmpty ||
-          applicantSignLocationController.text.isEmpty) {
-        return false;
-      } else {
-        return true;
-      }
-    }
-    return false;
-  }
+  // bool isDetailComplete() {
+  //   if (_currentStep == 0) {
+  //     //check sender fields
+  //     if (applicantPhoneNoController.text.isEmpty ||
+  //         applicantAddressController.text.isEmpty ||
+  //         applicantNameController.text.isEmpty ||
+  //         applicantWardNoController.text.isEmpty ||
+  //         applicantShopController.text.isEmpty) {
+  //       return false;
+  //     } else {
+  //       return true; //if all fields are not empty
+  //     }
+  //   } else if (_currentStep == 1) {
+  //     //check receiver fields
+  //     if (applicantOwnerController.text.isEmpty ||
+  //         applicantTradeController.text.isEmpty ||
+  //         applicantTradeAddressController.text.isEmpty ||
+  //         applicantRelationController.text.isEmpty ||
+  //         applicantTypeofTradeController.text.isEmpty ||
+  //         applicantBusinessController.text.isEmpty ||
+  //         applicantTradeAreaController.text.isEmpty ||
+  //         applicantEmployeesController.text.isEmpty ||
+  //         //applicantWasteManagement.text.isEmpty ||
+  //         // applicantLeasePay.text.isEmpty ||
+  //         applicantSignContentOnBoardController.text.isEmpty ||
+  //         applicantSignAreaController.text.isEmpty ||
+  //         applicantSignLocationController.text.isEmpty) {
+  //       return false;
+  //     } else {
+  //       return true;
+  //     }
+  //   }
+  //   return false;
+  // }
 
   //This will be your screens
   List<Step> getSteps() => [
@@ -618,6 +634,12 @@ class _TradeLicenseState extends State<TradeLicense> {
               key: _formKeys[0],
               child: Column(
                 children: [
+                  Text('Applicant Details',
+                      style: TextStyle(
+                          fontFamily: 'Poppins-Bold',
+                          color: Colors.black,
+                          fontSize: 20)),
+                  SizedBox(height: 16),
                   Row(
                     children: [
                       Expanded(
@@ -1524,10 +1546,578 @@ class _TradeLicenseState extends State<TradeLicense> {
           title: const Text('Documents'),
           content: Form(
             key: _formKeys[2],
-            child: Column(
-              children: const [Text('Information Complete!')],
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Upload Documents',
+                    style: TextStyle(
+                      fontFamily: 'Poppins-Bold',
+                      color: Colors.black,
+                      fontSize: 20,
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  Text(
+                    '(Please upload documents in .pdf format. File size not to exceed 2MB)',
+                    style: TextStyle(
+                      color: Colors.red,
+                      fontSize: 10,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const Text(
+                        'Identity Proof',
+                        style: TextStyle(
+                          fontFamily: 'Poppins-Bold',
+                          fontSize: 14,
+                          color: Color(0xff21205b),
+                        ),
+                        textAlign: TextAlign.left,
+                      ),
+                      if (_pdfFiles[0] != null) ...[
+                        _buildPDFListItem(_pdfFiles[0]!)
+                      ] else ...[
+                        chooseFileButton(0)
+                      ],
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const Text(
+                        'Housetax Receipt',
+                        style: TextStyle(
+                          fontFamily: 'Poppins-Bold',
+                          fontSize: 14,
+                          color: Color(0xff21205b),
+                        ),
+                        textAlign: TextAlign.left,
+                      ),
+                      if (_pdfFiles[1] != null) ...[
+                        _buildPDFListItem(_pdfFiles[1]!)
+                      ] else ...[
+                        chooseFileButton(1)
+                      ],
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      const Text(
+                        'No Objection Certificate/ Lease argreement/ Ownership document',
+                        style: TextStyle(
+                          fontFamily: 'Poppins-Bold',
+                          fontSize: 14,
+                          color: Color(0xff21205b),
+                        ),
+                        textAlign: TextAlign.left,
+                      ),
+                      if (_pdfFiles[2] != null) ...[
+                        _buildPDFListItem(_pdfFiles[2]!)
+                      ] else ...[
+                        chooseFileButton(2)
+                      ],
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 40,
+                  ),
+                  const Text(
+                    'Please upload permissions granted by the Authorities as per requirement',
+                    style: TextStyle(
+                      fontFamily: 'Poppins-Bold',
+                      fontSize: 14,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        children: [
+                          Checkbox(
+                              value: _isChecked[0],
+                              onChanged: (bool? value) {
+                                setState(() {
+                                  _isChecked[0] = value!;
+                                  _pdfFiles[3] = null;
+                                });
+                              }),
+                          const Text(
+                            "Foods & Drugs",
+                            style: TextStyle(
+                              fontFamily: 'Poppins-Bold',
+                              fontSize: 14,
+                              color: Color(0xff21205b),
+                            ), // or TextOverflow.fade
+                          ),
+                        ],
+                      ),
+                      Visibility(
+                        visible: _isChecked[0],
+                        child: _pdfFiles[3] != null
+                            ? _buildPDFListItem(_pdfFiles[3]!)
+                            : chooseFileButton(3),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        children: [
+                          Checkbox(
+                              value: _isChecked[1],
+                              onChanged: (bool? value) {
+                                setState(() {
+                                  _isChecked[1] = value!;
+                                  _pdfFiles[4] = null;
+                                });
+                              }),
+                          const Text(
+                            "Excise",
+                            style: TextStyle(
+                              fontFamily: 'Poppins-Bold',
+                              fontSize: 14,
+                              color: Color(0xff21205b),
+                            ), // or TextOverflow.fade
+                          ),
+                        ],
+                      ),
+                      Visibility(
+                        visible: _isChecked[1],
+                        child: _pdfFiles[4] != null
+                            ? _buildPDFListItem(_pdfFiles[4]!)
+                            : chooseFileButton(4),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        children: [
+                          Checkbox(
+                              value: _isChecked[2],
+                              onChanged: (bool? value) {
+                                setState(() {
+                                  _isChecked[2] = value!;
+                                  _pdfFiles[5] = null;
+                                });
+                              }),
+                          const Text(
+                            "Police Dept.",
+                            style: TextStyle(
+                              fontFamily: 'Poppins-Bold',
+                              fontSize: 14,
+                              color: Color(0xff21205b),
+                            ), // or TextOverflow.fade
+                          ),
+                        ],
+                      ),
+                      Visibility(
+                        visible: _isChecked[2],
+                        child: _pdfFiles[5] != null
+                            ? _buildPDFListItem(_pdfFiles[5]!)
+                            : chooseFileButton(5),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        children: [
+                          Checkbox(
+                              value: _isChecked[3],
+                              onChanged: (bool? value) {
+                                setState(() {
+                                  _isChecked[3] = value!;
+                                  _pdfFiles[6] = null;
+                                });
+                              }),
+                          const Text(
+                            "CRZ",
+                            style: TextStyle(
+                              fontFamily: 'Poppins-Bold',
+                              fontSize: 14,
+                              color: Color(0xff21205b),
+                            ), // or TextOverflow.fade
+                          ),
+                        ],
+                      ),
+                      Visibility(
+                        visible: _isChecked[3],
+                        child: _pdfFiles[6] != null
+                            ? _buildPDFListItem(_pdfFiles[6]!)
+                            : chooseFileButton(6),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        children: [
+                          Checkbox(
+                              value: _isChecked[4],
+                              onChanged: (bool? value) {
+                                setState(() {
+                                  _isChecked[4] = value!;
+                                  _pdfFiles[7] = null;
+                                });
+                              }),
+                          const Text(
+                            "Tourism",
+                            style: TextStyle(
+                              fontFamily: 'Poppins-Bold',
+                              fontSize: 14,
+                              color: Color(0xff21205b),
+                            ), // or TextOverflow.fade
+                          ),
+                        ],
+                      ),
+                      Visibility(
+                        visible: _isChecked[4],
+                        child: _pdfFiles[7] != null
+                            ? _buildPDFListItem(_pdfFiles[7]!)
+                            : chooseFileButton(7),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        children: [
+                          Checkbox(
+                              value: _isChecked[5],
+                              onChanged: (bool? value) {
+                                setState(() {
+                                  _isChecked[5] = value!;
+                                  _pdfFiles[8] = null;
+                                });
+                              }),
+                          const Text(
+                            "Fire Brigade",
+                            style: TextStyle(
+                              fontFamily: 'Poppins-Bold',
+                              fontSize: 14,
+                              color: Color(0xff21205b),
+                            ), // or TextOverflow.fade
+                          ),
+                        ],
+                      ),
+                      Visibility(
+                        visible: _isChecked[5],
+                        child: _pdfFiles[8] != null
+                            ? _buildPDFListItem(_pdfFiles[8]!)
+                            : chooseFileButton(8),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        children: [
+                          Checkbox(
+                              value: _isChecked[6],
+                              onChanged: (bool? value) {
+                                setState(() {
+                                  _isChecked[6] = value!;
+                                  _pdfFiles[9] = null;
+                                });
+                              }),
+                          const Text(
+                            "Factories & Boilers",
+                            style: TextStyle(
+                              fontFamily: 'Poppins-Bold',
+                              fontSize: 14,
+                              color: Color(0xff21205b),
+                            ), // or TextOverflow.fade
+                          ),
+                        ],
+                      ),
+                      Visibility(
+                        visible: _isChecked[6],
+                        child: _pdfFiles[9] != null
+                            ? _buildPDFListItem(_pdfFiles[9]!)
+                            : chooseFileButton(9),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        children: [
+                          Checkbox(
+                              value: _isChecked[7],
+                              onChanged: (bool? value) {
+                                setState(() {
+                                  _isChecked[7] = value!;
+                                  _pdfFiles[10] = null;
+                                });
+                              }),
+                          const Text(
+                            "Health Services",
+                            style: TextStyle(
+                              fontFamily: 'Poppins-Bold',
+                              fontSize: 14,
+                              color: Color(0xff21205b),
+                            ), // or TextOverflow.fade
+                          ),
+                        ],
+                      ),
+                      Visibility(
+                        visible: _isChecked[7],
+                        child: _pdfFiles[10] != null
+                            ? _buildPDFListItem(_pdfFiles[10]!)
+                            : chooseFileButton(10),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        children: [
+                          Checkbox(
+                              value: _isChecked[8],
+                              onChanged: (bool? value) {
+                                setState(() {
+                                  _isChecked[8] = value!;
+                                  _pdfFiles[11] = null;
+                                });
+                              }),
+                          const Text(
+                            "Others",
+                            style: TextStyle(
+                              fontFamily: 'Poppins-Bold',
+                              fontSize: 14,
+                              color: Color(0xff21205b),
+                            ), // or TextOverflow.fade
+                          ),
+                        ],
+                      ),
+                      Visibility(
+                        visible: _isChecked[8],
+                        child: _pdfFiles[11] != null
+                            ? _buildPDFListItem(_pdfFiles[11]!)
+                            : chooseFileButton(11),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  const Align(
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                      "Self Declaration",
+                      style: TextStyle(
+                        fontFamily: 'Poppins-Bold',
+                        color: Colors.red,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  Row(
+                    children: [
+                      Checkbox(
+                          value: declaration,
+                          onChanged: (bool? value) {
+                            setState(() {
+                              declaration = value!;
+                            });
+                          }),
+                      const Expanded(
+                        child: Text(
+                          "I declare that the above information is true to the best of my knowledge and belief. I am well aware that information given by me above is proved false/not true, I will have to face the punishment as per law & also all the permissions obtained by me shall be summarily withdrawn.",
+                          style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 10,
+                              overflow: TextOverflow.visible),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                ],
+              ),
             ),
           ),
         )
       ];
+
+  Widget _buildPDFListItem(File pdfFile) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+      child: InkWell(
+        onTap: () async {
+          String filePath = pdfFile.path;
+          await OpenFile.open(filePath);
+        },
+        child: Container(
+          padding: EdgeInsets.all(10.0),
+          decoration: BoxDecoration(
+            border: Border.all(width: 1.0, color: Colors.grey),
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Icon(
+                Icons.picture_as_pdf,
+                size: 48.0,
+                color: Color(0xffDD2025),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        pdfFile.path.split('/').last,
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14.0,
+                        ),
+                      ),
+                      Text(
+                        '${(pdfFile!.lengthSync() / 1024).toStringAsFixed(2)} KB',
+                        style: TextStyle(
+                          fontSize: 12.0,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              IconButton(
+                icon: const Icon(
+                  Icons.delete,
+                  color: Color(0xFF5386E4),
+                ),
+                // onPressed: () {},
+                onPressed: () {
+                  setState(() {
+                    int index = _pdfFiles.indexOf(pdfFile);
+                    print(index);
+                    _pdfFiles[index] = null;
+                    print(_pdfFiles);
+                  });
+                },
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget chooseFileButton(int index) {
+    return ElevatedButton(
+      onPressed: () async {
+        _pickFile(index);
+      },
+      style: ButtonStyle(
+        backgroundColor: MaterialStateProperty.all<Color>(Color(0xFF5386E4)),
+      ),
+      child: const Text('Choose file'),
+    );
+  }
+
+  void _pickFile(int index) async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pdf'],
+    );
+    if (result != null) {
+      PlatformFile file = result.files.first;
+
+      print(file.name);
+      print(file.bytes);
+      print(file.size);
+      print(file.extension);
+      print(file.path);
+
+      if (file.size > _maxFileSize) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) => AlertDialog(
+            title: Text('File too large'),
+            content: Text('Selected file is larger than 2 MB.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: Text('OK'),
+              ),
+            ],
+          ),
+        );
+      } else {
+        setState(() {
+          _pdfFiles[index] = File(result.files.single.path!);
+        });
+      }
+    }
+    print(_pdfFiles);
+  }
 }

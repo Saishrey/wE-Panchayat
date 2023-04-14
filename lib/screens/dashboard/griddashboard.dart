@@ -3,34 +3,40 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'package:we_panchayat_dev/screens/tradelicense/tradelicense.dart';
 
+import '../tradelicense/temp.dart';
+
 class GridDashboard extends StatelessWidget {
   Items item1 = new Items(
     title: "Trade License\n  & Signboard",
     img: "assets/images/trade_license.png",
     backgroundColor: 0xffDAF5FF,
     textColor: 0xff415EB6,
-    formClass: TradeLicense(),);
+    formClass: TradeLicense(),
+  );
 
   Items item2 = new Items(
-      title: "Birth & Death\n   Certificate",
-      img: "assets/images/birth_&_death.png",
-      backgroundColor: 0xffFBFACD,
-      textColor: 0xffFFB110,
-    formClass: TradeLicense(),);
+    title: "Birth & Death\n   Certificate",
+    img: "assets/images/birth_&_death.png",
+    backgroundColor: 0xffFBFACD,
+    textColor: 0xffFFB110,
+    formClass: TradeLicense(),
+  );
 
   Items item3 = new Items(
-      title: "Income Certificate",
-      img: "assets/images/income.png",
-      backgroundColor: 0xffFAD4D4,
-      textColor: 0xffF45656,
-    formClass: TradeLicense(),);
+    title: "Income Certificate",
+    img: "assets/images/income.png",
+    backgroundColor: 0xffFAD4D4,
+    textColor: 0xffF45656,
+    formClass: TradeLicense(),
+  );
 
   Items item4 = new Items(
-      title: "Pay House Tax",
-      img: "assets/images/house_tax.png",
-      backgroundColor: 0xffCDF0EA,
-      textColor: 0xff23B0B0,
-    formClass: TradeLicense(),);
+    title: "Pay House Tax",
+    img: "assets/images/house_tax.png",
+    backgroundColor: 0xffCDF0EA,
+    textColor: 0xff23B0B0,
+    formClass: TradeLicense(),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -53,21 +59,20 @@ class GridDashboard extends StatelessWidget {
                 print("Tapped on ${data.title}");
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) => data.formClass),
+                  MaterialPageRoute(builder: (context) => data.formClass),
                 );
               },
               child: Ink(
                 decoration: BoxDecoration(
                   color: Color(data.backgroundColor),
                   borderRadius: BorderRadius.circular(20),
-                  // boxShadow: [
-                  //   BoxShadow(
-                  //     color: const Color(0xFFA7A9AF),
-                  //     blurRadius: 5.0,
-                  //     offset: Offset(2, 2),
-                  //   ),
-                  // ],
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFFA7A9AF),
+                      blurRadius: 2.0,
+                      offset: Offset(0, 1),
+                    ),
+                  ],
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,

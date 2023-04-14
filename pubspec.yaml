@@ -41,6 +41,17 @@ dependencies:
   api_cache_manager: ^1.0.2
   snippet_coder_utils: ^1.0.13
 
+  file_picker:
+  open_file: ^3.2.1
+#  pdf_viewer: ^1.0.1
+  url_launcher: ^6.0.3
+
+
+  loading_indicator: ^3.0.2
+  dotted_border: ^2.0.0+1
+  iconsax: ^0.0.8
+  dio: ^4.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

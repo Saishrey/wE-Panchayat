@@ -43,14 +43,28 @@ dependencies:
 
   file_picker:
   open_file: ^3.2.1
-#  pdf_viewer: ^1.0.1
-  url_launcher: ^6.0.3
 
+#  flutter_secure_storage: ^4.1.1
+  flutter_secure_storage:
+
+  connectivity: ^3.0.3
+
+  lottie: ^1.2.1
 
   loading_indicator: ^3.0.2
   dotted_border: ^2.0.0+1
   iconsax: ^0.0.8
   dio: ^4.0.0
+
+  another_stepper: ^1.2.2
+  styled_divider: ^1.0.4
+  easy_stepper: ^0.1.2
+  flutter_local_notifications: ^14.0.0
+  permission_handler: ^10.2.0
+  url_launcher: ^6.1.10
+  http_parser: ^4.0.2
+  image: ^3.3.0
+
 
 dev_dependencies:
   flutter_test:
@@ -108,6 +122,7 @@ flutter:
     - assets/carousel_images/carousel_img_1.jpg
     - assets/carousel_images/carousel_img_2.jpg
     - assets/carousel_images/carousel_img_3.jpeg
+    - assets/animations/application-submitted-animation.json
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

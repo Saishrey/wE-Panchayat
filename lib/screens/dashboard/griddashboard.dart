@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:we_panchayat_dev/screens/birth&death_certificate/birth_and_death_certificate.dart';
+import 'package:we_panchayat_dev/screens/house_tax/house_tax.dart';
 
 import 'package:we_panchayat_dev/screens/tradelicense/tradelicense.dart';
 
-import '../tradelicense/temp.dart';
+import '../income_certificate/income_certificate.dart';
 
 class GridDashboard extends StatelessWidget {
   Items item1 = new Items(
@@ -11,7 +13,7 @@ class GridDashboard extends StatelessWidget {
     img: "assets/images/trade_license.png",
     backgroundColor: 0xffDAF5FF,
     textColor: 0xff415EB6,
-    formClass: TradeLicense(),
+    formClass: TradeLicense(isEdit: false,),
   );
 
   Items item2 = new Items(
@@ -19,7 +21,7 @@ class GridDashboard extends StatelessWidget {
     img: "assets/images/birth_&_death.png",
     backgroundColor: 0xffFBFACD,
     textColor: 0xffFFB110,
-    formClass: TradeLicense(),
+    formClass: BirthAndDeathCertificate(),
   );
 
   Items item3 = new Items(
@@ -27,7 +29,7 @@ class GridDashboard extends StatelessWidget {
     img: "assets/images/income.png",
     backgroundColor: 0xffFAD4D4,
     textColor: 0xffF45656,
-    formClass: TradeLicense(),
+    formClass: IncomeCertificate(isEdit: false,),
   );
 
   Items item4 = new Items(
@@ -35,7 +37,7 @@ class GridDashboard extends StatelessWidget {
     img: "assets/images/house_tax.png",
     backgroundColor: 0xffCDF0EA,
     textColor: 0xff23B0B0,
-    formClass: TradeLicense(),
+    formClass: HouseTax(),
   );
 
   @override

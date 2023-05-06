@@ -1,13 +1,10 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
-
-import '../main.dart';
-
+import 'package:flutter/services.dart';
 import 'auth/login.dart';
-import 'auth/signup.dart';
+import 'package:connectivity/connectivity.dart';
 
-import 'homepage/homepage.dart';
+
 
 class SplashLogin extends StatefulWidget {
   const SplashLogin({Key? key}) : super(key: key);
@@ -17,19 +14,48 @@ class SplashLogin extends StatefulWidget {
 }
 
 class _SplashLoginState extends State<SplashLogin> {
+
+  var connectivityResult;
+
   @override
   void initState() {
     super.initState();
-    Timer(const Duration(seconds: 3), () {
-      Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
+    checkInternet();
+  }
+
+  Future<void> checkInternet() async {
+    connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult == ConnectivityResult.none) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('No Internet Connection'),
+            content: Text('Please check your internet connection and try again.'),
+            actions: <Widget>[
+              TextButton(
+                child: Text('OK'),
+                onPressed: () {
+                  SystemNavigator.pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
+    else {
+      Timer(const Duration(seconds: 3), () {
+        Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
               // builder: (context) => const MyHomePage(
               //       title: 'wE-Panchayat',
               //     )
-            builder: (context) => const Login(),
-          ));
-    });
+              builder: (context) => const Login(),
+            ));
+      });
+    }
   }
 
   @override

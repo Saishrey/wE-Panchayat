@@ -44,6 +44,41 @@ class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
         ),
       ],
     );
+
+    // return AppBar(
+    //   elevation: 0,
+    //   leading: null,
+    //   title: Row(
+    //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+    //     children: [
+    //       Padding(
+    //         padding: const EdgeInsets.only(left: 16),
+    //         child: Image.asset(
+    //           imageUrl,
+    //           height: 30,
+    //           width: 30,
+    //         ),
+    //       ),
+    //       villageName(),
+    //       Padding(
+    //         padding: const EdgeInsets.only(right: 8.0),
+    //         child: IconButton(
+    //           // icon: Icon(Icons.person),
+    //           icon: ClipOval(
+    //             child: Image.asset(
+    //               'assets/images/user_icon.jpeg',
+    //               height: 40,
+    //               width: 40,
+    //             ),
+    //           ),
+    //           onPressed: () {
+    //             Scaffold.of(context).openDrawer();
+    //           },
+    //         ),
+    //       ),
+    //     ],
+    //   ),
+    // );
   }
 
   @override
@@ -103,7 +138,7 @@ class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
         }
 
         return Text(
-          "USER NAME",
+          "VILLAGE NAME",
           style: GoogleFonts.openSans(
               textStyle: TextStyle(
                   color: Color(0xff21205b),

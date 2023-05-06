@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:core';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -95,21 +96,21 @@ class APIService {
   }
 
   static Future<bool> logout(BuildContext context) async {
-    final url = Uri.http(Config.apiURL, Config.logoutAPI);
-    print(url);
+      final url = Uri.http(Config.apiURL, Config.logoutAPI);
+      print(url);
 
-    print("COOKIE DETAILS Logout");
-    Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
-    print(cookieHeaders);
+      print("COOKIE DETAILS Logout");
+      Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
+      print(cookieHeaders);
 
-    var response = await client.post(url, headers: cookieHeaders);
+      var response = await client.post(url, headers: cookieHeaders);
 
-    if (response.statusCode == 200) {
-      SharedService.logout(context);
-      print("Logged out.");
-      return true;
-    }
-    return false;
+      if (response.statusCode == 200) {
+        SharedService.logout(context);
+        print("Logged out.");
+        return true;
+      }
+      return false;
   }
 
   static Future<Map> resendOtp() async {

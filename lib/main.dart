@@ -1,24 +1,47 @@
 import 'package:api_cache_manager/utils/cache_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:we_panchayat_dev/screens/auth/login.dart';
-import 'package:we_panchayat_dev/screens/auth/signup.dart';
-import 'package:we_panchayat_dev/screens/homepage/homepage.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'package:we_panchayat_dev/screens/splash.dart';
 import 'package:we_panchayat_dev/screens/splashLogin.dart';
 import 'package:we_panchayat_dev/services/shared_service.dart';
+import 'package:permission_handler/permission_handler.dart';
+
 
 Widget _defaultHome = const SplashLogin();
 
+// FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+// FlutterLocalNotificationsPlugin();
+Future<void> requestPermission() async {
+  // var status = await Permission.storage.status;
+  // if (status.isDenied) {
+  //   // Request permission
+  //   await Permission.storage.request();
+  // }
+
+  var status = await Permission.manageExternalStorage.status;
+  if (status.isDenied) {
+    // Request permission
+    await Permission.storage.request();
+  }
+}
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  requestPermission();
 
   bool _result = await SharedService.isLoggedIn();
 
   if(_result) {
     print("User ALREADY logged in.");
     _defaultHome = const Splash();
+    // await flutterLocalNotificationsPlugin.initialize(
+    //   const InitializationSettings(
+    //     android: AndroidInitializationSettings('app_icon'),
+    //   ),
+    // );
   }
   else {
     print("User NOT logged in");

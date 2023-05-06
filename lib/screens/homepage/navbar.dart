@@ -65,9 +65,11 @@ class NavBar extends StatelessWidget {
             title: Text('Logout'),
             leading: Icon(Icons.logout),
             onTap: () async {
-              await APIService.logout(context);
-              ScaffoldMessenger.of(context)
-                  .showSnackBar(const SnackBar(content: Text('Logged out.')));
+              bool isLoggedOut = await APIService.logout(context);
+              if(isLoggedOut) {
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(const SnackBar(content: Text('Logged out.')));
+              }
             },
           ),
         ],

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:we_panchayat_dev/services/applications_api_service.dart';
 import 'package:we_panchayat_dev/services/shared_service.dart';
 import '../dashboard/dashboard.dart';
-import '../menu/menu.dart';
+import '../applications/applications.dart';
 import '../settings/settings.dart';
-import '../dashboard/navbar.dart';
+import 'navbar.dart';
 import 'custom_appbar.dart';
 
 
@@ -23,10 +24,9 @@ class HomeState extends State<Home> {
 
   int _selectedIndex = 0;
 
-
   static const List<Widget> _widgetOptions = <Widget>[
     DashBoard(),
-    Menu(),
+    Applications(),
     Settings(),
   ];
 
@@ -51,11 +51,14 @@ class HomeState extends State<Home> {
           ),
         ),
         child: Scaffold(
-          appBar: CustomAppBar(
-            imageUrl: 'assets/images/icon.png',
-            onDrawerIconTap: () {
-              // Open the drawer
-            },
+          appBar: PreferredSize(
+            preferredSize: Size.fromHeight(50.0),
+            child: CustomAppBar(
+              imageUrl: 'assets/images/icon.png',
+              onDrawerIconTap: () {
+                // Open the drawer
+              },
+            ),
           ),
           drawer: NavBar(),
           backgroundColor: Colors.transparent,
@@ -80,6 +83,11 @@ class HomeState extends State<Home> {
           ),
           bottomNavigationBar: BottomNavigationBar(
             currentIndex: _selectedIndex,
+            backgroundColor: Colors.white,
+            showSelectedLabels: false,
+            selectedItemColor: Color(0xff19376D),
+            unselectedItemColor: Colors.grey,
+            showUnselectedLabels: false,
             onTap: _onItemTapped,
             items: const <BottomNavigationBarItem>[
               BottomNavigationBarItem(
@@ -87,8 +95,8 @@ class HomeState extends State<Home> {
                 label: 'Home',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.grid_view),
-                label: 'Menu',
+                icon: Icon(Icons.view_list_sharp),
+                label: 'Applications',
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.settings),

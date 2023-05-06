@@ -1,15 +1,30 @@
+import 'dart:convert';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
+import 'package:we_panchayat_dev/models/login_response_model.dart';
+import 'package:we_panchayat_dev/services/shared_service.dart';
+import 'package:we_panchayat_dev/services/trade_license_api_service.dart';
 import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 
 import 'package:open_file/open_file.dart';
 
-enum WidgetState { enabled, disabled }
+import '../application_submitted.dart';
+
+enum SignboardDetails { enabled, disabled }
 
 class TradeLicense extends StatefulWidget {
-  const TradeLicense({Key? key}) : super(key: key);
+  final Map<String, File?>? fileMap;
+  final Map<String, String>? formData;
+  final bool isEdit;
+
+  const TradeLicense(
+      {Key? key, this.fileMap, this.formData, required this.isEdit})
+      : super(key: key);
 
   @override
   _TradeLicenseState createState() => _TradeLicenseState();
@@ -19,7 +34,8 @@ class _TradeLicenseState extends State<TradeLicense> {
   int _currentStep = 0;
   bool isCompleted = false; //check completeness of inputs
 
-  final List<File?> _pdfFiles = List.generate(12, (_) => null);
+  Map<String, File> _fileMap = {};
+
   final int _maxFileSize = 2 * 1024 * 1024;
 
   final List<bool> _isChecked = [
@@ -32,17 +48,33 @@ class _TradeLicenseState extends State<TradeLicense> {
     false,
     false,
     false,
+    false,
+    false,
+    false,
   ];
 
-  bool declaration = false;
+  final List<String> _fileNames = [
+    "identityProof",
+    "houseTax",
+    "ownershipDocument",
+    "permissionsGranted.foodAndDrugs",
+    "permissionsGranted.excise",
+    "permissionsGranted.policeDepartment",
+    "permissionsGranted.crz",
+    "permissionsGranted.tourism",
+    "permissionsGranted.fireAndBridge",
+    "permissionsGranted.factoriesAndBoilers",
+    "permissionsGranted.healthServices",
+    "permissionsGranted.others.file",
+  ];
+
+  bool _isCheckedDeclaration = false;
 
   final List<GlobalKey<FormState>> _formKeys = [
     GlobalKey<FormState>(),
     GlobalKey<FormState>(),
     GlobalKey<FormState>(),
   ];
-
-  final GlobalKey<State<StatefulWidget>> _stepperKey = GlobalKey();
 
   final Map<String, List<String>> _mappedTalukaAndVillages = {
     'Bardez': [
@@ -262,66 +294,82 @@ class _TradeLicenseState extends State<TradeLicense> {
   };
 
   final List<String> _signboardValues = [
-    'WALL PAINTING',
-    'NON-ILLUMINATED BOARD',
-    'GLOW/NEON SIGNBOARD',
-    'METALLIC ZINC BOARD',
-    'ILLUMINATED BOARD',
-    'FLEX BOARD',
-    'GLOW BOARD',
-    'WOODEN BOARD',
-    'GLOW and BRANDED BOARD',
-    'ARCYLIC BOARD',
+    "Wall Painting",
+    "Non-Illuminated Board",
+    "Glow/Neon Signboard",
+    "Metallic Zinc Board",
+    "Illuminated Board",
+    "Flex Board",
+    "Glow Board",
+    "Wooden Board",
+    "Glow And Branded Board",
+    "Acrylic Board",
   ];
 
   final List<String> _tradeTypes = [
-    'Office ',
-    'Fast Food ',
-    'Restaurant ',
-    'Bar and Restaurant ',
-    'Tailoring ',
-    'General Store ',
-    'Super Market',
-    'Wine Store',
-    'Computer Shop ',
-    'Mobile Shop ',
-    'Garment Store',
-    'Utensils Store ',
-    'Sale of Two Wheeler ',
-    'Sale of Four Wheeler ',
-    'Hotels',
-    'Sale of Vegetables and Fruits ',
-    'Sale of Chicken ',
-    'Sale of Shawrma',
-    'Sale of Ross Omlet ',
-    'Sale of Vada Paav',
-    'Sale of Fish',
-    'Bakery and Confectionary ',
-    'Ice Cream Parlour',
-    'Saloon ',
-    'Beauty Parlour',
-    'Pastry Shop ',
-    'Fair Price Shop ',
-    'Pharmacy ',
-    'Clinics',
-    'Pathology and Laboratory ',
-    'Security Office ',
-    'Open School ',
-    'Play School for childrens',
-    'Cement Godown',
-    'Others',
+    "Office",
+    "Fast Food",
+    "Restaurant",
+    "Bar and Restaurant",
+    "Tailoring",
+    "General Store",
+    "Super Market",
+    "Wine Store",
+    "Garment Store",
+    "Utensils Store",
+    "Computer Shop",
+    "Mobile Shop",
+    "Sale of Two Wheeler",
+    "Sale of Four Wheeler",
+    "Hotels",
+    "Sale of Vegetables and Fruits",
+    "Sale of Chicken",
+    "Sale of Shawrma",
+    "Sale of Ross Omlet",
+    "Sale of Vada Paav",
+    "Sale of Fish",
+    "Bakery and Confectionary",
+    "Ice Cream Parlour",
+    "Saloon",
+    "Beauty Parlour",
+    "Pastry Shop",
+    "Fair Price Shop",
+    "Pharmacy",
+    "Clinics",
+    "Pathology and Laboratory",
+    "Security Office",
+    "Open School",
+    "Play School for childrens",
+    "Cement Godown",
+    "Others",
+  ];
+
+  final List<String> _applicantsRelation = [
+    "Self",
+    "Son",
+    "Daughter",
+    "Mother",
+    "Father",
+    "Wife",
+    "Husband",
+    "Son-In-Law",
+    "Daughter-In-Law",
+    "Mother-In-Law",
+    "Father-In-Law",
+    "Brother-In-Law",
+    "Sister-In-Law",
+    "Others",
   ];
 
   String? _selectedTaluka;
   String? _selectedVillage;
-  String? _selectedSignboard;
+  String? _selectedSignboardType;
   String? _selectedTypeOfTrade;
+  String? _selectedRelationType;
 
   List<DropdownMenuItem<String>> villageMenuItems = [];
 
   bool disabledVillageMenuItem = true;
-
-  get controlsDetails => null;
 
   void selected(_value) {
     villageMenuItems = [];
@@ -361,10 +409,11 @@ class _TradeLicenseState extends State<TradeLicense> {
     });
   }
 
-//form1
+  //form1
   TextEditingController applicantNameController = TextEditingController();
-  TextEditingController applicantAddressController = TextEditingController();
   TextEditingController applicantPhoneNoController = TextEditingController();
+  TextEditingController applicantAddressController = TextEditingController();
+
   TextEditingController applicantWardNoController = TextEditingController();
   TextEditingController applicantShopController = TextEditingController();
 
@@ -394,22 +443,117 @@ class _TradeLicenseState extends State<TradeLicense> {
   TextEditingController applicantSignLocationController =
       TextEditingController();
 
-  WidgetState _widgetState =
-      WidgetState.disabled; // for signboard details yes or no
+  SignboardDetails _signboardDetails =
+      SignboardDetails.disabled; // for signboard details yes or no
+
+  @override
+  void initState() {
+    if (widget.isEdit) {
+      // Dropdown details
+      _selectedTaluka = widget.formData!["taluka"];
+      selected(_selectedTaluka);
+      disabledVillageMenuItem = false;
+      _selectedVillage = widget.formData!["panchayat"];
+
+      _selectedSignboardType = widget.formData!["signboard_type"];
+      _selectedTypeOfTrade = widget.formData!["trade_type"];
+      _selectedRelationType = widget.formData!["applicants_relation"];
+
+      // Step 1 details
+      applicantNameController =
+          TextEditingController(text: widget.formData!["applicants_name"]);
+      applicantPhoneNoController =
+          TextEditingController(text: widget.formData!["phone"]);
+      applicantAddressController =
+          TextEditingController(text: widget.formData!["applicants_address"]);
+      applicantWardNoController =
+          TextEditingController(text: widget.formData!["ward_no"]);
+      applicantShopController =
+          TextEditingController(text: widget.formData!["shop_no"]);
+
+      //Step 2 details
+      applicantOwnerController =
+          TextEditingController(text: widget.formData!["owner_name"]);
+      applicantTradeController =
+          TextEditingController(text: widget.formData!["trade_name"]);
+      applicantTradeAddressController =
+          TextEditingController(text: widget.formData!["trade_address"]);
+      applicantRelationController =
+          TextEditingController(text: widget.formData!["applicants_relation"]);
+      applicantTypeofTradeController =
+          TextEditingController(text: widget.formData!["trade_type"]);
+      applicantBusinessController =
+          TextEditingController(text: widget.formData!["business_nature"]);
+      applicantTradeAreaController =
+          TextEditingController(text: widget.formData!["trade_area"]);
+      applicantEmployeesController =
+          TextEditingController(text: widget.formData!["no_of_employee"]);
+      applicantWasteManagementController = TextEditingController(
+          text: widget.formData!["waste_management_facility"]);
+      applicantLeasePayController =
+          TextEditingController(text: widget.formData!["lease_pay"]);
+
+      //SignBoard
+      if (widget.formData!["signboard_details"] == "true") {
+        _signboardDetails = SignboardDetails.enabled;
+      }
+      applicantSignContentOnBoardController =
+          TextEditingController(text: widget.formData!["signboard_content"]);
+      applicantSignAreaController =
+          TextEditingController(text: widget.formData!["signboard_area"]);
+      applicantSignLocationController =
+          TextEditingController(text: widget.formData!["signboard_location"]);
+
+      //Documents
+      for (int i = 0; i < _fileNames.length; i++) {
+        if (widget.fileMap!.containsKey(_fileNames[i])) {
+          _fileMap[_fileNames[i]] = widget.fileMap![_fileNames[i]]!;
+          _isChecked[i] = true;
+        }
+      }
+
+      //Declaration
+      _isCheckedDeclaration = true;
+    } else {
+      initialiseNamePhoneAddress();
+    }
+  }
+
+  Future<void> initialiseNamePhoneAddress() async {
+    LoginResponseModel? loginResponseModel = await SharedService.loginDetails();
+    setState(() {
+      applicantNameController =
+          TextEditingController(text: loginResponseModel?.fullname);
+      applicantPhoneNoController =
+          TextEditingController(text: loginResponseModel?.phone);
+      applicantAddressController =
+          TextEditingController(text: loginResponseModel?.address);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    print(_pdfFiles);
+    // print(_pdfFiles);
+    print(widget.fileMap);
+    print(widget.formData);
+    print(_isChecked);
+    print(applicantNameController.text);
+    print(applicantPhoneNoController.text);
+    print(applicantAddressController.text);
 
     return WillPopScope(
       onWillPop: () => _showCancelConfirmationDialog(context, false),
       child: Scaffold(
         resizeToAvoidBottomInset: true,
         appBar: AppBar(
-          title: const Text('Trade License & Signboard'),
-          // backgroundColor: Color(0xffDDF0FF),
           backgroundColor: Color(0xffDAF5FF),
-          foregroundColor: Color(0xff22215B),
+          foregroundColor: Color(0xff415EB6),
+          title: Text(
+            widget.isEdit ? 'Edit form' : 'Trade License & Signboard',
+            style: TextStyle(
+                fontFamily: 'Poppins-Medium',
+                fontSize: 18),
+          ),
           elevation: 0,
         ),
         body: Theme(
@@ -423,31 +567,108 @@ class _TradeLicenseState extends State<TradeLicense> {
             type: StepperType.horizontal,
             currentStep: _currentStep,
             onStepTapped: (step) {
-              // if (step <= _currentStep) {
-              //   setState(() {
-              //     _currentStep = step;
-              //   });
-              // } else if (_validateStep(_currentStep) &&
-              //     step == _currentStep + 1) {
-              //   setState(() {
-              //     _currentStep = step;
-              //   });
-              // }
-              setState(() {
-                _currentStep = step;
-              });
+              if (step <= _currentStep) {
+                setState(() {
+                  _currentStep = step;
+                });
+              } else if (_validateStep(_currentStep) &&
+                  step == _currentStep + 1) {
+                setState(() {
+                  _currentStep = step;
+                });
+              } else if (_validateStep(0) &&
+                  _validateStep(1) &&
+                  _validateStep(2)) {
+                setState(() {
+                  _currentStep = step;
+                });
+              }
+              // setState(() {
+              //   _currentStep = step;
+              // });
             },
-            onStepContinue: () {
-              // if (_currentStep == getSteps().length - 1) {
-              //   // Perform submit operation
-              // } else if (_validateStep(_currentStep)) {
-              //   setState(() {
-              //     _currentStep += 1;
-              //   });
-              // }
+            onStepContinue: () async {
               if (_currentStep == getSteps().length - 1) {
                 // Perform submit operation
-              } else {
+                if (!_isChecked[0] || !_isChecked[1] || !_isChecked[2]) {
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text('Please upload the required documents.')));
+                } else {
+                  Map<String, String> body = {
+                    "taluka": _selectedTaluka!,
+                    "panchayat": _selectedVillage!,
+                    "applicants_name": applicantNameController.text,
+                    "applicants_address": applicantAddressController.text,
+                    "phone": applicantPhoneNoController.text,
+                    "ward_no": applicantWardNoController.text,
+                    "shop_no": applicantShopController.text,
+                    "owner_name": applicantOwnerController.text,
+                    "trade_name": applicantTradeController.text,
+                    "trade_address": applicantTradeAddressController.text,
+                    "applicants_relation": _selectedRelationType!,
+                    "trade_type": _selectedTypeOfTrade!,
+                    "business_nature": applicantBusinessController.text,
+                    "waste_management_facility":
+                        applicantWasteManagementController.text,
+                    "lease_pay": applicantLeasePayController.text,
+                    'trade_area': applicantTradeAreaController.text,
+                    "no_of_employee": applicantEmployeesController.text,
+                    "signboard_details":
+                        (_signboardDetails == SignboardDetails.enabled)
+                            .toString(),
+                    "signboard_location": applicantSignLocationController.text,
+                    "signboard_type": _selectedSignboardType ?? "",
+                    "signboard_content":
+                        applicantSignContentOnBoardController.text,
+                    "signboard_area": applicantSignAreaController.text,
+                  };
+
+                  http.Response response;
+
+                  if(widget.isEdit) {
+                    print("APPLICATION ID: ${widget.formData!["application_id"]!}");
+                    print("SIGNBOARD ID: ${widget.formData!["signboard_id"]!}");
+
+                    body["application_id"] = widget.formData!["application_id"]!;
+                    body["signboard_id"] = widget.formData!["signboard_id"]!;
+
+                    response = await TradeLicenseAPIService.updateForm(body);
+                  }
+                  else {
+                    response = await TradeLicenseAPIService.saveForm(body);
+                  }
+
+                  if (response.statusCode == 200) {
+                    print("Trade License Form Data Successfully Submitted.");
+
+                    bool isSuccessful;
+
+                    if(widget.isEdit) {
+                      //update files
+                      isSuccessful = await TradeLicenseAPIService.updateFiles({..._fileMap}, widget.formData!["mongo_id"]!);
+                    } else {
+                      //upload files
+                      Map<String, dynamic> map = jsonDecode(response.body);
+                      String applicationId = map['applicationId'];
+                      print(applicationId);
+                      isSuccessful = await TradeLicenseAPIService.uploadFiles({..._fileMap}, applicationId);
+                    }
+
+                    if (isSuccessful) {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ApplicationSubmitted()),
+                        (route) => false,
+                      );
+                    } else {
+                      print("Failed to upload documents TRADE LICENSE");
+                    }
+                  } else {
+                    print("Failed to Submit Trade License Form.");
+                  }
+                }
+              } else if (_validateStep(_currentStep)) {
                 setState(() {
                   _currentStep += 1;
                 });
@@ -505,7 +726,11 @@ class _TradeLicenseState extends State<TradeLicense> {
                     SizedBox(width: 10.0),
                     Expanded(
                       child: ElevatedButton(
-                        onPressed: controlsDetails.onStepContinue,
+                        onPressed: _currentStep == getSteps().length - 1
+                            ? (_isCheckedDeclaration
+                                ? controlsDetails.onStepContinue
+                                : null)
+                            : controlsDetails.onStepContinue,
                         child: Text(
                           _currentStep + 1 == getSteps().length
                               ? 'Submit'
@@ -517,8 +742,11 @@ class _TradeLicenseState extends State<TradeLicense> {
                         ),
                         style: ButtonStyle(
                           backgroundColor: _currentStep == getSteps().length - 1
-                              ? MaterialStateProperty.all<Color>(
-                                  Color(0xff6CC51D))
+                              ? (_isCheckedDeclaration
+                                  ? MaterialStateProperty.all<Color>(
+                                      Color(0xff6CC51D))
+                                  : MaterialStateProperty.all<Color>(
+                                      Colors.grey))
                               : MaterialStateProperty.all<Color>(
                                   Color(0xFF5386E4)),
                           shape:
@@ -580,9 +808,51 @@ class _TradeLicenseState extends State<TradeLicense> {
     return result ?? false;
   }
 
-  // bool _validateStep(int step) {
-  //   return _formKeys[step].currentState?.validate() ?? false;
-  // }
+  bool _validateStep(int step) {
+    switch (step) {
+      case 0:
+        if (_formKeys[0].currentState?.validate() ?? false) {
+          print("Applicant Details");
+          print(_selectedTaluka);
+          print(_selectedVillage);
+          print(applicantNameController.text);
+          print(applicantAddressController.text);
+          print(applicantPhoneNoController.text);
+          print(applicantWardNoController.text);
+          print(applicantShopController.text);
+
+          return true;
+        }
+        return false;
+      case 1:
+        if (_formKeys[1].currentState?.validate() ?? false) {
+          print("Trade Details");
+          print(applicantOwnerController.text);
+          print(applicantTradeController.text);
+          print(applicantTradeAddressController.text);
+          print(_applicantsRelation);
+          print(_selectedTypeOfTrade);
+          print(applicantBusinessController.text);
+          print(applicantWasteManagementController.text);
+          print(applicantLeasePayController.text);
+          print(applicantTradeAreaController.text);
+          print(applicantEmployeesController.text);
+
+          print("Signboard Details");
+          print(applicantSignLocationController.text);
+          print(_selectedSignboardType);
+          print(applicantSignContentOnBoardController.text);
+          print(applicantSignAreaController.text);
+
+          return true;
+        }
+        return false;
+      case 3:
+        return _formKeys[step].currentState?.validate() ?? false;
+      default:
+        return _formKeys[step].currentState?.validate() ?? false;
+    }
+  }
 
   // // define the function to move to the next step
   // void next() {
@@ -730,49 +1000,45 @@ class _TradeLicenseState extends State<TradeLicense> {
                     ],
                   ),
                   SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextFormField(
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return "Required";
-                            }
-                            return null;
-                          },
-                          controller: applicantNameController,
-                          style: TextStyle(
-                            color: Colors.black54, //Name
-                            fontFamily: 'Poppins-Bold',
-                          ),
-                          decoration: InputDecoration(
-                            labelText: "Applicant's Name ",
-                            filled: true,
-                            fillColor: Color(0xffF6F6F6),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                color: Color(0xffBDBDBD),
-                              ),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                color: Color(0xffBDBDBD),
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                color: Theme.of(context).primaryColor,
-                              ),
-                            ),
-                          ),
+                  // getFormField("Applicant's Name"),
+                  TextFormField(
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return "Required";
+                      }
+                      return null;
+                    },
+                    controller: applicantNameController,
+                    style: TextStyle(
+                      color: Colors.black54, //Name
+                      fontFamily: 'Poppins-Bold',
+                    ),
+                    decoration: InputDecoration(
+                      labelText: "Applicant's Name",
+                      filled: true,
+                      fillColor: Color(0xffF6F6F6),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: Color(0xffBDBDBD),
                         ),
                       ),
-                    ],
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: Color(0xffBDBDBD),
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: Theme.of(context).primaryColor,
+                        ),
+                      ),
+                    ),
                   ),
                   SizedBox(height: 16),
+                  // getFormField("Applicant's Address"),
                   TextFormField(
                     validator: (value) {
                       if (value!.isEmpty) {
@@ -810,7 +1076,9 @@ class _TradeLicenseState extends State<TradeLicense> {
                     ),
                   ),
                   SizedBox(height: 16),
+                  // getFormField("Mobile No."),
                   TextFormField(
+                    enabled: false,
                     validator: (value) {
                       if (value!.isEmpty) {
                         return "Required";
@@ -840,6 +1108,12 @@ class _TradeLicenseState extends State<TradeLicense> {
                           color: Color(0xffBDBDBD),
                         ),
                       ),
+                      disabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: Color(0xffBDBDBD),
+                        ),
+                      ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10),
                         borderSide: BorderSide(
@@ -862,10 +1136,13 @@ class _TradeLicenseState extends State<TradeLicense> {
                           validator: (value) {
                             if (value!.isEmpty) {
                               return "Required";
+                            } else if (!RegExp(r"^\d+$").hasMatch(value)) {
+                              return "Invalid Ward No.";
                             }
                             return null;
                           },
                           controller: applicantWardNoController,
+                          keyboardType: TextInputType.number,
                           style: TextStyle(
                             color: Colors.black54, //Name
                             fontFamily: 'Poppins-Bold',
@@ -901,10 +1178,13 @@ class _TradeLicenseState extends State<TradeLicense> {
                           validator: (value) {
                             if (value!.isEmpty) {
                               return "Required";
+                            } else if (!RegExp(r"^\d+$").hasMatch(value)) {
+                              return "Invalid Shop No.";
                             }
                             return null;
                           },
                           controller: applicantShopController,
+                          keyboardType: TextInputType.number,
                           style: TextStyle(
                             color: Colors.black54,
                             fontFamily: 'Poppins-Bold',
@@ -1064,40 +1344,50 @@ class _TradeLicenseState extends State<TradeLicense> {
                     ),
                   ),
                   SizedBox(height: 16),
-                  TextFormField(
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return "Required";
-                      }
-                      return null;
-                    },
-                    controller: applicantRelationController,
-                    style: TextStyle(
-                      color: Colors.black54,
-                      fontFamily: 'Poppins-Bold',
-                    ),
-                    decoration: InputDecoration(
-                      labelText: 'Applicant\'s Relation',
-                      filled: true,
-                      fillColor: Color(0xffF6F6F6),
-                      border: OutlineInputBorder(
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Color(0xffBDBDBD),
+                        border: Border.all(color: Color(0xffBDBDBD), width: 1)),
+                    child: DropdownButtonFormField(
+                      menuMaxHeight: 200,
+                      isExpanded: true,
+                      icon: Icon(
+                        Icons.arrow_drop_down_outlined,
+                        color: Colors.black,
+                      ),
+                      items: _applicantsRelation.map((String option) {
+                        return DropdownMenuItem<String>(
+                          value: option,
+                          child: Text(
+                            option,
+                            style: TextStyle(
+                              color: Colors.black54,
+                              fontFamily: 'Poppins-Bold',
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                      value: _selectedRelationType,
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          _selectedRelationType = newValue!;
+                        });
+                      },
+                      hint: Text(
+                        "Applicant's Relation",
+                        style: TextStyle(
+                          color: Colors.black54,
+                          fontFamily: 'Poppins-Bold',
                         ),
                       ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Color(0xffBDBDBD),
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      ),
+                      validator: (value) {
+                        if (value == null) {
+                          // Add validation to check if a value is selected
+                          return 'Required';
+                        }
+                        return null;
+                      },
                     ),
                   ),
                   SizedBox(height: 16),
@@ -1324,26 +1614,34 @@ class _TradeLicenseState extends State<TradeLicense> {
                     ),
                   ),
                   SizedBox(height: 32),
-                  Text('Do you want to enter Signboard Details?',
-                      style: TextStyle(
-                          fontFamily: 'Poppins-Bold',
-                          color: Colors.black,
-                          fontSize: 16)),
+                  Text(
+                    'Do you want to enter Signboard Details?',
+                    style: TextStyle(
+                        fontFamily: 'Poppins-Bold',
+                        color: Colors.black,
+                        fontSize: 16),
+                  ),
                   Row(
                     children: [
                       Expanded(
                         child: Row(
                           children: [
                             Radio(
-                              value: WidgetState.enabled,
-                              groupValue: _widgetState,
+                              value: SignboardDetails.enabled,
+                              groupValue: _signboardDetails,
                               onChanged: (value) {
                                 setState(() {
-                                  _widgetState = value as WidgetState;
+                                  _signboardDetails = value as SignboardDetails;
                                 });
                               },
                             ),
-                            const Text('YES'),
+                            const Text(
+                              'YES',
+                              style: TextStyle(
+                                  fontFamily: 'Poppins-Bold',
+                                  color: Colors.black54,
+                                  fontSize: 14),
+                            ),
                           ],
                         ),
                       ),
@@ -1351,21 +1649,27 @@ class _TradeLicenseState extends State<TradeLicense> {
                         child: Row(
                           children: [
                             Radio(
-                              value: WidgetState.disabled,
-                              groupValue: _widgetState,
+                              value: SignboardDetails.disabled,
+                              groupValue: _signboardDetails,
                               onChanged: (value) {
                                 setState(() {
-                                  _widgetState = value as WidgetState;
+                                  _signboardDetails = value as SignboardDetails;
                                 });
                               },
                             ),
-                            const Text('NO'),
+                            const Text(
+                              'NO',
+                              style: TextStyle(
+                                  fontFamily: 'Poppins-Bold',
+                                  color: Colors.black54,
+                                  fontSize: 14),
+                            ),
                           ],
                         ),
                       ),
                     ],
                   ),
-                  if (_widgetState == WidgetState.enabled) ...[
+                  if (_signboardDetails == SignboardDetails.enabled) ...[
                     // This widget will only be shown if the radio button for "enabled" is selected.
                     SizedBox(height: 16),
                     Text('Signboard Details',
@@ -1425,7 +1729,7 @@ class _TradeLicenseState extends State<TradeLicense> {
                           Icons.arrow_drop_down_outlined,
                           color: Colors.black,
                         ),
-                        value: _selectedSignboard,
+                        value: _selectedSignboardType,
                         items: _signboardValues.map((String option) {
                           return DropdownMenuItem<String>(
                             value: option,
@@ -1440,7 +1744,7 @@ class _TradeLicenseState extends State<TradeLicense> {
                         }).toList(),
                         onChanged: (String? newValue) {
                           setState(() {
-                            _selectedSignboard = newValue!;
+                            _selectedSignboardType = newValue!;
                           });
                         },
                         hint: Text(
@@ -1550,7 +1854,7 @@ class _TradeLicenseState extends State<TradeLicense> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
+                  const Text(
                     'Upload Documents',
                     style: TextStyle(
                       fontFamily: 'Poppins-Bold',
@@ -1559,7 +1863,7 @@ class _TradeLicenseState extends State<TradeLicense> {
                     ),
                   ),
                   SizedBox(height: 16),
-                  Text(
+                  const Text(
                     '(Please upload documents in .pdf format. File size not to exceed 2MB)',
                     style: TextStyle(
                       color: Colors.red,
@@ -1573,17 +1877,32 @@ class _TradeLicenseState extends State<TradeLicense> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const Text(
-                        'Identity Proof',
-                        style: TextStyle(
-                          fontFamily: 'Poppins-Bold',
-                          fontSize: 14,
-                          color: Color(0xff21205b),
-                        ),
-                        textAlign: TextAlign.left,
+                      Row(
+                        children: const [
+                          Expanded(
+                            child: Text(
+                              'Identity Proof',
+                              style: TextStyle(
+                                fontFamily: 'Poppins-Bold',
+                                fontSize: 14,
+                                color: Color(0xff21205b),
+                              ),
+                              textAlign: TextAlign.left,
+                            ),
+                          ),
+                          Text(
+                            'Required',
+                            style: TextStyle(
+                              fontFamily: 'Poppins-Bold',
+                              fontSize: 10,
+                              color: Colors.red,
+                            ),
+                            textAlign: TextAlign.left,
+                          ),
+                        ],
                       ),
-                      if (_pdfFiles[0] != null) ...[
-                        _buildPDFListItem(_pdfFiles[0]!)
+                      if (_fileMap.containsKey(_fileNames[0])) ...[
+                        _buildPDFListItem(_fileMap[_fileNames[0]]!)
                       ] else ...[
                         chooseFileButton(0)
                       ],
@@ -1596,17 +1915,32 @@ class _TradeLicenseState extends State<TradeLicense> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const Text(
-                        'Housetax Receipt',
-                        style: TextStyle(
-                          fontFamily: 'Poppins-Bold',
-                          fontSize: 14,
-                          color: Color(0xff21205b),
-                        ),
-                        textAlign: TextAlign.left,
+                      Row(
+                        children: const [
+                          Expanded(
+                            child: Text(
+                              'Housetax Receipt',
+                              style: TextStyle(
+                                fontFamily: 'Poppins-Bold',
+                                fontSize: 14,
+                                color: Color(0xff21205b),
+                              ),
+                              textAlign: TextAlign.left,
+                            ),
+                          ),
+                          Text(
+                            'Required',
+                            style: TextStyle(
+                              fontFamily: 'Poppins-Bold',
+                              fontSize: 10,
+                              color: Colors.red,
+                            ),
+                            textAlign: TextAlign.left,
+                          ),
+                        ],
                       ),
-                      if (_pdfFiles[1] != null) ...[
-                        _buildPDFListItem(_pdfFiles[1]!)
+                      if (_fileMap.containsKey(_fileNames[1])) ...[
+                        _buildPDFListItem(_fileMap[_fileNames[1]]!)
                       ] else ...[
                         chooseFileButton(1)
                       ],
@@ -1619,17 +1953,33 @@ class _TradeLicenseState extends State<TradeLicense> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      const Text(
-                        'No Objection Certificate/ Lease argreement/ Ownership document',
-                        style: TextStyle(
-                          fontFamily: 'Poppins-Bold',
-                          fontSize: 14,
-                          color: Color(0xff21205b),
-                        ),
-                        textAlign: TextAlign.left,
+                      Row(
+                        children: const [
+                          Expanded(
+                            child: Text(
+                              'No Objection Certificate/ Lease argreement/ Ownership document',
+                              style: TextStyle(
+                                fontFamily: 'Poppins-Bold',
+                                fontSize: 14,
+                                color: Color(0xff21205b),
+                              ),
+                              textAlign: TextAlign.left,
+                              // overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          Text(
+                            'Required',
+                            style: TextStyle(
+                              fontFamily: 'Poppins-Bold',
+                              fontSize: 10,
+                              color: Colors.red,
+                            ),
+                            textAlign: TextAlign.left,
+                          ),
+                        ],
                       ),
-                      if (_pdfFiles[2] != null) ...[
-                        _buildPDFListItem(_pdfFiles[2]!)
+                      if (_fileMap.containsKey(_fileNames[2])) ...[
+                        _buildPDFListItem(_fileMap[_fileNames[2]]!)
                       ] else ...[
                         chooseFileButton(2)
                       ],
@@ -1653,11 +2003,12 @@ class _TradeLicenseState extends State<TradeLicense> {
                       Row(
                         children: [
                           Checkbox(
-                              value: _isChecked[0],
+                              value: _isChecked[3],
                               onChanged: (bool? value) {
                                 setState(() {
-                                  _isChecked[0] = value!;
-                                  _pdfFiles[3] = null;
+                                  _isChecked[3] = value!;
+                                  // _pdfFiles[3] = null;
+                                  _fileMap.remove(_fileNames[3]);
                                 });
                               }),
                           const Text(
@@ -1671,115 +2022,13 @@ class _TradeLicenseState extends State<TradeLicense> {
                         ],
                       ),
                       Visibility(
-                        visible: _isChecked[0],
-                        child: _pdfFiles[3] != null
-                            ? _buildPDFListItem(_pdfFiles[3]!)
-                            : chooseFileButton(3),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Row(
-                        children: [
-                          Checkbox(
-                              value: _isChecked[1],
-                              onChanged: (bool? value) {
-                                setState(() {
-                                  _isChecked[1] = value!;
-                                  _pdfFiles[4] = null;
-                                });
-                              }),
-                          const Text(
-                            "Excise",
-                            style: TextStyle(
-                              fontFamily: 'Poppins-Bold',
-                              fontSize: 14,
-                              color: Color(0xff21205b),
-                            ), // or TextOverflow.fade
-                          ),
-                        ],
-                      ),
-                      Visibility(
-                        visible: _isChecked[1],
-                        child: _pdfFiles[4] != null
-                            ? _buildPDFListItem(_pdfFiles[4]!)
-                            : chooseFileButton(4),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Row(
-                        children: [
-                          Checkbox(
-                              value: _isChecked[2],
-                              onChanged: (bool? value) {
-                                setState(() {
-                                  _isChecked[2] = value!;
-                                  _pdfFiles[5] = null;
-                                });
-                              }),
-                          const Text(
-                            "Police Dept.",
-                            style: TextStyle(
-                              fontFamily: 'Poppins-Bold',
-                              fontSize: 14,
-                              color: Color(0xff21205b),
-                            ), // or TextOverflow.fade
-                          ),
-                        ],
-                      ),
-                      Visibility(
-                        visible: _isChecked[2],
-                        child: _pdfFiles[5] != null
-                            ? _buildPDFListItem(_pdfFiles[5]!)
-                            : chooseFileButton(5),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Row(
-                        children: [
-                          Checkbox(
-                              value: _isChecked[3],
-                              onChanged: (bool? value) {
-                                setState(() {
-                                  _isChecked[3] = value!;
-                                  _pdfFiles[6] = null;
-                                });
-                              }),
-                          const Text(
-                            "CRZ",
-                            style: TextStyle(
-                              fontFamily: 'Poppins-Bold',
-                              fontSize: 14,
-                              color: Color(0xff21205b),
-                            ), // or TextOverflow.fade
-                          ),
-                        ],
-                      ),
-                      Visibility(
                         visible: _isChecked[3],
-                        child: _pdfFiles[6] != null
-                            ? _buildPDFListItem(_pdfFiles[6]!)
-                            : chooseFileButton(6),
+                        // child: _pdfFiles[3] != null
+                        //     ? _buildPDFListItem(_pdfFiles[3]!)
+                        //     : chooseFileButton(3),
+                        child: _fileMap.containsKey(_fileNames[3])
+                            ? _buildPDFListItem(_fileMap[_fileNames[3]]!)
+                            : chooseFileButton(3),
                       ),
                     ],
                   ),
@@ -1797,11 +2046,12 @@ class _TradeLicenseState extends State<TradeLicense> {
                               onChanged: (bool? value) {
                                 setState(() {
                                   _isChecked[4] = value!;
-                                  _pdfFiles[7] = null;
+                                  // _pdfFiles[4] = null;
+                                  _fileMap.remove(_fileNames[4]);
                                 });
                               }),
                           const Text(
-                            "Tourism",
+                            "Excise",
                             style: TextStyle(
                               fontFamily: 'Poppins-Bold',
                               fontSize: 14,
@@ -1812,9 +2062,12 @@ class _TradeLicenseState extends State<TradeLicense> {
                       ),
                       Visibility(
                         visible: _isChecked[4],
-                        child: _pdfFiles[7] != null
-                            ? _buildPDFListItem(_pdfFiles[7]!)
-                            : chooseFileButton(7),
+                        // child: _pdfFiles[4] != null
+                        //     ? _buildPDFListItem(_pdfFiles[4]!)
+                        //     : chooseFileButton(4),
+                        child: _fileMap.containsKey(_fileNames[4])
+                            ? _buildPDFListItem(_fileMap[_fileNames[4]]!)
+                            : chooseFileButton(4),
                       ),
                     ],
                   ),
@@ -1832,11 +2085,12 @@ class _TradeLicenseState extends State<TradeLicense> {
                               onChanged: (bool? value) {
                                 setState(() {
                                   _isChecked[5] = value!;
-                                  _pdfFiles[8] = null;
+                                  // _pdfFiles[5] = null;
+                                  _fileMap.remove(_fileNames[5]);
                                 });
                               }),
                           const Text(
-                            "Fire Brigade",
+                            "Police Dept.",
                             style: TextStyle(
                               fontFamily: 'Poppins-Bold',
                               fontSize: 14,
@@ -1847,9 +2101,12 @@ class _TradeLicenseState extends State<TradeLicense> {
                       ),
                       Visibility(
                         visible: _isChecked[5],
-                        child: _pdfFiles[8] != null
-                            ? _buildPDFListItem(_pdfFiles[8]!)
-                            : chooseFileButton(8),
+                        // child: _pdfFiles[5] != null
+                        //     ? _buildPDFListItem(_pdfFiles[5]!)
+                        //     : chooseFileButton(5),
+                        child: _fileMap.containsKey(_fileNames[5])
+                            ? _buildPDFListItem(_fileMap[_fileNames[5]]!)
+                            : chooseFileButton(5),
                       ),
                     ],
                   ),
@@ -1867,11 +2124,12 @@ class _TradeLicenseState extends State<TradeLicense> {
                               onChanged: (bool? value) {
                                 setState(() {
                                   _isChecked[6] = value!;
-                                  _pdfFiles[9] = null;
+                                  // _pdfFiles[6] = null;
+                                  _fileMap.remove(_fileNames[6]);
                                 });
                               }),
                           const Text(
-                            "Factories & Boilers",
+                            "CRZ",
                             style: TextStyle(
                               fontFamily: 'Poppins-Bold',
                               fontSize: 14,
@@ -1882,9 +2140,12 @@ class _TradeLicenseState extends State<TradeLicense> {
                       ),
                       Visibility(
                         visible: _isChecked[6],
-                        child: _pdfFiles[9] != null
-                            ? _buildPDFListItem(_pdfFiles[9]!)
-                            : chooseFileButton(9),
+                        // child: _pdfFiles[6] != null
+                        //     ? _buildPDFListItem(_pdfFiles[6]!)
+                        //     : chooseFileButton(6),
+                        child: _fileMap.containsKey(_fileNames[6])
+                            ? _buildPDFListItem(_fileMap[_fileNames[6]]!)
+                            : chooseFileButton(6),
                       ),
                     ],
                   ),
@@ -1902,11 +2163,12 @@ class _TradeLicenseState extends State<TradeLicense> {
                               onChanged: (bool? value) {
                                 setState(() {
                                   _isChecked[7] = value!;
-                                  _pdfFiles[10] = null;
+                                  // _pdfFiles[7] = null;
+                                  _fileMap.remove(_fileNames[7]);
                                 });
                               }),
                           const Text(
-                            "Health Services",
+                            "Tourism",
                             style: TextStyle(
                               fontFamily: 'Poppins-Bold',
                               fontSize: 14,
@@ -1917,9 +2179,12 @@ class _TradeLicenseState extends State<TradeLicense> {
                       ),
                       Visibility(
                         visible: _isChecked[7],
-                        child: _pdfFiles[10] != null
-                            ? _buildPDFListItem(_pdfFiles[10]!)
-                            : chooseFileButton(10),
+                        // child: _pdfFiles[7] != null
+                        //     ? _buildPDFListItem(_pdfFiles[7]!)
+                        //     : chooseFileButton(7),
+                        child: _fileMap.containsKey(_fileNames[7])
+                            ? _buildPDFListItem(_fileMap[_fileNames[7]]!)
+                            : chooseFileButton(7),
                       ),
                     ],
                   ),
@@ -1937,7 +2202,125 @@ class _TradeLicenseState extends State<TradeLicense> {
                               onChanged: (bool? value) {
                                 setState(() {
                                   _isChecked[8] = value!;
-                                  _pdfFiles[11] = null;
+                                  // _pdfFiles[8] = null;
+                                  _fileMap.remove(_fileNames[8]);
+                                });
+                              }),
+                          const Text(
+                            "Fire Brigade",
+                            style: TextStyle(
+                              fontFamily: 'Poppins-Bold',
+                              fontSize: 14,
+                              color: Color(0xff21205b),
+                            ), // or TextOverflow.fade
+                          ),
+                        ],
+                      ),
+                      Visibility(
+                        visible: _isChecked[8],
+                        // child: _pdfFiles[8] != null
+                        //     ? _buildPDFListItem(_pdfFiles[8]!)
+                        //     : chooseFileButton(8),
+                        child: _fileMap.containsKey(_fileNames[8])
+                            ? _buildPDFListItem(_fileMap[_fileNames[8]]!)
+                            : chooseFileButton(8),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        children: [
+                          Checkbox(
+                              value: _isChecked[9],
+                              onChanged: (bool? value) {
+                                setState(() {
+                                  _isChecked[9] = value!;
+                                  // _pdfFiles[9] = null;
+                                  _fileMap.remove(_fileNames[9]);
+                                });
+                              }),
+                          const Text(
+                            "Factories & Boilers",
+                            style: TextStyle(
+                              fontFamily: 'Poppins-Bold',
+                              fontSize: 14,
+                              color: Color(0xff21205b),
+                            ), // or TextOverflow.fade
+                          ),
+                        ],
+                      ),
+                      Visibility(
+                        visible: _isChecked[9],
+                        // child: _pdfFiles[9] != null
+                        //     ? _buildPDFListItem(_pdfFiles[9]!)
+                        //     : chooseFileButton(9),
+                        child: _fileMap.containsKey(_fileNames[9])
+                            ? _buildPDFListItem(_fileMap[_fileNames[9]]!)
+                            : chooseFileButton(9),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        children: [
+                          Checkbox(
+                              value: _isChecked[10],
+                              onChanged: (bool? value) {
+                                setState(() {
+                                  _isChecked[10] = value!;
+                                  // _pdfFiles[10] = null;
+                                  _fileMap.remove(_fileNames[10]);
+                                });
+                              }),
+                          const Text(
+                            "Health Services",
+                            style: TextStyle(
+                              fontFamily: 'Poppins-Bold',
+                              fontSize: 14,
+                              color: Color(0xff21205b),
+                            ), // or TextOverflow.fade
+                          ),
+                        ],
+                      ),
+                      Visibility(
+                        visible: _isChecked[10],
+                        // child: _pdfFiles[10] != null
+                        //     ? _buildPDFListItem(_pdfFiles[10]!)
+                        //     : chooseFileButton(10),
+                        child: _fileMap.containsKey(_fileNames[10])
+                            ? _buildPDFListItem(_fileMap[_fileNames[10]]!)
+                            : chooseFileButton(10),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        children: [
+                          Checkbox(
+                              value: _isChecked[11],
+                              onChanged: (bool? value) {
+                                setState(() {
+                                  _isChecked[11] = value!;
+                                  // _pdfFiles[11] = null;
+                                  _fileMap.remove(_fileNames[11]);
                                 });
                               }),
                           const Text(
@@ -1951,9 +2334,12 @@ class _TradeLicenseState extends State<TradeLicense> {
                         ],
                       ),
                       Visibility(
-                        visible: _isChecked[8],
-                        child: _pdfFiles[11] != null
-                            ? _buildPDFListItem(_pdfFiles[11]!)
+                        visible: _isChecked[11],
+                        // child: _pdfFiles[11] != null
+                        //     ? _buildPDFListItem(_pdfFiles[11]!)
+                        //     : chooseFileButton(11),
+                        child: _fileMap.containsKey(_fileNames[11])
+                            ? _buildPDFListItem(_fileMap[_fileNames[11]]!)
                             : chooseFileButton(11),
                       ),
                     ],
@@ -1977,10 +2363,10 @@ class _TradeLicenseState extends State<TradeLicense> {
                   Row(
                     children: [
                       Checkbox(
-                          value: declaration,
+                          value: _isCheckedDeclaration,
                           onChanged: (bool? value) {
                             setState(() {
-                              declaration = value!;
+                              _isCheckedDeclaration = value!;
                             });
                           }),
                       const Expanded(
@@ -2010,7 +2396,8 @@ class _TradeLicenseState extends State<TradeLicense> {
       child: InkWell(
         onTap: () async {
           String filePath = pdfFile.path;
-          await OpenFile.open(filePath);
+          var r = await OpenFile.open(filePath);
+          print("MESSAGE: ${r.message}");
         },
         child: Container(
           padding: EdgeInsets.all(10.0),
@@ -2034,14 +2421,14 @@ class _TradeLicenseState extends State<TradeLicense> {
                     children: [
                       Text(
                         pdfFile.path.split('/').last,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 14.0,
                         ),
                       ),
                       Text(
-                        '${(pdfFile!.lengthSync() / 1024).toStringAsFixed(2)} KB',
-                        style: TextStyle(
+                        '${(pdfFile.lengthSync() / 1024).toStringAsFixed(2)} KB',
+                        style: const TextStyle(
                           fontSize: 12.0,
                           color: Colors.grey,
                         ),
@@ -2058,10 +2445,13 @@ class _TradeLicenseState extends State<TradeLicense> {
                 // onPressed: () {},
                 onPressed: () {
                   setState(() {
-                    int index = _pdfFiles.indexOf(pdfFile);
-                    print(index);
-                    _pdfFiles[index] = null;
-                    print(_pdfFiles);
+                    String key = getKeyFromValue(pdfFile);
+                    _fileMap.remove(key);
+
+                    int index = _fileNames.indexOf(key);
+                    _isChecked[index] = false;
+
+                    print(_fileMap);
                   });
                 },
               ),
@@ -2070,6 +2460,15 @@ class _TradeLicenseState extends State<TradeLicense> {
         ),
       ),
     );
+  }
+
+  String getKeyFromValue(File targetFile) {
+    for (var entry in _fileMap.entries) {
+      if (entry.value == targetFile) {
+        return entry.key;
+      }
+    }
+    return "null"; // no key found for the value
   }
 
   Widget chooseFileButton(int index) {
@@ -2114,10 +2513,13 @@ class _TradeLicenseState extends State<TradeLicense> {
         );
       } else {
         setState(() {
-          _pdfFiles[index] = File(result.files.single.path!);
+          if (0 <= index && index <= 2) {
+            _isChecked[index] = true;
+          }
+          _fileMap[_fileNames[index]] = File(result.files.single.path!);
         });
       }
     }
-    print(_pdfFiles);
+    print(_fileMap);
   }
 }

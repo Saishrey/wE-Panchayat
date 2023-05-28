@@ -9,6 +9,7 @@ class Config {
   static const String resetPassAPI = "/auth/reset-password";
   static const String verifyOtpAPI = "/auth/verify-otp";
   static const String resendOtpAPI = "/auth/resend-otp";
+  static const String checkSessionAPI = "/user/check-session";
 }
 
 class TradeLicenseAPI {
@@ -36,4 +37,17 @@ class IncomeCertificateAPI {
 
 class ApplicationsAPI {
   static const String allApplicationsAPI = "/user/all-applications";
+}
+
+
+class HouseTaxAPI {
+  static const String houseTaxAPI = "/house-tax/get-house-tax";
+}
+
+class BirthCertificateAPI {
+  static const String birthCertificateAPI = "/birth-certificate/search";
+}
+
+class DeathCertificateAPI {
+  static const String deathCertificateAPI = "/death-certificate/search";
 }

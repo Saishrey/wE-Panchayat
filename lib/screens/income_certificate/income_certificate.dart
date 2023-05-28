@@ -300,9 +300,9 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
   ];
 
   final Map<String, String> _file3TypeMap = {
-    "Form 16" : "form16",
-    "Salary Certificate" : "salaryCertificate",
-    "Bank Passbook" : "bankPassbook",
+    "Form 16": "form16",
+    "Salary Certificate": "salaryCertificate",
+    "Bank Passbook": "bankPassbook",
   };
 
   String? _selectedIdProof;
@@ -356,7 +356,6 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
     });
   }
 
-
 //form1
   TextEditingController applicantNameController = TextEditingController();
   TextEditingController applicantGuardianNameController =
@@ -379,9 +378,7 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
   TextEditingController applicantProduceAtController = TextEditingController();
   TextEditingController applicantPurposeController = TextEditingController();
 
-  MaritalStatus _maritalStatus =
-      MaritalStatus.unmarried;
-
+  MaritalStatus _maritalStatus = MaritalStatus.unmarried;
 
   String fileType = 'All';
 
@@ -390,7 +387,7 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
 
   @override
   void initState() {
-    if(widget.isEdit) {
+    if (widget.isEdit) {
       // Dropdown details
       _selectedTaluka = widget.formData!["taluka"];
       selected(_selectedTaluka);
@@ -403,39 +400,52 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
       _selectedDate = DateTime.parse(widget.formData!["date_of_birth"]!);
       _selectedMaritalStatus = widget.formData!["marital_status"];
 
-      for(var entry in _file3TypeMap.entries) {
-        if(widget.fileMap!.containsKey(entry.value)) {
+      for (var entry in _file3TypeMap.entries) {
+        if (widget.fileMap!.containsKey(entry.value)) {
           _selectedFile3Type = entry.key;
           print(_selectedFile3Type);
           break;
         }
       }
 
-      applicantNameController = TextEditingController(text: widget.formData!["applicants_name"]);
-      applicantGuardianNameController = TextEditingController(text: widget.formData!["parents_name"]);
-      applicantPhoneNoController = TextEditingController(text: widget.formData!["phone"]);
-      applicantEmailController = TextEditingController(text: widget.formData!["email"]);
-      applicantIdProofNumberController = TextEditingController(text: widget.formData!["id_proof_no"]);
-      applicantPlaceOfBirthController = TextEditingController(text: widget.formData!["place_of_birth"]);
-      applicantRelationOfController = TextEditingController(text: widget.formData!["applicants_relation"]);
-      applicantAddressController = TextEditingController(text: widget.formData!["applicants_address"]);
-      applicantOccupationController = TextEditingController(text: widget.formData!["occupation"]);
-      applicantAnnualIncomeController = TextEditingController(text: widget.formData!["annual_income"]);
-      applicantAnnualIncomeFromYearController = TextEditingController(text: widget.formData!["from_year"]);
-      applicantAnnualIncomeToYearController = TextEditingController(text: widget.formData!["to_year"]);
-      applicantProduceAtController = TextEditingController(text: widget.formData!["to_produce_at"]);
-      applicantPurposeController = TextEditingController(text: widget.formData!["purpose"]);
+      applicantNameController =
+          TextEditingController(text: widget.formData!["applicants_name"]);
+      applicantGuardianNameController =
+          TextEditingController(text: widget.formData!["parents_name"]);
+      applicantPhoneNoController =
+          TextEditingController(text: widget.formData!["phone"]);
+      applicantEmailController =
+          TextEditingController(text: widget.formData!["email"]);
+      applicantIdProofNumberController =
+          TextEditingController(text: widget.formData!["id_proof_no"]);
+      applicantPlaceOfBirthController =
+          TextEditingController(text: widget.formData!["place_of_birth"]);
+      applicantRelationOfController =
+          TextEditingController(text: widget.formData!["applicants_relation"]);
+      applicantAddressController =
+          TextEditingController(text: widget.formData!["applicants_address"]);
+      applicantOccupationController =
+          TextEditingController(text: widget.formData!["occupation"]);
+      applicantAnnualIncomeController =
+          TextEditingController(text: widget.formData!["annual_income"]);
+      applicantAnnualIncomeFromYearController =
+          TextEditingController(text: widget.formData!["from_year"]);
+      applicantAnnualIncomeToYearController =
+          TextEditingController(text: widget.formData!["to_year"]);
+      applicantProduceAtController =
+          TextEditingController(text: widget.formData!["to_produce_at"]);
+      applicantPurposeController =
+          TextEditingController(text: widget.formData!["purpose"]);
 
       //Documents
       for (int i = 0; i < _fileNames.length; i++) {
-        if(i==2) {
-          _fileMap[_fileNames[i]] = widget.fileMap![_file3TypeMap[_selectedFile3Type]!]!;
-        }
-        else {
+        if (i == 2) {
+          _fileMap[_fileNames[i]] =
+              widget.fileMap![_file3TypeMap[_selectedFile3Type]!]!;
+        } else {
           _fileMap[_fileNames[i]] = widget.fileMap![_fileNames[i]]!;
         }
       }
-
     } else {
       initialiseNamePhoneAddress();
     }
@@ -505,7 +515,10 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
         appBar: AppBar(
           title: Text(
             widget.isEdit ? 'Edit form' : 'Income Certificate',
-            style: TextStyle(fontFamily: 'Poppins-Medium', fontSize: 18,),
+            style: TextStyle(
+              fontFamily: 'Poppins-Medium',
+              fontSize: 18,
+            ),
           ),
           backgroundColor: Color(0xffFAD4D4),
           foregroundColor: Color(0xffF45656),
@@ -577,15 +590,17 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
 
                     http.Response response;
 
-                    if(widget.isEdit) {
-                      print("APPLICATION ID: ${widget.formData!["application_id"]!}");
-                      body["application_id"] = widget.formData!["application_id"]!;
-                      response = await IncomeCertificateAPIService.updateForm(body);
+                    if (widget.isEdit) {
+                      print(
+                          "APPLICATION ID: ${widget.formData!["application_id"]!}");
+                      body["application_id"] =
+                          widget.formData!["application_id"]!;
+                      response =
+                          await IncomeCertificateAPIService.updateForm(body);
+                    } else {
+                      response =
+                          await IncomeCertificateAPIService.saveForm(body);
                     }
-                    else {
-                      response = await IncomeCertificateAPIService.saveForm(body);
-                    }
-
 
                     if (response.statusCode == 200) {
                       print(
@@ -593,18 +608,23 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
                       String? newKeyFile3 = _file3TypeMap[_selectedFile3Type!];
                       bool isSuccessful;
 
-                      if(widget.isEdit) {
+                      if (widget.isEdit) {
                         //update files
-                        isSuccessful = await IncomeCertificateAPIService.updateFiles({..._fileMap}, newKeyFile3!, widget.formData!["mongo_id"]!);
+                        isSuccessful =
+                            await IncomeCertificateAPIService.updateFiles(
+                                {..._fileMap},
+                                newKeyFile3!,
+                                widget.formData!["mongo_id"]!);
                       } else {
                         //upload files
                         Map<String, dynamic> map = jsonDecode(response.body);
                         String applicationId = map['application_id'];
                         print(applicationId);
 
-                        isSuccessful = await IncomeCertificateAPIService.uploadFiles({..._fileMap}, newKeyFile3!, applicationId);
+                        isSuccessful =
+                            await IncomeCertificateAPIService.uploadFiles(
+                                {..._fileMap}, newKeyFile3!, applicationId);
                       }
-
 
                       if (isSuccessful) {
                         Navigator.pushAndRemoveUntil(
@@ -755,18 +775,26 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
   //This will be your screens
   List<Step> getSteps() => [
         Step(
-            title: const Text('Applicant'),
+            title: const Text(
+              'Applicant',
+              style: TextStyle(
+                fontFamily: 'Poppins-Medium',
+                color: Colors.black54,
+              ),
+            ),
             state: _currentStep > 0 ? StepState.complete : StepState.indexed,
             isActive: _currentStep >= 0,
             content: Form(
               key: _formKeys[0],
               child: Column(
                 children: [
-                  Text('Applicant Details',
-                      style: TextStyle(
-                          fontFamily: 'Poppins-Bold',
-                          color: Colors.black,
-                          fontSize: 20)),
+                  Text(
+                    'Applicant Details',
+                    style: TextStyle(
+                        fontFamily: 'Poppins-Bold',
+                        color: Colors.black,
+                        fontSize: 20),
+                  ),
                   SizedBox(height: 16),
                   Row(
                     children: [
@@ -1454,8 +1482,7 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
                           validator: (value) {
                             if (value!.isEmpty) {
                               return "Required";
-                            }
-                            else if (!RegExp(r"\b(19\d{2}|20\d{2})\b")
+                            } else if (!RegExp(r"\b(19\d{2}|20\d{2})\b")
                                 .hasMatch(value)) {
                               return "Invalid  .";
                             }
@@ -1499,8 +1526,7 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
                           validator: (value) {
                             if (value!.isEmpty) {
                               return "Required";
-                            }
-                            else if (!RegExp(r"\b(19\d{2}|20\d{2})\b")
+                            } else if (!RegExp(r"\b(19\d{2}|20\d{2})\b")
                                 .hasMatch(value)) {
                               return "Invalid  .";
                             }
@@ -1679,7 +1705,13 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
         Step(
           state: _currentStep > 1 ? StepState.complete : StepState.indexed,
           isActive: _currentStep >= 1,
-          title: const Text('Documents'),
+          title: const Text(
+            'Documents',
+            style: TextStyle(
+              fontFamily: 'Poppins-Medium',
+              color: Colors.black54,
+            ),
+          ),
           content: Form(
             key: _formKeys[1],
             child: Column(
@@ -2010,11 +2042,9 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
       padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
       child: InkWell(
         onTap: () async {
-
           String filePath = file.path;
           var r = await OpenFile.open(filePath);
           print("MESSAGE: ${r.message}");
-
         },
         child: Container(
           padding: EdgeInsets.all(10.0),

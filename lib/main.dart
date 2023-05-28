@@ -4,49 +4,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'package:we_panchayat_dev/screens/splash.dart';
-import 'package:we_panchayat_dev/screens/splashLogin.dart';
-import 'package:we_panchayat_dev/services/shared_service.dart';
-import 'package:permission_handler/permission_handler.dart';
-
-
-Widget _defaultHome = const SplashLogin();
-
-// FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-// FlutterLocalNotificationsPlugin();
-Future<void> requestPermission() async {
-  // var status = await Permission.storage.status;
-  // if (status.isDenied) {
-  //   // Request permission
-  //   await Permission.storage.request();
-  // }
-
-  var status = await Permission.manageExternalStorage.status;
-  if (status.isDenied) {
-    // Request permission
-    await Permission.storage.request();
-  }
-}
+import 'package:connectivity/connectivity.dart';
+import 'package:flutter_dialogs/flutter_dialogs.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  requestPermission();
-
-  bool _result = await SharedService.isLoggedIn();
-
-  if(_result) {
-    print("User ALREADY logged in.");
-    _defaultHome = const Splash();
-    // await flutterLocalNotificationsPlugin.initialize(
-    //   const InitializationSettings(
-    //     android: AndroidInitializationSettings('app_icon'),
-    //   ),
-    // );
-  }
-  else {
-    print("User NOT logged in");
-    await APICacheManager().deleteCache("cookie_headers");
-  }
 
   runApp(const MyApp());
 }
@@ -65,6 +27,51 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
 
   var isLogin = false;
+
+  ConnectivityResult? _connectivityResult;
+
+  @override
+  void initState() {
+    super.initState();
+    checkConnectivity();
+    Connectivity().onConnectivityChanged.listen((result) {
+      setState(() {
+        _connectivityResult = result;
+      });
+      if (result == ConnectivityResult.none) {
+        showNoInternetDialog();
+      }
+    });
+  }
+
+  Future<void> checkConnectivity() async {
+    final connectivityResult = await Connectivity().checkConnectivity();
+    setState(() {
+      _connectivityResult = connectivityResult;
+    });
+    if (connectivityResult == ConnectivityResult.none) {
+      showNoInternetDialog();
+    }
+  }
+
+  Future<void> showNoInternetDialog() async {
+    await showPlatformDialog(
+      context: context,
+      builder: (_) => BasicDialogAlert(
+        title: Text("No Internet Connection"),
+        content: Text("Please check your internet connection."),
+        actions: [
+          BasicDialogAction(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            title: Text("OK"),
+          ),
+        ],
+      ),
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +93,7 @@ class _MyAppState extends State<MyApp> {
         primarySwatch: Colors.blue,
         accentColor: Colors.purpleAccent.shade700,
       ),
-      home: _defaultHome,
+      home: const Splash(),
       // routes: {
       //   '/' : (context) => const Splash(),
       //   '/login' : (context) => const Login(),

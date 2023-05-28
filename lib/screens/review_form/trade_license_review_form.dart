@@ -849,7 +849,10 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
   //This will be your screens
   List<Step> getDetailsSteps() => [
         Step(
-            title: const Text('Applicant'),
+            title: const Text('Applicant', style: TextStyle(
+              fontFamily: 'Poppins-Medium',
+              color: Colors.black54,
+            ),),
             state: _currentStep > 0 ? StepState.complete : StepState.indexed,
             isActive: _currentStep >= 0,
             content: Column(
@@ -1154,7 +1157,10 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
               ],
             )),
         Step(
-          title: const Text('Trade'),
+          title: const Text('Trade', style: TextStyle(
+            fontFamily: 'Poppins-Medium',
+            color: Colors.black54,
+          ),),
           state: _currentStep > 1 ? StepState.complete : StepState.indexed,
           isActive: _currentStep >= 1,
           content: Column(
@@ -1729,7 +1735,10 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
         Step(
           state: _currentStep > 2 ? StepState.complete : StepState.indexed,
           isActive: _currentStep >= 2,
-          title: const Text('Documents'),
+          title: const Text('Documents', style: TextStyle(
+            fontFamily: 'Poppins-Medium',
+            color: Colors.black54,
+          ),),
           content: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,

@@ -3,6 +3,7 @@ import 'dart:core';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:we_panchayat_dev/config.dart';
 import 'package:we_panchayat_dev/models/login_request_model.dart';
@@ -19,6 +20,32 @@ class APIService {
   static var client = http.Client();
 
   static var loginResponse;
+
+  static Future<int> checkSession(BuildContext context) async {
+    try {
+      final url = Uri.http(Config.apiURL, Config.checkSessionAPI);
+      print(url);
+
+      print("COOKIE DETAILS Check Session");
+      Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
+      print(cookieHeaders);
+
+      var response = await client.post(url, headers: cookieHeaders);
+      print(response.body);
+
+      if (response.statusCode == 200) {
+        print("COOKIE PRESENT");
+        return 1;
+      }
+
+      print("COOKIE ABSENT");
+      return 0;
+
+    } catch (e) {
+      print("CONNECTION FAILED");
+      return 2;
+    }
+  }
 
   static Future<bool> login(LoginRequestModel model) async {
     // 'username':'abc@gmail.com', 'password':'Asdfg@123',

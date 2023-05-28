@@ -551,8 +551,9 @@ class _TradeLicenseState extends State<TradeLicense> {
           title: Text(
             widget.isEdit ? 'Edit form' : 'Trade License & Signboard',
             style: TextStyle(
-                fontFamily: 'Poppins-Medium',
-                fontSize: 18),
+              fontFamily: 'Poppins-Medium',
+              fontSize: 18,
+            ),
           ),
           elevation: 0,
         ),
@@ -592,7 +593,8 @@ class _TradeLicenseState extends State<TradeLicense> {
                 // Perform submit operation
                 if (!_isChecked[0] || !_isChecked[1] || !_isChecked[2]) {
                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text('Please upload the required documents.')));
+                      content:
+                          Text('Please upload the required documents.')));
                 } else {
                   Map<String, String> body = {
                     "taluka": _selectedTaluka!,
@@ -616,7 +618,8 @@ class _TradeLicenseState extends State<TradeLicense> {
                     "signboard_details":
                         (_signboardDetails == SignboardDetails.enabled)
                             .toString(),
-                    "signboard_location": applicantSignLocationController.text,
+                    "signboard_location":
+                        applicantSignLocationController.text,
                     "signboard_type": _selectedSignboardType ?? "",
                     "signboard_content":
                         applicantSignContentOnBoardController.text,
@@ -625,33 +628,42 @@ class _TradeLicenseState extends State<TradeLicense> {
 
                   http.Response response;
 
-                  if(widget.isEdit) {
-                    print("APPLICATION ID: ${widget.formData!["application_id"]!}");
-                    print("SIGNBOARD ID: ${widget.formData!["signboard_id"]!}");
+                  if (widget.isEdit) {
+                    print(
+                        "APPLICATION ID: ${widget.formData!["application_id"]!}");
+                    print(
+                        "SIGNBOARD ID: ${widget.formData!["signboard_id"]!}");
 
-                    body["application_id"] = widget.formData!["application_id"]!;
-                    body["signboard_id"] = widget.formData!["signboard_id"]!;
+                    body["application_id"] =
+                        widget.formData!["application_id"]!;
+                    body["signboard_id"] =
+                        widget.formData!["signboard_id"]!;
 
-                    response = await TradeLicenseAPIService.updateForm(body);
-                  }
-                  else {
+                    response =
+                        await TradeLicenseAPIService.updateForm(body);
+                  } else {
                     response = await TradeLicenseAPIService.saveForm(body);
                   }
 
                   if (response.statusCode == 200) {
-                    print("Trade License Form Data Successfully Submitted.");
+                    print(
+                        "Trade License Form Data Successfully Submitted.");
 
                     bool isSuccessful;
 
-                    if(widget.isEdit) {
+                    if (widget.isEdit) {
                       //update files
-                      isSuccessful = await TradeLicenseAPIService.updateFiles({..._fileMap}, widget.formData!["mongo_id"]!);
+                      isSuccessful =
+                          await TradeLicenseAPIService.updateFiles(
+                              {..._fileMap}, widget.formData!["mongo_id"]!);
                     } else {
                       //upload files
                       Map<String, dynamic> map = jsonDecode(response.body);
                       String applicationId = map['applicationId'];
                       print(applicationId);
-                      isSuccessful = await TradeLicenseAPIService.uploadFiles({..._fileMap}, applicationId);
+                      isSuccessful =
+                          await TradeLicenseAPIService.uploadFiles(
+                              {..._fileMap}, applicationId);
                     }
 
                     if (isSuccessful) {
@@ -708,10 +720,10 @@ class _TradeLicenseState extends State<TradeLicense> {
                           ),
                         ),
                         style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.all<Color>(Colors.white),
-                          shape:
-                              MaterialStateProperty.all<RoundedRectangleBorder>(
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                              Colors.white),
+                          shape: MaterialStateProperty.all<
+                              RoundedRectangleBorder>(
                             RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10.0),
                               side: BorderSide(color: Colors.black54),
@@ -741,16 +753,17 @@ class _TradeLicenseState extends State<TradeLicense> {
                           ),
                         ),
                         style: ButtonStyle(
-                          backgroundColor: _currentStep == getSteps().length - 1
-                              ? (_isCheckedDeclaration
-                                  ? MaterialStateProperty.all<Color>(
-                                      Color(0xff6CC51D))
+                          backgroundColor:
+                              _currentStep == getSteps().length - 1
+                                  ? (_isCheckedDeclaration
+                                      ? MaterialStateProperty.all<Color>(
+                                          Color(0xff6CC51D))
+                                      : MaterialStateProperty.all<Color>(
+                                          Colors.grey))
                                   : MaterialStateProperty.all<Color>(
-                                      Colors.grey))
-                              : MaterialStateProperty.all<Color>(
-                                  Color(0xFF5386E4)),
-                          shape:
-                              MaterialStateProperty.all<RoundedRectangleBorder>(
+                                      Color(0xFF5386E4)),
+                          shape: MaterialStateProperty.all<
+                              RoundedRectangleBorder>(
                             RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10.0),
                             ),
@@ -854,50 +867,16 @@ class _TradeLicenseState extends State<TradeLicense> {
     }
   }
 
-  // // define the function to move to the next step
-  // void next() {
-  //   currentStep + 1 != getSteps().length ? goTo(currentStep + 1) : submit();
-  // }
-
-  // bool isDetailComplete() {
-  //   if (_currentStep == 0) {
-  //     //check sender fields
-  //     if (applicantPhoneNoController.text.isEmpty ||
-  //         applicantAddressController.text.isEmpty ||
-  //         applicantNameController.text.isEmpty ||
-  //         applicantWardNoController.text.isEmpty ||
-  //         applicantShopController.text.isEmpty) {
-  //       return false;
-  //     } else {
-  //       return true; //if all fields are not empty
-  //     }
-  //   } else if (_currentStep == 1) {
-  //     //check receiver fields
-  //     if (applicantOwnerController.text.isEmpty ||
-  //         applicantTradeController.text.isEmpty ||
-  //         applicantTradeAddressController.text.isEmpty ||
-  //         applicantRelationController.text.isEmpty ||
-  //         applicantTypeofTradeController.text.isEmpty ||
-  //         applicantBusinessController.text.isEmpty ||
-  //         applicantTradeAreaController.text.isEmpty ||
-  //         applicantEmployeesController.text.isEmpty ||
-  //         //applicantWasteManagement.text.isEmpty ||
-  //         // applicantLeasePay.text.isEmpty ||
-  //         applicantSignContentOnBoardController.text.isEmpty ||
-  //         applicantSignAreaController.text.isEmpty ||
-  //         applicantSignLocationController.text.isEmpty) {
-  //       return false;
-  //     } else {
-  //       return true;
-  //     }
-  //   }
-  //   return false;
-  // }
-
   //This will be your screens
   List<Step> getSteps() => [
         Step(
-            title: const Text('Applicant'),
+            title: const Text(
+              'Applicant',
+              style: TextStyle(
+                fontFamily: 'Poppins-Medium',
+                color: Colors.black54,
+              ),
+            ),
             state: _currentStep > 0 ? StepState.complete : StepState.indexed,
             isActive: _currentStep >= 0,
             content: Form(
@@ -1220,7 +1199,13 @@ class _TradeLicenseState extends State<TradeLicense> {
               ),
             )),
         Step(
-            title: const Text('Trade'),
+            title: const Text(
+              'Trade',
+              style: TextStyle(
+                fontFamily: 'Poppins-Medium',
+                color: Colors.black54,
+              ),
+            ),
             state: _currentStep > 1 ? StepState.complete : StepState.indexed,
             isActive: _currentStep >= 1,
             content: Form(
@@ -1847,7 +1832,13 @@ class _TradeLicenseState extends State<TradeLicense> {
         Step(
           state: _currentStep > 2 ? StepState.complete : StepState.indexed,
           isActive: _currentStep >= 2,
-          title: const Text('Documents'),
+          title: const Text(
+            'Documents',
+            style: TextStyle(
+              fontFamily: 'Poppins-Medium',
+              color: Colors.black54,
+            ),
+          ),
           content: Form(
             key: _formKeys[2],
             child: Center(

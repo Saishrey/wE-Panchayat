@@ -1,6 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:we_panchayat_dev/screens/auth/login.dart';
+import '../services/api_service.dart';
+import '../services/shared_service.dart';
 import 'homepage/homepage.dart';
 import 'package:connectivity/connectivity.dart';
 
@@ -14,13 +18,106 @@ class Splash extends StatefulWidget {
 class _SplashState extends State<Splash> {
   var connectivityResult;
 
+  void checkLoginDetails() async {
+    bool result = await SharedService.isLoggedIn();
+
+    if (result) {
+      print("User ALREADY logged in.");
+
+      int isSessionActive = await APIService.checkSession(context);
+
+      await Future.delayed(Duration(seconds: 1));
+
+      if (isSessionActive == 0) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Session Expired'),
+              content: Text('Please log in again.'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    SharedService.logout(context);
+                    Navigator.of(context).pop();
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => Login(),
+                        ));
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      } else if(isSessionActive == 1){
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            // builder: (context) => const MyHomePage(
+            //       title: 'wE-Panchayat',
+            //     )
+            builder: (context) => Home(),
+          ),
+        );
+      }
+      else {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('Could not establish connection with server.'),
+              content: Text('Please try again later.'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    SharedService.logout(context);
+                    SystemNavigator.pop();
+                  },
+                  child: Text('OK'),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    } else {
+      print("User NOT logged in");
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          // builder: (context) => const MyHomePage(
+          //       title: 'wE-Panchayat',
+          //     )
+          builder: (context) => Login(),
+        ),
+      );
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+
     checkInternet();
+
+    requestPermission();
+
+    checkLoginDetails();
+  }
+
+  Future<void> requestPermission() async {
+    var status = await Permission.manageExternalStorage.status;
+    if (status.isDenied) {
+      // Request permission
+      await Permission.storage.request();
+    }
   }
 
   Future<void> checkInternet() async {
+    await Future.delayed(Duration(seconds: 1));
     connectivityResult = await Connectivity().checkConnectivity();
     if (connectivityResult == ConnectivityResult.none) {
       showDialog(
@@ -28,7 +125,8 @@ class _SplashState extends State<Splash> {
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text('No Internet Connection'),
-            content: Text('Please check your internet connection and try again.'),
+            content:
+                Text('Please check your internet connection and try again.'),
             actions: <Widget>[
               TextButton(
                 child: Text('OK'),
@@ -40,21 +138,10 @@ class _SplashState extends State<Splash> {
           );
         },
       );
-    }
-    else {
-      Timer(const Duration(seconds: 3), () {
-        Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              // builder: (context) => const MyHomePage(
-              //       title: 'wE-Panchayat',
-              //     )
-              builder: (context) => const Home(),
-            ));
-      });
+    } else {
+      await Future.delayed(Duration(seconds: 1));
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -104,7 +191,7 @@ class _SplashState extends State<Splash> {
             ),
             Container(
               margin: EdgeInsets.fromLTRB(0, 50, 0, 0),
-              child: const CircularProgressIndicator(),
+              child: CircularProgressIndicator(),
             ),
           ],
         ),

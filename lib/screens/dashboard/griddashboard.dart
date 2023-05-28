@@ -13,7 +13,9 @@ class GridDashboard extends StatelessWidget {
     img: "assets/images/trade_license.png",
     backgroundColor: 0xffDAF5FF,
     textColor: 0xff415EB6,
-    formClass: TradeLicense(isEdit: false,),
+    formClass: TradeLicense(
+      isEdit: false,
+    ),
   );
 
   Items item2 = new Items(
@@ -29,7 +31,9 @@ class GridDashboard extends StatelessWidget {
     img: "assets/images/income.png",
     backgroundColor: 0xffFAD4D4,
     textColor: 0xffF45656,
-    formClass: IncomeCertificate(isEdit: false,),
+    formClass: IncomeCertificate(
+      isEdit: false,
+    ),
   );
 
   Items item4 = new Items(
@@ -88,11 +92,18 @@ class GridDashboard extends StatelessWidget {
                     ),
                     Text(
                       data.title,
-                      style: GoogleFonts.openSans(
-                          textStyle: TextStyle(
-                              color: Color(data.textColor),
-                              fontSize: 12,
-                              fontWeight: FontWeight.w700)),
+                      // style: GoogleFonts.openSans(
+                      //   textStyle: TextStyle(
+                      //       color: Color(data.textColor),
+                      //       fontSize: 12,
+                      //       fontWeight: FontWeight.w700),
+                      // ),
+                      style: TextStyle(
+                        color: Color(data.textColor),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        fontFamily: 'Poppins-Medium',
+                      ),
                     ),
                   ],
                 ),

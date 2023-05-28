@@ -84,15 +84,22 @@ class HomeState extends State<Home> {
           bottomNavigationBar: BottomNavigationBar(
             currentIndex: _selectedIndex,
             backgroundColor: Colors.white,
-            showSelectedLabels: false,
+            // showSelectedLabels: false,
             selectedItemColor: Color(0xff19376D),
             unselectedItemColor: Colors.grey,
-            showUnselectedLabels: false,
+            // showUnselectedLabels: false,
+            selectedLabelStyle: const TextStyle(
+              fontFamily: 'Poppins-Medium',
+            ),
+            unselectedLabelStyle: const TextStyle(
+              fontFamily: 'Poppins-Medium',
+            ),
             onTap: _onItemTapped,
             items: const <BottomNavigationBarItem>[
               BottomNavigationBarItem(
                 icon: Icon(Icons.home),
                 label: 'Home',
+
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.view_list_sharp),

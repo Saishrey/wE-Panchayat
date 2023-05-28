@@ -3,6 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:flutter/material.dart';
+import 'package:we_panchayat_dev/config.dart';
+import 'package:we_panchayat_dev/services/house_tax_api_service.dart';
+
+import '../../models/login_response_model.dart';
+import '../../services/shared_service.dart';
 
 class HouseTax extends StatefulWidget {
   HouseTax({Key? key}) : super(key: key);
@@ -17,252 +22,857 @@ class _HouseTaxState extends State<HouseTax> {
   TextEditingController mobile = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
-  final Map<String, List<String>> _mappedTalukaAndVillages = {
-    'Bardez': [
-      'Aldona',
-      'Anjuna',
-      'Arpora-Nagoa',
-      'Assagao',
-      'Assanora',
-      'Bastora',
-      'Calangute',
-      'Camurlim',
-      'Candolim',
-      'Colvale',
-      'Guirim',
-      'Moira',
-      'Nachinola',
-      'Nadora',
-      'Nerul',
-      'Oxel',
-      'Parra',
-      'Penha-De-Franca',
-      'Pilerne',
-      'Pirna',
-      'Pomburpa-Olaulim',
-      'Reis Magos',
-      'Revora',
-      'Saligao',
-      'Salvador-Do-Mundo',
-      'Sangolda',
-      'Siolim-Marna',
-      'Siolim-Sodiem',
-      'Sirsaim',
-      'Socorro',
-      'Tivim',
-      'Ucassaim,Paliem-Punola',
-      'Verla Canca',
+  Map<String, List<String>> _mappedPanchayatAndRevenueVillages = {
+    "Assolda": [
+      'ASSOLDA'
+          'ODAR'
+          'XELVONA'
+          'XIC-XELVONA'
     ],
-    'Bicholim': [
-      'Advalpal',
-      'Amona',
-      'Cudnem',
-      'Harvalem',
-      'Karapur-Sarvan',
-      'Latambarcem',
-      'Maulinguem',
-      'Mayem',
-      'Mencurem',
-      'Mulgao',
-      'Naroa',
-      'Navelim,Bicholim',
-      'Pale,Cotombi',
-      'Piligao',
-      'Salem',
-      'Sirigao',
-      'Surla',
-      'Velguem',
+    "Advalpal": [
+      'ADWALPALE',
     ],
-    'Canacona': [
-      'Agonda',
-      'Cola',
-      'Cotigao',
-      'Gaondongri',
-      'Loliem-Polem',
-      'Poinguinim',
-      'Shristhal'
+    "Agarwada,Chopdem": [
+      'AGARWADO',
+      'CHOPDEM',
     ],
-    'Dharbandora': [
-      'Colem',
-      'Dharbandora',
-      'Kirlapal-Dabhal',
-      'Mollem',
-      'Sancordem',
+    "Agonda": [
+      'AGONDA',
     ],
-    'Mormugao': [
-      'Cansaulim-Arossim-Cuelim',
-      'Chicalim',
-      'Chicolna-Bogmalo',
-      'Cortalim',
-      'Majorda-Utorda-Calata',
-      'Nagoa',
-      'Quelossim',
-      'Sancoale',
-      'Velsao-Pale',
-      'Verna',
+    "Aldona": [
+      'ALDONA',
+      'CALVIM',
+      'KHORJUVEM',
+      'PONOLI',
     ],
-    'Pernem': [
-      'Agarwada,Chopdem',
-      'Alorna',
-      'Arambol',
-      'Casnem, Amberem,Poroscodem',
-      'Chandel Hassapur',
-      'Corgao',
-      'Dhargal',
-      'Ibrampur',
-      'Kasarvanem',
-      'Mandrem',
-      'Morjim',
-      'Ozarim',
-      'Paliem',
-      'Parcem',
-      'Querim-Tiracol',
-      'Tamboxem,Mopa,Uguem',
-      'Torxem',
-      'Tuem',
-      'Varkhand Nagzar',
-      'Virnoda',
+    "Alorna": [
+      'ALORNA',
     ],
-    'Ponda': [
-      'Bandora',
-      'Betora-Nirancal',
-      'Betqui, Candola',
-      'Bhoma-Adcolna',
-      'Borim',
-      'Curti-Khandepar',
-      'Durbhat',
-      'Kundaim',
-      'Marcaim',
-      'Panchawadi',
-      'Quela',
-      'Querim',
-      'Shiroda',
-      'Talaulim',
-      'Tivrem-Orgao',
-      'Usgao-Ganjem',
-      'Veling,Priol,Cuncoliem',
-      'Verem,Vaghurme',
-      'Volvoi',
+    "Ambaulim": [
+      'AMBAULIM',
     ],
-    'Quepem': [
-      'Ambaulim',
-      'Assolda',
-      'Avedem-Cotombi',
-      'Balli-Adnem',
-      'Barcem',
-      'Caurem',
-      'Fatorpa-Quitol',
-      'Molcornem',
-      'Morpirla',
-      'Naqueri-Betul',
-      'Xeldem',
+    "Ambelim": [
+      'AMBELIM',
     ],
-    'Salcete': [
-      'Ambelim',
-      'Aquem Baixo',
-      'Assolna',
-      'Benaulim',
-      'Betalbatim',
-      'Camorlim',
-      'Carmona',
-      'Cavelossim',
-      'Chandor-Cavorim',
-      'Chinchinim- Deussua',
-      'Colva',
-      'Curtorim',
-      'Davorlim,Dicarpale',
-      'Dramapur',
-      'Guirdolim',
-      'Loutulim',
-      'Macasana',
-      'Navelim Salcete',
-      'Nuvem',
-      'Orlim',
-      'Paroda',
-      'Rachol',
-      'Raia',
-      'Rumdamol-Davorlim',
-      'Sarzora',
-      'Seraulim',
-      'St. Jose-De-Areal',
-      'Telaulim',
-      'Varca',
-      'Velim',
+    "Amona": [
+      'AMONE',
     ],
-    'Sanguem': [
-      'Bhati',
-      'Curdi',
-      'Kalay(Kalem)',
-      'Neturlim',
-      'Rivona',
-      'Sanvordem(Sanguem)',
-      'Uguem',
+    "Anjuna": [
+      'ANJUNA',
     ],
-    'Sattari': [
-      'Birondem',
-      'Cotorem',
-      'Dongurli',
-      'Guleli',
-      'Honda',
-      'Kerim',
-      'Mauxi',
-      'Morlem',
-      'Nagargao',
-      'Pissurlem',
-      'Poriem',
-      'Sanvordem(Sattari)',
+    "Aquem Baixo": [
+      'AQUEM',
     ],
-    'Tiswadi': [
-      'Batim',
-      'Carambolim',
-      'Chimbel',
-      'Chodan-Madel',
-      'Corlim',
-      'Cumbharjua',
-      'Curca,Bambolim,Talaulim',
-      'Goltim-Navelim',
-      'Merces',
-      'Neura',
-      'Sao Lourence(Agassaim)',
-      'Sao Matias',
-      'Se-Old-Goa',
-      'Siridao-Palem',
-      'St. Andre',
-      'St. Cruz',
-      'St. Estevam',
+    "Arambol": [
+      'ARAMBOL',
+    ],
+    "Arpora-Nagoa": [
+      'ARPORA',
+      'NAGOA',
+    ],
+    " Assagao ": [
+      'ASSAGAO',
+    ],
+    " Assanora ": [
+      'ASSNODA',
+      'MOITEM',
+    ],
+    " Assolda ": [
+      'ASSOLDA',
+      'ODAR',
+      'XELVONA',
+      'XIC-XELVONA',
+    ],
+    " Assolna ": [
+      'ASSOLNA',
+    ],
+    " Avedem-Cotombi ": [
+      'AVEDEM',
+      'CHAIFI',
+      'COTOMBI',
+    ],
+    "Azossim-Mandur": [
+      'AZOSSIM',
+      'MANDUR',
+    ],
+    "Balli-Adnem": [
+      'ADNEM',
+      'BALI',
+      'BENDORDEM',
+      'CORDEM',
+      'TILOI',
+    ],
+    "Bandora": [
+      'BANDORA',
+    ],
+    " Barcem": [
+      'BARCEM',
+      'GOCOLDEM',
+      'PADI',
+      'QUEDEM',
+      'QUISCONDA',
+    ],
+    " Bastora": [
+      'BASTORA',
+    ],
+    " Batim": [
+      'GANCIM',
+      'BATIM',
+    ],
+    " Benaulim": [
+      'BENAULIM',
+      'ADSULIM',
+      'CANA',
+    ],
+    " Betalbatim": [
+      'BATALBATIM',
+      'GONSUA',
+    ],
+    "Betora-Nirancal": [
+      'BETORA',
+      'CODAR',
+      'CONXEM',
+      'NIRANCAL',
+    ],
+    "Betqui, Candola": [
+      'BETQUI',
+      'CANDOLA',
+    ],
+    "Bhati": [
+      'BATI',
+      'CUMBARI',
+      'DONGOR',
+      'NAIQUINIM',
+      'POTREM',
+      'SIGONEM',
+      'TODAU',
+      'VILIENA',
+    ],
+    "Bhoma-Adcolna": [
+      'ADCOLNA',
+      'BHOMA',
+    ],
+    "Birondem": [
+      'ADVOI',
+      'ANSOLEM',
+      'BIRONDEM',
+      'PADELI',
+      'SANVORCEM',
+      'VANTEM',
+    ],
+    "Borim": [
+      'BORIM',
+    ],
+    "Calangute": [
+      'CALANGUTE',
+    ],
+    "Camurlim": [
+      'KAMURLI',
+    ],
+    "Camorlim": [
+      'CAMURLIM',
+    ],
+    "Candolim": [
+      'CANDOLIM',
+      'MARRA',
+    ],
+    "Carambolim": [
+      'CARAMBOLIM',
+    ],
+    "Carmona": [
+      'CARMONA',
+    ],
+    "Casnem, Amberem,Poroscodem": [
+      'POROSCODEM',
+      'AMBEREM',
+      'CASNEM',
+    ],
+    "Caurem": [
+      'CAVOREM',
+      'CAZUR',
+      'CORLA',
+      'MAINA',
+      'MANGAL',
+      'PIRLA',
+      'SULCORNA'
+    ],
+    "Cavelossim": [
+      'CAVELOSSIM',
+    ],
+    "Chandel Hassapur": [
+      'CHANDEL',
+    ],
+    "Chandor-Cavorim": [
+      'CAVORIM',
+      'CHANDOR',
+    ],
+    "Chicalim": [
+      'DABOLIM',
+      'CHICALIM',
+      'SAOJACINTOISLAND',
+      'SAOJORGEISLAND',
+    ],
+    "Chicolna-Bogmalo": [
+      'CHICOLNA',
+    ],
+    "Chimbel": [
+      'CHIMBEL',
+    ],
+    "Chinchinim- Deussua": [
+      'CHINCHINIM',
+      'DEUSSUA',
+    ],
+    "Chodan-Madel": [
+      'AMBARIM',
+      'CHORAO',
+      'CARAIM',
+    ],
+    "Cola": [
+      'COLA',
+    ],
+    "Colem": [
+      'CARANZOL',
+      'COLEM',
+      'SIGAO',
+      'SONAULIM',
+    ],
+    "Colva": ['COLVA', 'GANDAULIM', 'SERNABATIM', 'VANELI'],
+    "Colvale": [
+      'COLVALE',
+    ],
+    "Corgao": [
+      'CORGAO',
+    ],
+    "Corlim": [
+      'CORLIM',
+    ],
+    "Cortalim": [
+      'CORTALIM',
+    ],
+    "Cotigao": [
+      'COTIGAO',
+    ],
+    "Cotorem": [
+      'COLA',
+      'MALPONA',
+      'GOVANEM',
+      'CODQUI',
+      'SIRANGULI',
+      'ASSODEM',
+      'AMBELI',
+      'XELOPO-CURDO',
+      'VELGUEM',
+      'SIRSODEM',
+      'COTOREM',
+    ],
+    "Cudnem": [
+      'CUDNEM',
+    ],
+    "Cansaulim-Arossim-Cuelim": [
+      'CANSAULIM',
+      'AROSSIM',
+      'CUELIM',
+    ],
+    "Cumbharjua": [
+      'CUMBHARJUA',
+      'GANDAULIM',
+    ],
+    "Curca,Bambolim,Talaulim": [
+      'CURCA',
+      'GOALIM-MOULA',
+      'TALAULIM',
+      'BAMBOLIM',
+    ],
+    "Curdi": [
+      'CURDI',
+      'CURPEM',
+      'PORTEM',
+    ],
+    "Curti-Khandepar": [
+      'CURTI',
+      'CANDEPAR',
+    ],
+    "Curtorim": [
+      'CURTORIM',
+    ],
+    "Davorlim,Dicarpale": [
+      'DICARPALE',
+    ],
+    "Dharbandora": [
+      'DHARBANDORA',
+      'PILIEM',
+    ],
+    "Dhargal": [
+      'DARGALIM',
+    ],
+    "Dongurli": [
+      'IVREM-BUZRUCO',
+      'SURLA',
+      'DONGURLI',
+      'RIVEM',
+      'IVREM-CURDO',
+      'PALE',
+      'CHORAUNDEM',
+      'GOLAULI',
+      'NANELI'
+    ],
+    "Dharmapur": [
+      'DHARMAPUR',
+    ],
+    "Durbhat": [
+      'DURBHAT',
+    ],
+    "Fatorpa-Quitol": [
+      'FATORPA',
+    ],
+    "Gaondongri": [
+      'GAODONGREM',
+    ],
+    "Goltim-Navelim": [
+      'GOTLIM',
+      'NAVELIM',
+    ],
+    "Guirdolim": [
+      'GUIRDOLIM',
+    ],
+    "Guirim": [
+      'GUIRIM',
+    ],
+    "Guleli": ['CONQUIREM', 'DAMOCEM', 'GULELI', 'MELAULI'],
+    "Honda": [
+      'BUIMPAL',
+      'ONDA',
+      'SALELI',
+      'SONUS-VONVOLIEM',
+    ],
+    "Ibrampur": [
+      'IBRAMPUR',
+    ],
+    "Kalay(Kalem)": [
+      'BOMA',
+      'CALEM',
+      'COSTI',
+      'DONGURLIM',
+      'DUDAL',
+      'MAULINGUEM',
+      'OXEL'
+    ],
+    "Karapur-Sarvan": [
+      'KARAPUR',
+      'SARVONA',
+    ],
+    "Kasarvanem": [
+      'CANSARVORNEM',
+    ],
+    "Querim-Tiracol": [
+      'QUERIM',
+      'TIRACOL',
+    ],
+    "Kerim": [
+      'ANJUNEM',
+      'GONTELI',
+      'GULULEM',
+      'PONSULI',
+      'QUELAUDEM',
+      'QUERIM',
+      'RAVONA',
+      'SIROLI',
+    ],
+    "Kirlapal-Dabhal": [
+      'BANDOLI',
+      'CAMARCOND',
+      'CODLI',
+      'CORMONEM',
+      'MOISSAL',
+    ],
+    "Kundaim": [
+      'CUNDAIM',
+    ],
+    "Latambarcem": [
+      'LATAMBARCEM',
+    ],
+    "Loliem-Polem": [
+      'ANGEDIVA',
+      'LOLIEM',
+    ],
+    "Loutulim": [
+      'LOUTOLIM',
+    ],
+    "Macasana": [
+      'MACAZANA',
+    ],
+    "Majorda-Utorda-Calata": [
+      'CALATA',
+      'MAJORDA',
+      'UTORDA',
+    ],
+    "Mandrem": [
+      'MANDREM',
+    ],
+    "Marcaim": [
+      'MARCAIM',
+    ],
+    "Maulinguem": [
+      'CURCHIREM',
+      'MAULINGUEM-NORTH',
+      'MAULINGUEM-SOUTH',
+      'ONA',
+    ],
+    "Mauxi": [
+      'COMPORDEM',
+      'DABEM',
+      'MAUXI',
+      'NAGUEM',
+      'ZORMEN',
+    ],
+    "Mayem": [
+      'ATURLI',
+      'MAEM',
+      'VAINGUINIM',
+    ],
+    "Mencurem": [
+      'DUMACEM',
+      'MENCUREM',
+    ],
+    "Merces": [
+      'MORAMBI-O-GRANDE',
+      'MORAMBI-O-PEQUENO',
+      'MURDA',
+      'RENOVADI',
+    ],
+    "Moira": [
+      'MOIRA',
+    ],
+    "Molcornem": [
+      'MOLCARNEM',
+      'MOLCOPONA',
+      'NAGVEM',
+      'UNDORNA',
+      'ZANODEM',
+    ],
+    "Mollem": [
+      'MOLLEM',
+      'SANGOD',
+    ],
+    "Morjim": [
+      'MORGIM',
+    ],
+    "Morlem": [
+      'MORLEM',
+    ],
+    "Morpirla": [
+      'MORPIRLA',
+    ],
+    "Mulgao": [
+      'MULGAO',
+    ],
+    "Nachinola": [
+      'NACHINOLA',
+    ],
+    "Nadora": [
+      'NADORA',
+    ],
+    "Nagargao": [
+      'AMBEDEM',
+      'DAVEM',
+      'EDOREM',
+      'NANOREM',
+      'XELOPO-BUZRUCO',
+      'CARAMBOLIM-BRAMA',
+      'NAGARGAO',
+      'USTEM',
+      'MALOLI',
+      'ZARANI',
+      'DERODEM',
+      'SATREM',
+      'VAINGUINIM',
+      'SIGONEM',
+      'SATOREM',
+      'CODAL',
+      'BOMBEDEM',
+    ],
+    "Nagoa": [
+      'NAGOA',
+    ],
+    "Naqueri-Betul": [
+      'NAQUERIM',
+      'QUITOL',
+    ],
+    "Naroa": [
+      'NAROA',
+    ],
+    "Navelim,Bicholim": [
+      'NAVELIM',
+    ],
+    "Navelim Salcete": [
+      'NAVELIM',
+    ],
+    "Nerul": [
+      'NERUL',
+    ],
+    "Neturlim": [
+      'NETURLIM',
+      'NUNDEM',
+      'VERLEM',
+      'VICHUNDREM',
+    ],
+    "Neura": [
+      'NEURA-O-GRANDE',
+      'NEURA-O-PEQUENO',
+    ],
+    "Nuvem": [
+      'NUVEM',
+    ],
+    "Orlim": [
+      'ORLIM',
+    ],
+    "Oxel": [
+      'OXEL',
+    ],
+    "Ozarim": [
+      'OZORIM',
+    ],
+    "Pale,COtombi": [
+      'COTOMBI',
+      'PALE',
+    ],
+    "Paliem": [
+      'PALIEM',
+    ],
+    "Panchawadi": [
+      'PONCHAVADI',
+    ],
+    "Parcem": [
+      'PARCEM',
+    ],
+    "Paroda": [
+      'MULEM',
+      'PARODA',
+    ],
+    "Parra": [
+      'PARRA',
+    ],
+    "Penha-De-Franca": [
+      'PENHA DE FRANCE',
+    ],
+    "Pilerne": [
+      'PILERNE',
+    ],
+    "Piligao": [
+      'PILIGAO',
+    ],
+    "Pirna": [
+      'PIRNA',
+    ],
+    "Pissurlem": [
+      'CODIEM',
+      'CUMARCONDA',
+      'PISSURLEM',
+      'PONOCEM',
+      'VAGURIEM',
+    ],
+    "Poinguinim": [
+      'POINGUINIM',
+    ],
+    "Pomburpa-Olaulim": [
+      'OLAVALI',
+      'POMBURPA',
+    ],
+    "Poriem": [
+      'PODOCEM',
+      'PORIEM',
+    ],
+    "Quela": [
+      'QUELA',
+    ],
+    "Querim": [
+      'QUERIM',
+    ],
+    "Rachol": [
+      'RACHOL',
+    ],
+    "Raia ": [
+      'RAIA',
+    ],
+    "Revora ": [
+      'REVORA',
+    ],
+    "Rivona ": [
+      'COLOMBA',
+      'RIVONA',
+    ],
+    "Rumdamol-Davorlim ": [
+      'DAVORLIM',
+    ],
+    "Salem ": [
+      'SAL',
+    ],
+    "Saligao ": [
+      'SALIGAO',
+    ],
+    "Salvador-Do-Mundo ": [
+      'SALVADOR DO MUNDO',
+    ],
+    "Sancoale ": [
+      'SANCOALE',
+    ],
+    "Sancordem ": [
+      'AGLOTE',
+      'SANCORDEM',
+      'SURLA',
+    ],
+    "Sangolda ": [
+      'SANGOLDA',
+    ],
+    "Sanvordem(Sattari) ": [
+      'CARAMBOLIM-BUZRUCO',
+      'CARANZOL',
+      'CODVOL',
+      'CUDCEM',
+      'PENDRAL',
+      'SANVORDEM',
+      'SONAL',
+    ],
+    "Sanvordem(Sanguem) ": [
+      'ANTOREM',
+      'COMPROI',
+      'CORANGUINIM',
+      'RUMBREM',
+      'SANTONA',
+      'SANVORDEM',
+    ],
+    "Sao Lourence(Agassaim) ": [
+      'MERCURIM',
+    ],
+    "Sao Matias ": [
+      'MALAR',
+      'NAROA',
+      'CAPAO',
+    ],
+    "Sarzora ": [
+      'SARZORA',
+    ],
+    "Se-Old-Goa ": [
+      'ELLA',
+      'BAINGUINIM',
+      'PANELIM',
+    ],
+    "Seraulim ": [
+      'DUNCOLIM',
+      'SERAULIM',
+    ],
+    "Shiroda ": [
+      'SIRODA',
+    ],
+    "Shristhal ": [
+      'CANACONA',
+    ],
+    "Siolim-Marna ": [
+      'MARNA',
+    ],
+    "Siolim-Sodiem ": [
+      'SIOLIM',
+    ],
+    "Siridao-Palem ": [
+      'SIRIDAO',
+    ],
+    "Sirigao ": [
+      'SIRIGAO',
+    ],
+    "Sirsasim ": [
+      'SIRSAI',
+    ],
+    "Socorro ": [
+      'SOCORRO',
+    ],
+    "St. Andre ": [
+      'GOA-VELHA',
+    ],
+    " St. Cruz ": [
+      'CUJIRA ',
+      'CALAPOR ',
+    ],
+    " St. Estevam ": [
+      'JUA ',
+    ],
+    "St. Jose-De-Areal": [
+      'SAO JOSE DE AREAL ',
+    ],
+    "Surla": [
+      'SURLA ',
+    ],
+    "Talaulim": [
+      'TALAULIM ',
+      'VADI',
+    ],
+    "Taleigao": [
       'Taleigao',
     ],
+    "Tamboxem,Mopa,Uguem": [
+      'TAMBOXEM ',
+      'UGUEM',
+      'MOPA',
+    ],
+    "Telaulim": [
+      'TALAULIM ',
+    ],
+    "Tivim": [
+      'TIVIM ',
+    ],
+    "Tivrem-Orgao": [
+      'ORGAO ',
+      'TIVREM',
+    ],
+    "Torxem": [
+      'Torxem ',
+    ],
+    "Tuem": [
+      'TUEM ',
+    ],
+    "Ucassaim,Paliem-Punola": [
+      'PALIEM ',
+      'PUNOLA',
+      'UCCASSAIM',
+    ],
+    "Uguem": [
+      'COTARLI',
+      'MUGULI',
+      'PATIEM',
+      'SALAULI',
+      'UGUEM',
+      'XELPEM',
+    ],
+    "Usgao-Ganjem": [
+      'GANGEM',
+      'USGAO',
+    ],
+    "Varca": [
+      'VARCA',
+    ],
+    "Varkhand Nagzar": [
+      'VARCONDA',
+    ],
+    "Velguem": [
+      'VELGUEM',
+    ],
+    "VELIM": [
+      'VELIM',
+    ],
+    "Veling,Priol,Cuncoliem": [
+      'VELING',
+      'PRIOL',
+      'VELIM',
+    ],
+    "Velsao-Pale": [
+      'ISSORCIM',
+      'PALE',
+      'VELSAO',
+    ],
+    "Reis Magos": [
+      'REIS MAGOS',
+    ],
+    "Verem,Vaghurme": [
+      'SAVOI-VEREM',
+      'VAGURBEM',
+    ],
+    "Verla Canca": [
+      'CANKA',
+      'VERLA',
+    ],
+    "Verna": [
+      'VERNA',
+    ],
+    "Virnoda": [
+      'VIRNORA',
+    ],
+    "Volvoi": [
+      'VOLVOI',
+    ],
+    "Xeldem": [
+      'SIRVOI',
+      'XELDEM',
+    ],
+    "Harvalem": [
+      'ARVALEM',
+    ],
+    "Quelossim": [
+      'QUELOSSIM',
+    ],
   };
-  String? _selectedTaluka;
-  String? _selectedVillage;
+
+  String? _selectedPanchayat;
+  String? _selectedRevenueVillage;
 
   List<DropdownMenuItem<String>> villageMenuItems = [];
 
-  void secondselected(_value) {
-    setState(() {
-      _selectedVillage = _value;
-      debugPrint("Selected Two Taluka = $_selectedTaluka");
-      debugPrint("Selected Two village = $_selectedVillage");
+  TextEditingController _houseNumberController = TextEditingController();
+  TextEditingController _nameOfPayeeController = TextEditingController();
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _mobileNumberController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    initialiseNamePhoneAddress();
+    _houseNumberController.addListener(() {
+      if (_houseNumberController.text.isEmpty) {
+        _houseNumberController.clear();
+      }
+    });
+    _nameOfPayeeController.addListener(() {
+      if (_nameOfPayeeController.text.isEmpty) {
+        _nameOfPayeeController.clear();
+      }
+    });
+    _emailController.addListener(() {
+      if (_emailController.text.isEmpty) {
+        _emailController.clear();
+      }
+    });
+    _mobileNumberController.addListener(() {
+      if (_mobileNumberController.text.isEmpty) {
+        _mobileNumberController.clear();
+      }
     });
   }
+
+  Future<void> initialiseNamePhoneAddress() async {
+    LoginResponseModel? loginResponseModel = await SharedService.loginDetails();
+    setState(() {
+      _nameOfPayeeController =
+          TextEditingController(text: loginResponseModel?.fullname);
+      _emailController = TextEditingController(text: loginResponseModel?.email);
+      _mobileNumberController =
+          TextEditingController(text: loginResponseModel?.phone);
+    });
+  }
+
+  void secondselected(_value) {
+    setState(() {
+      _selectedRevenueVillage = _value;
+      debugPrint("Selected Two Taluka = $_selectedPanchayat");
+      debugPrint("Selected Two village = $_selectedRevenueVillage");
+    });
+  }
+
   bool disabledVillageMenuItem = true;
 
   void selected(_value) {
     villageMenuItems = [];
-    populateVillageMenuItem(_mappedTalukaAndVillages[_value]);
+    populateRevenueVillageMenuItem(_mappedPanchayatAndRevenueVillages[_value]);
     setState(() {
-      _selectedTaluka = _value;
+      _selectedPanchayat = _value;
 
-      _selectedVillage = _mappedTalukaAndVillages[_value]![0];
+      _selectedRevenueVillage = _mappedPanchayatAndRevenueVillages[_value]![0];
 
-      debugPrint("Selected One Taluka = $_selectedTaluka");
-      debugPrint("Selected One village = $_selectedVillage");
+      debugPrint("Selected One Panchayat = $_selectedPanchayat");
+      debugPrint("Selected One village = $_selectedRevenueVillage");
 
       disabledVillageMenuItem = false;
     });
   }
 
-  void populateVillageMenuItem(List<String>? villages) {
+  void populateRevenueVillageMenuItem(List<String>? villages) {
     for (String village in villages!) {
       villageMenuItems.add(DropdownMenuItem<String>(
         child: Center(
@@ -277,275 +887,446 @@ class _HouseTaxState extends State<HouseTax> {
     }
   }
 
+  Future<bool> _showCancelConfirmationDialog(
+      BuildContext context, bool isCancel) async {
+    var result = await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Are you sure you want to cancel?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('No'),
+              onPressed: () {
+                if (isCancel) {
+                  Navigator.of(context).pop();
+                } else {
+                  Navigator.of(context).pop(false);
+                }
+              },
+            ),
+            TextButton(
+              child: const Text('Yes'),
+              onPressed: () {
+                if (isCancel) {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                } else {
+                  Navigator.of(context).pop(true);
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+
+    return result ?? false;
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: true,
-      appBar: AppBar(
-        title: Text(' Pay Your House Tax'),
-      ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      padding:
-                      EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          border:
-                          Border.all(color: Color(0xffBDBDBD), width: 1)),
-                      child: DropdownButton(
-                        menuMaxHeight: 200,
-                        isExpanded: true,
-                        icon: Icon(
-                          Icons.arrow_drop_down_outlined,
-                          color: Colors.black,
-                        ),
-                        value: _selectedTaluka,
-                        items: _mappedTalukaAndVillages.keys
-                            .map((String option) {
-                          return DropdownMenuItem<String>(
-                            value: option,
-                            child: Text(
-                              option,
+    return WillPopScope(
+      onWillPop: () => _showCancelConfirmationDialog(context, false),
+      child: Scaffold(
+        resizeToAvoidBottomInset: true,
+        appBar: AppBar(
+          backgroundColor: Color(0xffCDF0EA),
+          foregroundColor: Color(0xff088395),
+          title: Text(
+            'Pay Your House Tax',
+            style: TextStyle(
+              fontFamily: 'Poppins-Medium',
+              fontSize: 18,
+            ),
+          ),
+          elevation: 0,
+        ),
+        backgroundColor: Color(0xffCDF0EA),
+        body: Container(
+          height: MediaQuery.of(context).size.height,
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(30.0),
+              topRight: Radius.circular(30.0),
+            ),
+          ),
+          child: SingleChildScrollView(
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  const SizedBox(height: 16),
+                  const Text(
+                    'House Tax',
+                    style: TextStyle(
+                        fontFamily: 'Poppins-Bold',
+                        color: Colors.black,
+                        fontSize: 20),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 6),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                  color: Color(0xffBDBDBD), width: 1)),
+                          child: DropdownButtonFormField(
+                            menuMaxHeight: 200,
+                            isExpanded: true,
+                            icon: const Icon(
+                              Icons.arrow_drop_down_outlined,
+                              color: Colors.black,
+                            ),
+                            value: _selectedPanchayat,
+                            items: _mappedPanchayatAndRevenueVillages.keys
+                                .map((String option) {
+                              return DropdownMenuItem<String>(
+                                value: option,
+                                child: Text(
+                                  option,
+                                  style: TextStyle(
+                                    color: Colors.black54,
+                                    fontFamily: 'Poppins-Bold',
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                            onChanged: (_value) => selected(_value),
+                            hint: const Text(
+                              "Panchayat",
                               style: TextStyle(
                                 color: Colors.black54,
                                 fontFamily: 'Poppins-Bold',
+                                fontSize: 14,
                               ),
                             ),
-                          );
-                        }).toList(),
-                        onChanged: (_value) => selected(_value),
-                        hint: Text(
-                          "Select Taluka",
-                          style: TextStyle(
-                            color: Colors.black54,
-                            fontFamily: 'Poppins-Bold',
+                            validator: (value) {
+                              if (value == null) {
+                                // Add validation to check if a value is selected
+                                return 'Required';
+                              }
+                              return null;
+                            },
                           ),
+                        ),
+                      ),
+                      SizedBox(width: 10.0),
+                      Expanded(
+                        child: Container(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 10, vertical: 6),
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                  color: Color(0xffBDBDBD), width: 1)),
+                          child: DropdownButtonFormField(
+                            menuMaxHeight: 200,
+                            isExpanded: true,
+                            icon: Icon(
+                              Icons.arrow_drop_down_outlined,
+                              color: Colors.black,
+                            ),
+                            value: _selectedRevenueVillage,
+                            items: villageMenuItems,
+                            onChanged: disabledVillageMenuItem
+                                ? null
+                                : (_value) => secondselected(_value),
+                            disabledHint: const Text(
+                              "Revenue Village",
+                              style: TextStyle(
+                                color: Colors.black54,
+                                fontFamily: 'Poppins-Bold',
+                                fontSize: 14,
+                              ),
+                            ),
+                            validator: (value) {
+                              if (value == null) {
+                                // Add validation to check if a value is selected
+                                return 'Required';
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Required';
+                      }
+                      else if(!RegExp(r"^\d{1,}(\/[A-Za-z0-9]+)*$").hasMatch(value)) {
+                        return 'Invalid House No.';
+                      }
+                      return null;
+                    },
+                    controller: _houseNumberController,
+                    style: TextStyle(
+                      color: Colors.black54,
+                      fontFamily: 'Poppins-Bold',
+                    ),
+                    decoration: InputDecoration(
+                      labelText: 'House Number',
+                      hintText: 'Eg. 12/345/',
+                      hintStyle: TextStyle(
+                        color: Colors.black26,
+                      ),
+                      filled: true,
+                      fillColor: Color(0xffF6F6F6),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: Color(0xffBDBDBD),
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: Color(0xffBDBDBD),
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: Theme.of(context).primaryColor,
                         ),
                       ),
                     ),
                   ),
-                  SizedBox(width: 10.0),
-                  Expanded(
-                    child: Container(
-                      padding:
-                      EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10),
-                          border:
-                          Border.all(color: Color(0xffBDBDBD), width: 1)),
-                      child: DropdownButton(
-                        menuMaxHeight: 200,
-                        isExpanded: true,
-                        icon: Icon(
-                          Icons.arrow_drop_down_outlined,
-                          color: Colors.black,
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    validator: (value) {
+                      if (value?.isEmpty ?? true) {
+                        return "Required";
+                      }
+                      return null;
+                    },
+                    controller: _nameOfPayeeController,
+                    style: TextStyle(
+                      color: Colors.black54, //Name
+                      fontFamily: 'Poppins-Bold',
+                    ),
+                    decoration: InputDecoration(
+                      labelText: 'Name of Payee',
+                      filled: true,
+                      fillColor: Color(0xffF6F6F6),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: Color(0xffBDBDBD),
                         ),
-                        value: _selectedVillage,
-                        items: villageMenuItems,
-                        onChanged: disabledVillageMenuItem
-                            ? null
-                            : (_value) => secondselected(_value),
-                        disabledHint: Text(
-                          "Select Village",
-                          style: TextStyle(
-                            color: Colors.black54,
-                            fontFamily: 'Poppins-Bold',
-                          ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: Color(0xffBDBDBD),
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: Theme.of(context).primaryColor,
                         ),
                       ),
                     ),
                   ),
+                  SizedBox(height: 16),
+                  TextFormField(
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return "Required";
+                      } else if (!RegExp(
+                              r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                          .hasMatch(value)) {
+                        return "Invalid email";
+                      }
+                    },
+                    controller: _emailController,
+                    style: TextStyle(
+                      color: Colors.black54,
+                      fontFamily: 'Poppins-Bold',
+                    ),
+                    decoration: InputDecoration(
+                      labelText: 'Email',
+                      filled: true,
+                      fillColor: Color(0xffF6F6F6),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: Color(0xffBDBDBD),
+                        ),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: Color(0xffBDBDBD),
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: Theme.of(context).primaryColor,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  TextFormField(
+                    keyboardType: TextInputType.phone,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(10)
+                    ],
+                    controller: _mobileNumberController,
+                    style: TextStyle(
+                      color: Colors.black54,
+                      fontFamily: 'Poppins-Bold',
+                    ),
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return "Required";
+                      } else if (!RegExp(r"^[789]\d{9}$").hasMatch(value)) {
+                        return "Invalid mobile no.";
+                      }
+                      return null;
+                    },
+                    decoration: InputDecoration(
+                      labelText: 'Mobile Number',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: Colors.grey.shade400,
+                          width: 2,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: Theme.of(context).primaryColor,
+                          width: 2,
+                        ),
+                      ),
+                      errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: Colors.red,
+                          width: 2,
+                        ),
+                      ),
+                      focusedErrorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        borderSide: BorderSide(
+                          color: Colors.red,
+                          width: 2,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              _selectedPanchayat = null;
+                              _selectedRevenueVillage = null;
+                              disabledVillageMenuItem = true;
+
+                              _houseNumberController.clear();
+                              _nameOfPayeeController.clear();
+                              _emailController.clear();
+                              _mobileNumberController.clear();
+                            });
+                          },
+                          child: Text(
+                            'Clear',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontFamily: 'Poppins-Bold',
+                              color: Colors.red,
+                            ),
+                          ),
+                          style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all<Color>(
+                                Colors.white),
+                            shape: MaterialStateProperty.all<
+                                RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                                side: BorderSide(
+                                  color: Colors.red,
+                                ),
+                              ),
+                            ),
+                            padding: MaterialStateProperty.all<EdgeInsets>(
+                              EdgeInsets.only(top: 15.0, bottom: 15.0),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 10.0),
+                      Expanded(
+                        child: ElevatedButton(
+                          onPressed: () async {
+                            // Validate the form inputs
+                            if (_formKey.currentState!.validate()) {
+                              // Form is valid, do something here
+                              print('Form is valid!');
+
+                              Map<String, String> body = {
+                                "panchayat": _selectedPanchayat!,
+                                "revenue_village": _selectedRevenueVillage!,
+                                "house_no": _houseNumberController.text,
+                                // "applicants_name": applicantNameController.text,
+                                // "applicants_address": applicantAddressController.text,
+                                // "phone": applicantPhoneNoController.text,
+                                // "email": applicantEmailController.text,
+                              };
+
+                              var response = await HouseTaxAPIService.getTaxDetails(body);
+                            }
+                          },
+                          child: Text(
+                            'Search',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontFamily: 'Poppins-Bold',
+                            ),
+                          ),
+                          style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all<Color>(
+                                Color(0xff6CC51D)),
+                            shape: MaterialStateProperty.all<
+                                RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                            ),
+                            padding: MaterialStateProperty.all<EdgeInsets>(
+                              EdgeInsets.only(top: 15.0, bottom: 15.0),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20),
                 ],
-              ),const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      validator: (value) {
-                        if (value?.isEmpty ?? true) {
-                          return " Required   ";
-                        }
-                        return null;
-                      },
-                      controller: applicantName,
-                      style: TextStyle(
-                        color: Colors.black54, //Name
-                        fontFamily: 'Poppins-Bold',
-                      ),
-                      decoration: InputDecoration(
-                        labelText: 'Name of Payee *',
-                        filled: true,
-                        fillColor: Color(0xffF6F6F6),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(
-                            color: Color(0xffBDBDBD),
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(
-                            color: Color(0xffBDBDBD),
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(
-                            color: Theme.of(context).primaryColor,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
               ),
-              SizedBox(height: 16),
-              TextFormField(
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return "Required";
-                  } else if (!RegExp(
-                      r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                      .hasMatch(value)) {
-                    return "Invalid email";
-                  }
-                  // _email = value;
-                  // print("Email : $_email");
-                  // return null;
-                },
-                style: TextStyle(
-                  color: Colors.black54,
-                  fontFamily: 'Poppins-Bold',
-                ),
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  filled: true,
-                  fillColor: Color(0xffF6F6F6),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16,),
-              TextFormField(
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter a house number.';
-                  }
-                  return null;
-                },
-                style: TextStyle(
-                  color: Colors.black54,
-                  fontFamily: 'Poppins-Bold',
-                ),
-                decoration: InputDecoration(
-                  labelText: 'House Number',
-                  hintText: 'Enter house number',
-                  filled: true,
-                  fillColor: Color(0xffF6F6F6),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                keyboardType: TextInputType.phone,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly, LengthLimitingTextInputFormatter(10)],
-                validator: (value) {
-                  if (value!.isEmpty) {
-                    return "Required";
-                  } else if (!RegExp(r"^[789]\d{9}$").hasMatch(value)) {
-                    return "Invalid mobile no.";
-                  }   return null;
-                },
-                decoration: InputDecoration(
-                  labelText: 'Mobile Number',
-                  hintText: 'Enter your mobile number',
-                  prefixIcon: Icon(Icons.phone),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Colors.grey.shade400,
-                      width: 2,
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).primaryColor,
-                      width: 2,
-                    ),
-                  ),
-                  errorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Colors.red,
-                      width: 2,
-                    ),
-                  ),
-                  focusedErrorBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Colors.red,
-                      width: 2,
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {
-                  // Validate the form inputs
-                  if (_formKey.currentState!.validate()) {
-                    // Form is valid, do something here
-                    print('Form is valid!');
-                  }
-                },
-                child: Text('Submit'),
-              ),
-            ],
+            ),
           ),
         ),
       ),

@@ -39,22 +39,22 @@ class NavBar extends StatelessWidget {
             title: Text('Personal Info'),
             onTap: () => null,
           ),
-          ListTile(
-            leading: Icon(Icons.description),
-            title: Text('Applications'),
-            onTap: () => null,
-          ),
+          // ListTile(
+          //   leading: Icon(Icons.description),
+          //   title: Text('Applications'),
+          //   onTap: () => null,
+          // ),
           ListTile(
             leading: Icon(Icons.warning),
             title: Text('Grievances'),
             onTap: () => null,
           ),
           Divider(),
-          ListTile(
-            leading: Icon(Icons.settings),
-            title: Text('Settings'),
-            onTap: () => null,
-          ),
+          // ListTile(
+          //   leading: Icon(Icons.settings),
+          //   title: Text('Settings'),
+          //   onTap: () => null,
+          // ),
           ListTile(
             leading: Icon(Icons.notifications),
             title: Text('Notifications'),

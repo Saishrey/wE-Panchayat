@@ -66,6 +66,14 @@ dependencies:
   image: ^3.3.0
   flutter_dialogs: ^3.0.0
 
+  internet_connection_checker: ^0.0.1+4
+  connectivity_plus: ^2.3.5
+
+  local_auth: ^2.1.5
+  local_auth_ios: ^1.1.0
+
+  shared_preferences: ^2.0.8
+
 
 dev_dependencies:
   flutter_test:
@@ -157,7 +165,15 @@ flutter:
     - family: Poppins-Medium
       fonts:
         - asset: fonts/Poppins-Medium.ttf
-
+    - family: Poppins-Light
+      fonts:
+        - asset: fonts/Poppins-Light.ttf
+    - family: Poppins-ExtraLight
+      fonts:
+        - asset: fonts/Poppins-ExtraLight.ttf
+    - family: Poppins-Thin
+      fonts:
+        - asset: fonts/Poppins-Thin.ttf
 
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

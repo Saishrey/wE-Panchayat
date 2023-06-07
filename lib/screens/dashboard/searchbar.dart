@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:we_panchayat_dev/constants.dart';
 
 class SearchBar extends StatelessWidget {
   final TextEditingController searchController = TextEditingController();
@@ -13,10 +14,11 @@ class SearchBar extends StatelessWidget {
           filled: true,
           fillColor: Colors.white,
           hintText: 'Search a service',
-          prefixIcon: Icon(Icons.search),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(20.0),
-          ),
+          hintStyle: FormConstants.getDropDownHintStyle(),
+          prefixIcon: Icon(Icons.search_sharp, color: ColorConstants.formLabelTextColor,),
+          border: FormConstants.getEnabledBorder(),
+          enabledBorder: FormConstants.getEnabledBorder(),
+          focusedBorder: FormConstants.getFocusedBorder(),
         ),
       ),
     );

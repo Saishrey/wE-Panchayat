@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:we_panchayat_dev/screens/settings/settings.dart';
 
 import '../../models/login_response_model.dart';
 import '../../services/api_service.dart';
@@ -36,7 +37,9 @@ class NavBar extends StatelessWidget {
           ),
           ListTile(
             leading: Icon(Icons.info),
-            title: Text('Personal Info'),
+            title: Text('Personal Info', style: TextStyle(
+              fontFamily: 'Poppins-Medium',
+            ),),
             onTap: () => null,
           ),
           // ListTile(
@@ -44,25 +47,37 @@ class NavBar extends StatelessWidget {
           //   title: Text('Applications'),
           //   onTap: () => null,
           // ),
-          ListTile(
-            leading: Icon(Icons.warning),
-            title: Text('Grievances'),
-            onTap: () => null,
-          ),
-          Divider(),
           // ListTile(
-          //   leading: Icon(Icons.settings),
-          //   title: Text('Settings'),
+          //   leading: Icon(Icons.warning),
+          //   title: Text('Grievances'),
           //   onTap: () => null,
           // ),
-          ListTile(
-            leading: Icon(Icons.notifications),
-            title: Text('Notifications'),
-            onTap: () => null,
-          ),
           Divider(),
           ListTile(
-            title: Text('Logout'),
+            leading: Icon(Icons.settings),
+            title: Text('Settings', style: TextStyle(
+              fontFamily: 'Poppins-Medium',
+            ),),
+            onTap: () {
+              print("Tapped on Settings");
+              Navigator.of(context).pop();
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => SettingsPage()),
+              );
+            },
+          ),
+          // ListTile(
+          //   leading: Icon(Icons.notifications),
+          //   title: Text('Notifications'),
+          //   onTap: () => null,
+          // ),
+          Divider(),
+          ListTile(
+            title: Text('Logout', style: TextStyle(
+              fontFamily: 'Poppins-Medium',
+            ),),
             leading: Icon(Icons.logout),
             onTap: () async {
               bool isLoggedOut = await APIService.logout(context);
@@ -115,6 +130,7 @@ class NavBar extends StatelessWidget {
             getEmail(model.data)!,
             style: TextStyle(
               color: Color(0xff356899),
+              fontFamily: "Poppins-Light",
             ),
           );
         }

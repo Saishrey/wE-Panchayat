@@ -15,14 +15,10 @@ import 'package:we_panchayat_dev/services/shared_service.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 
-
-
 class IncomeCertificateAPIService {
-
   static var client = http.Client();
 
   static Future<http.Response> saveForm(Map<String, String> body) async {
-
     Map<String, String> requestHeaders = {
       // "Content-Type": "application/json",
     };
@@ -41,9 +37,7 @@ class IncomeCertificateAPIService {
 
     print(body);
 
-
-    var response = await client.post(url,
-        body: body, headers: requestHeaders);
+    var response = await client.post(url, body: body, headers: requestHeaders);
 
     print("${response.body}");
 
@@ -60,12 +54,13 @@ class IncomeCertificateAPIService {
     // return false;
   }
 
-
-  static Future<bool> uploadFiles(Map<String, File> fileMap, String keyFile3, String applicationId) async {
+  static Future<bool> uploadFiles(
+      Map<String, File> fileMap, String keyFile3, String applicationId) async {
     fileMap[keyFile3] = fileMap["file3"]!;
     fileMap.remove("file3");
 
-    final url = Uri.http(Config.apiURL, IncomeCertificateAPI.uploadDocumentsAPI);
+    final url =
+        Uri.http(Config.apiURL, IncomeCertificateAPI.uploadDocumentsAPI);
     print(url);
     var request = http.MultipartRequest('POST', url);
     print("COOKIE DETAILS Income Certificate Upload Documents");
@@ -77,22 +72,25 @@ class IncomeCertificateAPIService {
     //add files to request
     int count = 1;
     //add photo file to request with explicit MIME type
-    request.files.add(http.MultipartFile(
-      "photo",
-      fileMap["photo"]!.readAsBytes().asStream(),
-      fileMap["photo"]!.lengthSync(),
-      filename: path.basename(fileMap["photo"]!.path),
-      contentType: MediaType('image', 'jpeg'),
-    ));
+    request.files.add(
+      http.MultipartFile(
+        "photo",
+        fileMap["photo"]!.readAsBytes().asStream(),
+        fileMap["photo"]!.lengthSync(),
+        filename: path.basename(fileMap["photo"]!.path),
+        contentType: MediaType('image', 'jpeg'),
+      ),
+    );
 
     for (var entry in fileMap.entries) {
-        print(entry);
-        if(entry.key != "photo") {
-          count++;
-          request.files.add(await http.MultipartFile.fromPath(entry.key, entry.value.path));
-        }
+      print(entry);
+      if (entry.key != "photo") {
+        count++;
+        request.files.add(
+            await http.MultipartFile.fromPath(entry.key, entry.value.path));
+      }
     }
-    request.fields['totalFilesCount'] = "$count" ;
+    request.fields['totalFilesCount'] = "$count";
     request.fields['applicationId'] = applicationId;
     print(request.files);
     print(request.fields);
@@ -112,11 +110,13 @@ class IncomeCertificateAPIService {
     return false;
   }
 
-  static Future<bool> updateFiles(Map<String, File> fileMap, String keyFile3, String applicationId) async {
+  static Future<bool> updateFiles(
+      Map<String, File> fileMap, String keyFile3, String applicationId) async {
     fileMap[keyFile3] = fileMap["file3"]!;
     fileMap.remove("file3");
 
-    final url = Uri.http(Config.apiURL, IncomeCertificateAPI.updateDocumentsAPI);
+    final url =
+        Uri.http(Config.apiURL, IncomeCertificateAPI.updateDocumentsAPI);
     print(url);
     var request = http.MultipartRequest('POST', url);
     print("COOKIE DETAILS Income Certificate UPDATE Documents");
@@ -138,12 +138,13 @@ class IncomeCertificateAPIService {
 
     for (var entry in fileMap.entries) {
       print(entry);
-      if(entry.key != "photo") {
+      if (entry.key != "photo") {
         count++;
-        request.files.add(await http.MultipartFile.fromPath(entry.key, entry.value.path));
+        request.files.add(
+            await http.MultipartFile.fromPath(entry.key, entry.value.path));
       }
     }
-    request.fields['totalFilesCount'] = "$count" ;
+    request.fields['totalFilesCount'] = "$count";
     request.fields['mongoId'] = applicationId;
     print(request.files);
     print(request.fields);
@@ -164,7 +165,6 @@ class IncomeCertificateAPIService {
   }
 
   static Future<http.Response> updateForm(Map<String, String> body) async {
-
     Map<String, String> requestHeaders = {
       // "Content-Type": "application/json",
     };
@@ -183,9 +183,7 @@ class IncomeCertificateAPIService {
 
     print(body);
 
-
-    var response = await client.post(url,
-        body: body, headers: requestHeaders);
+    var response = await client.post(url, body: body, headers: requestHeaders);
 
     print("${response.body}");
 
@@ -193,7 +191,6 @@ class IncomeCertificateAPIService {
   }
 
   static Future<http.Response> retrieveForm(Map<String, String> body) async {
-
     Map<String, String> requestHeaders = {
       // "Content-Type": "application/json",
     };
@@ -212,25 +209,23 @@ class IncomeCertificateAPIService {
 
     print(body);
 
-
-    var response = await client.post(url,
-        body: body, headers: requestHeaders);
+    var response = await client.post(url, body: body, headers: requestHeaders);
 
     print("${jsonDecode(response.body)['data']}");
 
     // print(tradeLicenseFormResponseJson(response.body));
 
     return response;
-
   }
 
-  static Future<http.Response> generateCertificatePDF(Map<String, String> body) async {
-
+  static Future<http.Response> generateCertificatePDF(
+      Map<String, String> body) async {
     Map<String, String> requestHeaders = {
       // "Content-Type": "application/json",
     };
 
-    final url = Uri.http(Config.apiURL, IncomeCertificateAPI.generateCertificatePDFAPI);
+    final url =
+        Uri.http(Config.apiURL, IncomeCertificateAPI.generateCertificatePDFAPI);
     print(url);
 
     print("COOKIE DETAILS Income Certificate GENERATE FORM PDF");
@@ -244,34 +239,31 @@ class IncomeCertificateAPIService {
 
     print(body);
 
-
-    var response = await client.post(url,
-        body: body, headers: requestHeaders);
+    var response = await client.post(url, body: body, headers: requestHeaders);
 
     print(response.body);
 
-    if(response.statusCode == 200) {
+    if (response.statusCode == 200) {
       print("Generated Income Certificate pdf successfully.");
 
       var pdfResponse = await retrieveCertificatePDF(body);
-    }
-    else {
+    } else {
       print("Failed to generate Income Certificate pdf.");
     }
 
     // print(tradeLicenseFormResponseJson(response.body));
 
     return response;
-
   }
 
-  static Future<http.Response> retrieveCertificatePDF(Map<String, String> body) async {
-
+  static Future<http.Response> retrieveCertificatePDF(
+      Map<String, String> body) async {
     Map<String, String> requestHeaders = {
       // "Content-Type": "application/json",
     };
 
-    final url = Uri.http(Config.apiURL, IncomeCertificateAPI.retrieveCertificatePDFAPI);
+    final url =
+        Uri.http(Config.apiURL, IncomeCertificateAPI.retrieveCertificatePDFAPI);
     print(url);
 
     print("COOKIE DETAILS Income Certificate RETRIEVE FORM PDF");
@@ -285,14 +277,13 @@ class IncomeCertificateAPIService {
 
     print(body);
 
-
-    var response = await client.post(url,
-        body: body, headers: requestHeaders);
+    var response = await client.post(url, body: body, headers: requestHeaders);
 
     // print(response.body);
 
-    if(response.statusCode == 200) {
-      IncomeCertificatePDFResponseModel model = incomeCertificatePDFResponseJson(response.body);
+    if (response.statusCode == 200) {
+      IncomeCertificatePDFResponseModel model =
+          incomeCertificatePDFResponseJson(response.body);
 
       displayPDF(body['application_id']!, model.certificate?.data);
     }
@@ -302,16 +293,17 @@ class IncomeCertificateAPIService {
   static void displayPDF(String applicationId, List<int>? data) async {
     Directory? tempDir = await getExternalStorageDirectory();
     String filename = "${applicationId}_income_certificate";
-    if(tempDir != null) {
+    if (tempDir != null) {
       File? pdfFile = await convertToPDF(filename, tempDir.path, data);
-      if(pdfFile != null) {
+      if (pdfFile != null) {
         print("Income Certificate PDF: ${pdfFile.path}");
         await OpenFile.open(pdfFile.path);
       }
     }
   }
 
-  static Future<File?> convertToPDF(String filename, String path, List<int>? binaryData) async {
+  static Future<File?> convertToPDF(
+      String filename, String path, List<int>? binaryData) async {
     // final directory = await getTemporaryDirectory();
     if (binaryData != null) {
       final file = File('$path/$filename.pdf');
@@ -320,6 +312,4 @@ class IncomeCertificateAPIService {
     }
     return null;
   }
-
-
 }

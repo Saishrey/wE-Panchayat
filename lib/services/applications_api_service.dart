@@ -39,7 +39,7 @@ class ApplicationsAPIService {
 
     var response = await client.post(url, body: body, headers: requestHeaders);
 
-    print("${response.body}");
+    // print("${response.body}");
 
     return applicationsResponseJson(response.body);
   }

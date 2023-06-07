@@ -1,3 +1,4 @@
+import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -13,6 +14,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:we_panchayat_dev/screens/application_submitted.dart';
 import 'package:we_panchayat_dev/services/income_certificate_api_service.dart';
 
+import '../../constants.dart';
 import '../../models/login_response_model.dart';
 import '../../services/shared_service.dart';
 
@@ -337,11 +339,10 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
     for (String village in villages!) {
       villageMenuItems.add(DropdownMenuItem<String>(
         child: Center(
-          child: Text(village,
-              style: TextStyle(
-                color: Colors.black54,
-                fontFamily: 'Poppins-Bold',
-              )),
+          child: Text(
+            village,
+            style: FormConstants.getDropDownTextStyle(),
+          ),
         ),
         value: village,
       ));
@@ -470,11 +471,11 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
     var result = await showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Are you sure you want to cancel?'),
+        return CupertinoAlertDialog(
+          title: Text('Are you sure you want to cancel?', style: AlertDialogBoxConstants.getNormalTextStyle(),),
           actions: <Widget>[
             TextButton(
-              child: const Text('No'),
+              child: Text('No', style: AlertDialogBoxConstants.getButtonTextStyle(),),
               onPressed: () {
                 if (isCancel) {
                   Navigator.of(context).pop();
@@ -484,7 +485,7 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
               },
             ),
             TextButton(
-              child: const Text('Yes'),
+              child: Text('Yes', style: AlertDialogBoxConstants.getButtonTextStyle(),),
               onPressed: () {
                 if (isCancel) {
                   Navigator.of(context).pop();
@@ -685,8 +686,10 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
                             shape: MaterialStateProperty.all<
                                 RoundedRectangleBorder>(
                               RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                                side: BorderSide(color: Colors.black54),
+                                borderRadius: BorderRadius.circular(20.0),
+                                side: BorderSide(
+                                  color: ColorConstants.formLabelTextColor,
+                                ),
                               ),
                             ),
                             padding: MaterialStateProperty.all<EdgeInsets>(
@@ -712,13 +715,13 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
                             backgroundColor:
                                 _currentStep == getSteps().length - 1
                                     ? MaterialStateProperty.all<Color>(
-                                        Color(0xff6CC51D))
+                                        ColorConstants.submitGreenColor)
                                     : MaterialStateProperty.all<Color>(
-                                        Color(0xFF5386E4)),
+                                        ColorConstants.darkBlueThemeColor),
                             shape: MaterialStateProperty.all<
                                 RoundedRectangleBorder>(
                               RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10.0),
+                                borderRadius: BorderRadius.circular(20.0),
                               ),
                             ),
                             padding: MaterialStateProperty.all<EdgeInsets>(
@@ -791,9 +794,10 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
                   Text(
                     'Applicant Details',
                     style: TextStyle(
-                        fontFamily: 'Poppins-Bold',
-                        color: Colors.black,
-                        fontSize: 20),
+                      fontFamily: 'Poppins-Bold',
+                      color: ColorConstants.darkBlueThemeColor,
+                      fontSize: 20,
+                    ),
                   ),
                   SizedBox(height: 16),
                   Row(
@@ -802,17 +806,15 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
                         child: Container(
                           padding:
                               EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                  color: Color(0xffBDBDBD), width: 1)),
+                          decoration: FormConstants.getDropDownBoxDecoration(),
                           child: DropdownButtonFormField(
                             menuMaxHeight: 200,
                             isExpanded: true,
-                            icon: Icon(
-                              Icons.arrow_drop_down_outlined,
-                              color: Colors.black,
+                            decoration: const InputDecoration(
+                              border:
+                                  InputBorder.none, // Remove the bottom border
                             ),
+                            icon: FormConstants.getDropDownIcon(),
                             value: _selectedTaluka,
                             items: _mappedTalukaAndVillages.keys
                                 .map((String option) {
@@ -820,20 +822,14 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
                                 value: option,
                                 child: Text(
                                   option,
-                                  style: TextStyle(
-                                    color: Colors.black54,
-                                    fontFamily: 'Poppins-Bold',
-                                  ),
+                                  style: FormConstants.getDropDownTextStyle(),
                                 ),
                               );
                             }).toList(),
                             onChanged: (_value) => selected(_value),
                             hint: Text(
                               "Taluka",
-                              style: TextStyle(
-                                color: Colors.black54,
-                                fontFamily: 'Poppins-Bold',
-                              ),
+                              style: FormConstants.getDropDownHintStyle(),
                             ),
                             validator: (value) {
                               if (value == null) {
@@ -850,17 +846,15 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
                         child: Container(
                           padding:
                               EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                  color: Color(0xffBDBDBD), width: 1)),
+                          decoration: FormConstants.getDropDownBoxDecoration(),
                           child: DropdownButtonFormField(
                             menuMaxHeight: 200,
                             isExpanded: true,
-                            icon: Icon(
-                              Icons.arrow_drop_down_outlined,
-                              color: Colors.black,
+                            decoration: const InputDecoration(
+                              border:
+                                  InputBorder.none, // Remove the bottom border
                             ),
+                            icon: FormConstants.getDropDownIcon(),
                             value: _selectedVillage,
                             items: villageMenuItems,
                             onChanged: disabledVillageMenuItem
@@ -868,10 +862,7 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
                                 : (_value) => secondselected(_value),
                             disabledHint: Text(
                               "Panchayat",
-                              style: TextStyle(
-                                color: Colors.black54,
-                                fontFamily: 'Poppins-Bold',
-                              ),
+                              style: FormConstants.getDropDownHintStyle(),
                             ),
                             validator: (value) {
                               if (value == null) {
@@ -890,26 +881,21 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
                   ),
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: Color(0xffBDBDBD), width: 1)),
+                    decoration: FormConstants.getDropDownBoxDecoration(),
                     child: DropdownButtonFormField(
                       menuMaxHeight: 200,
                       isExpanded: true,
-                      icon: Icon(
-                        Icons.arrow_drop_down_outlined,
-                        color: Colors.black,
+                      decoration: const InputDecoration(
+                        border: InputBorder.none, // Remove the bottom border
                       ),
+                      icon: FormConstants.getDropDownIcon(),
                       value: _selectedTitle,
                       items: _titleDropdownList.map((String option) {
                         return DropdownMenuItem<String>(
                           value: option,
                           child: Text(
                             option,
-                            style: TextStyle(
-                              color: Colors.black54,
-                              fontFamily: 'Poppins-Bold',
-                            ),
+                            style: FormConstants.getDropDownTextStyle(),
                           ),
                         );
                       }).toList(),
@@ -920,10 +906,7 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
                       },
                       hint: Text(
                         "Title",
-                        style: TextStyle(
-                          color: Colors.black54,
-                          fontFamily: 'Poppins-Bold',
-                        ),
+                        style: FormConstants.getDropDownHintStyle(),
                       ),
                       validator: (value) {
                         if (value == null) {
@@ -943,38 +926,16 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
                       return null;
                     },
                     controller: applicantNameController,
-                    style: TextStyle(
-                      color: Colors.black54, //Name
-                      fontFamily: 'Poppins-Bold',
-                    ),
+                    style: FormConstants.getTextStyle(),
                     decoration: InputDecoration(
                       labelText: "Applicant's Name",
-                      filled: true,
-                      fillColor: Color(0xffF6F6F6),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Color(0xffBDBDBD),
-                        ),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Color(0xffBDBDBD),
-                        ),
-                      ),
-                      disabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Color(0xffBDBDBD),
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      ),
+                      labelStyle: FormConstants.getLabelAndHintStyle(),
+                      // filled: true,
+                      // fillColor: Color(0xffF6F6F6),
+                      border: FormConstants.getEnabledBorder(),
+                      disabledBorder: FormConstants.getEnabledBorder(),
+                      enabledBorder: FormConstants.getEnabledBorder(),
+                      focusedBorder: FormConstants.getFocusedBorder(),
                     ),
                   ),
                   SizedBox(height: 16),
@@ -986,32 +947,15 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
                       return null;
                     },
                     controller: applicantGuardianNameController,
-                    style: TextStyle(
-                      color: Colors.black54,
-                      fontFamily: 'Poppins-Bold',
-                    ),
+                    style: FormConstants.getTextStyle(),
                     decoration: InputDecoration(
                       labelText: "Parent's/ Husband's Name",
-                      filled: true,
-                      fillColor: Color(0xffF6F6F6),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Color(0xffBDBDBD),
-                        ),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Color(0xffBDBDBD),
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      ),
+                      labelStyle: FormConstants.getLabelAndHintStyle(),
+                      // filled: true,
+                      // fillColor: Color(0xffF6F6F6),
+                      border: FormConstants.getEnabledBorder(),
+                      enabledBorder: FormConstants.getEnabledBorder(),
+                      focusedBorder: FormConstants.getFocusedBorder(),
                     ),
                   ),
                   SizedBox(height: 16),
@@ -1032,38 +976,16 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
                     inputFormatters: [
                       LengthLimitingTextInputFormatter(10),
                     ],
-                    style: TextStyle(
-                      color: Colors.black54,
-                      fontFamily: 'Poppins-Bold',
-                    ),
+                    style: FormConstants.getTextStyle(),
                     decoration: InputDecoration(
                       labelText: 'Mobile',
-                      filled: true,
-                      fillColor: Color(0xffF6F6F6),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Color(0xffBDBDBD),
-                        ),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Color(0xffBDBDBD),
-                        ),
-                      ),
-                      disabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Color(0xffBDBDBD),
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      ),
+                      labelStyle: FormConstants.getLabelAndHintStyle(),
+                      // filled: true,
+                      // fillColor: Color(0xffF6F6F6),
+                      border: FormConstants.getEnabledBorder(),
+                      disabledBorder: FormConstants.getEnabledBorder(),
+                      enabledBorder: FormConstants.getEnabledBorder(),
+                      focusedBorder: FormConstants.getFocusedBorder(),
                     ),
                   ),
                   SizedBox(height: 16),
@@ -1081,32 +1003,15 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
                       return null;
                     },
                     controller: applicantEmailController,
-                    style: TextStyle(
-                      color: Colors.black54,
-                      fontFamily: 'Poppins-Bold',
-                    ),
+                    style: FormConstants.getTextStyle(),
                     decoration: InputDecoration(
                       labelText: 'Email',
-                      filled: true,
-                      fillColor: Color(0xffF6F6F6),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Color(0xffBDBDBD),
-                        ),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Color(0xffBDBDBD),
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      ),
+                      labelStyle: FormConstants.getLabelAndHintStyle(),
+                      // filled: true,
+                      // fillColor: Color(0xffF6F6F6),
+                      border: FormConstants.getEnabledBorder(),
+                      enabledBorder: FormConstants.getEnabledBorder(),
+                      focusedBorder: FormConstants.getFocusedBorder(),
                     ),
                   ),
                   SizedBox(height: 16),
@@ -1116,27 +1021,22 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
                         child: Container(
                           padding:
                               EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                  color: Color(0xffBDBDBD), width: 1)),
+                          decoration: FormConstants.getDropDownBoxDecoration(),
                           child: DropdownButtonFormField(
                             menuMaxHeight: 200,
                             isExpanded: true,
-                            icon: Icon(
-                              Icons.arrow_drop_down_outlined,
-                              color: Colors.black,
+                            decoration: const InputDecoration(
+                              border:
+                                  InputBorder.none, // Remove the bottom border
                             ),
+                            icon: FormConstants.getDropDownIcon(),
                             value: _selectedIdProof,
                             items: _idProof.map((String option) {
                               return DropdownMenuItem<String>(
                                 value: option,
                                 child: Text(
                                   option,
-                                  style: TextStyle(
-                                    color: Colors.black54,
-                                    fontFamily: 'Poppins-Bold',
-                                  ),
+                                  style: FormConstants.getDropDownTextStyle(),
                                 ),
                               );
                             }).toList(),
@@ -1147,10 +1047,7 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
                             },
                             hint: Text(
                               "Id Proof",
-                              style: TextStyle(
-                                color: Colors.black54,
-                                fontFamily: 'Poppins-Bold',
-                              ),
+                              style: FormConstants.getDropDownHintStyle(),
                             ),
                             validator: (value) {
                               if (value == null) {
@@ -1182,32 +1079,15 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
                           inputFormatters: [
                             new LengthLimitingTextInputFormatter(12),
                           ],
-                          style: TextStyle(
-                            color: Colors.black54,
-                            fontFamily: 'Poppins-Bold',
-                          ),
+                          style: FormConstants.getTextStyle(),
                           decoration: InputDecoration(
                             labelText: 'Id Proof Number',
-                            filled: true,
-                            fillColor: Color(0xffF6F6F6),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                color: Color(0xffBDBDBD),
-                              ),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                color: Color(0xffBDBDBD),
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                color: Theme.of(context).primaryColor,
-                              ),
-                            ),
+                            labelStyle: FormConstants.getLabelAndHintStyle(),
+                            // filled: true,
+                            // fillColor: Color(0xffF6F6F6),
+                            border: FormConstants.getEnabledBorder(),
+                            enabledBorder: FormConstants.getEnabledBorder(),
+                            focusedBorder: FormConstants.getFocusedBorder(),
                           ),
                         ),
                       ),
@@ -1216,18 +1096,13 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
                   SizedBox(height: 16),
                   Container(
                     padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: Color(0xffBDBDBD), width: 1)),
+                    decoration: FormConstants.getDropDownBoxDecoration(),
                     child: ListTile(
                       title: Text(
                         "Date Of Birth:    ${DateFormat('dd-MM-yyyy').format(_selectedDate)}",
-                        style: TextStyle(
-                          color: Colors.black54,
-                          fontFamily: 'Poppins-Bold',
-                        ),
+                        style: FormConstants.getTextStyle(),
                       ),
-                      trailing: Icon(Icons.calendar_month),
+                      trailing: FormConstants.getCalenderIcon(),
                       onTap: _pickDate,
                     ),
                   ),
@@ -1240,32 +1115,15 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
                       return null;
                     },
                     controller: applicantPlaceOfBirthController,
-                    style: TextStyle(
-                      color: Colors.black54,
-                      fontFamily: 'Poppins-Bold',
-                    ),
+                    style: FormConstants.getTextStyle(),
                     decoration: InputDecoration(
                       labelText: 'Place of Birth',
-                      filled: true,
-                      fillColor: Color(0xffF6F6F6),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Color(0xffBDBDBD),
-                        ),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Color(0xffBDBDBD),
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      ),
+                      labelStyle: FormConstants.getLabelAndHintStyle(),
+                      // filled: true,
+                      // fillColor: Color(0xffF6F6F6),
+                      border: FormConstants.getEnabledBorder(),
+                      enabledBorder: FormConstants.getEnabledBorder(),
+                      focusedBorder: FormConstants.getFocusedBorder(),
                     ),
                   ),
                   SizedBox(height: 16),
@@ -1275,26 +1133,21 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
                         child: Container(
                           padding:
                               EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                  color: Color(0xffBDBDBD), width: 1)),
+                          decoration: FormConstants.getDropDownBoxDecoration(),
                           child: DropdownButtonFormField(
                             menuMaxHeight: 200,
                             isExpanded: true,
-                            icon: Icon(
-                              Icons.arrow_drop_down_outlined,
-                              color: Colors.black,
+                            icon: FormConstants.getDropDownIcon(),
+                            decoration: const InputDecoration(
+                              border:
+                                  InputBorder.none, // Remove the bottom border
                             ),
                             items: _applicantsRelation.map((String option) {
                               return DropdownMenuItem<String>(
                                 value: option,
                                 child: Text(
                                   option,
-                                  style: TextStyle(
-                                    color: Colors.black54,
-                                    fontFamily: 'Poppins-Bold',
-                                  ),
+                                  style: FormConstants.getDropDownTextStyle(),
                                 ),
                               );
                             }).toList(),
@@ -1306,10 +1159,7 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
                             },
                             hint: Text(
                               "Relation",
-                              style: TextStyle(
-                                color: Colors.black54,
-                                fontFamily: 'Poppins-Bold',
-                              ),
+                              style: FormConstants.getDropDownHintStyle(),
                             ),
                             validator: (value) {
                               if (value == null) {
@@ -1331,32 +1181,15 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
                             return null;
                           },
                           controller: applicantRelationOfController,
-                          style: TextStyle(
-                            color: Colors.black54, //Name
-                            fontFamily: 'Poppins-Bold',
-                          ),
+                          style: FormConstants.getTextStyle(),
                           decoration: InputDecoration(
                             labelText: "Of",
-                            filled: true,
-                            fillColor: Color(0xffF6F6F6),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                color: Color(0xffBDBDBD),
-                              ),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                color: Color(0xffBDBDBD),
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                color: Theme.of(context).primaryColor,
-                              ),
-                            ),
+                            labelStyle: FormConstants.getLabelAndHintStyle(),
+                            // filled: true,
+                            // fillColor: Color(0xffF6F6F6),
+                            border: FormConstants.getEnabledBorder(),
+                            enabledBorder: FormConstants.getEnabledBorder(),
+                            focusedBorder: FormConstants.getFocusedBorder(),
                           ),
                         ),
                       ),
@@ -1371,32 +1204,15 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
                       return null;
                     },
                     controller: applicantAddressController,
-                    style: TextStyle(
-                      color: Colors.black54,
-                      fontFamily: 'Poppins-Bold',
-                    ),
+                    style: FormConstants.getTextStyle(),
                     decoration: InputDecoration(
                       labelText: 'Address',
-                      filled: true,
-                      fillColor: Color(0xffF6F6F6),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Color(0xffBDBDBD),
-                        ),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Color(0xffBDBDBD),
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      ),
+                      labelStyle: FormConstants.getLabelAndHintStyle(),
+                      // filled: true,
+                      // fillColor: Color(0xffF6F6F6),
+                      border: FormConstants.getEnabledBorder(),
+                      enabledBorder: FormConstants.getEnabledBorder(),
+                      focusedBorder: FormConstants.getFocusedBorder(),
                     ),
                   ),
                   SizedBox(height: 16),
@@ -1408,32 +1224,15 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
                       return null;
                     },
                     controller: applicantOccupationController,
-                    style: TextStyle(
-                      color: Colors.black54,
-                      fontFamily: 'Poppins-Bold',
-                    ),
+                    style: FormConstants.getTextStyle(),
                     decoration: InputDecoration(
                       labelText: 'Occupation',
-                      filled: true,
-                      fillColor: Color(0xffF6F6F6),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Color(0xffBDBDBD),
-                        ),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Color(0xffBDBDBD),
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      ),
+                      labelStyle: FormConstants.getLabelAndHintStyle(),
+                      // filled: true,
+                      // fillColor: Color(0xffF6F6F6),
+                      border: FormConstants.getEnabledBorder(),
+                      enabledBorder: FormConstants.getEnabledBorder(),
+                      focusedBorder: FormConstants.getFocusedBorder(),
                     ),
                   ),
                   SizedBox(height: 16),
@@ -1446,32 +1245,15 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
                     },
                     controller: applicantAnnualIncomeController,
                     keyboardType: TextInputType.number,
-                    style: TextStyle(
-                      color: Colors.black54,
-                      fontFamily: 'Poppins-Bold',
-                    ),
+                    style: FormConstants.getTextStyle(),
                     decoration: InputDecoration(
                       labelText: 'Annual Income',
-                      filled: true,
-                      fillColor: Color(0xffF6F6F6),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Color(0xffBDBDBD),
-                        ),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Color(0xffBDBDBD),
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      ),
+                      labelStyle: FormConstants.getLabelAndHintStyle(),
+                      // filled: true,
+                      // fillColor: Color(0xffF6F6F6),
+                      border: FormConstants.getEnabledBorder(),
+                      enabledBorder: FormConstants.getEnabledBorder(),
+                      focusedBorder: FormConstants.getFocusedBorder(),
                     ),
                   ),
                   SizedBox(height: 16),
@@ -1491,32 +1273,15 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
                           controller: applicantAnnualIncomeFromYearController,
                           keyboardType: TextInputType.number,
                           maxLength: 4,
-                          style: TextStyle(
-                            color: Colors.black54, //Name
-                            fontFamily: 'Poppins-Bold',
-                          ),
+                          style: FormConstants.getTextStyle(),
                           decoration: InputDecoration(
                             labelText: 'From Year',
-                            filled: true,
-                            fillColor: Color(0xffF6F6F6),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                color: Color(0xffBDBDBD),
-                              ),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                color: Color(0xffBDBDBD),
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                color: Theme.of(context).primaryColor,
-                              ),
-                            ),
+                            labelStyle: FormConstants.getLabelAndHintStyle(),
+                            // filled: true,
+                            // fillColor: Color(0xffF6F6F6),
+                            border: FormConstants.getEnabledBorder(),
+                            enabledBorder: FormConstants.getEnabledBorder(),
+                            focusedBorder: FormConstants.getFocusedBorder(),
                           ),
                         ),
                       ),
@@ -1535,94 +1300,98 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
                           keyboardType: TextInputType.number,
                           maxLength: 4,
                           controller: applicantAnnualIncomeToYearController,
-                          style: TextStyle(
-                            color: Colors.black54,
-                            fontFamily: 'Poppins-Bold',
-                          ),
+                          style: FormConstants.getTextStyle(),
                           decoration: InputDecoration(
                             labelText: 'To Year',
-                            filled: true,
-                            fillColor: Color(0xffF6F6F6),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                color: Color(0xffBDBDBD),
-                              ),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                color: Color(0xffBDBDBD),
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: BorderSide(
-                                color: Theme.of(context).primaryColor,
-                              ),
-                            ),
+                            labelStyle: FormConstants.getLabelAndHintStyle(),
+                            // filled: true,
+                            // fillColor: Color(0xffF6F6F6),
+                            border: FormConstants.getEnabledBorder(),
+                            enabledBorder: FormConstants.getEnabledBorder(),
+                            focusedBorder: FormConstants.getFocusedBorder(),
                           ),
                         ),
                       ),
                     ],
                   ),
                   SizedBox(height: 16),
-                  Text(
-                    'Marital Status',
-                    style: TextStyle(
-                        fontFamily: 'Poppins-Bold',
-                        color: Colors.black,
-                        fontSize: 16),
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Row(
+                  Container(
+                    alignment: Alignment.centerLeft,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                          color: ColorConstants.formBorderColor, width: 2),
+                    ),
+                    padding: EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Marital Status',
+                          style: TextStyle(
+                            fontFamily: 'Poppins-Medium',
+                            fontSize: 14,
+                            color: ColorConstants.formLabelTextColor,
+                          ),
+                        ),
+                        Row(
                           children: [
-                            Radio(
-                              value: MaritalStatus.married,
-                              groupValue: _maritalStatus,
-                              onChanged: (value) {
-                                setState(() {
-                                  _maritalStatus = value as MaritalStatus;
-                                  _selectedMaritalStatus = "Married";
-                                });
-                              },
+                            Expanded(
+                              child: Row(
+                                children: [
+                                  Radio(
+                                    value: MaritalStatus.married,
+                                    groupValue: _maritalStatus,
+                                    activeColor:
+                                        ColorConstants.submitGreenColor,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _maritalStatus = value as MaritalStatus;
+                                        _selectedMaritalStatus = "Married";
+                                      });
+                                    },
+                                  ),
+                                  Text(
+                                    'Married',
+                                    style: TextStyle(
+                                      fontFamily: 'Poppins-Medium',
+                                      color: ColorConstants.darkBlueThemeColor,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                            const Text(
-                              'Married',
-                              style: TextStyle(
-                                  fontFamily: 'Poppins-Bold',
-                                  color: Colors.black54,
-                                  fontSize: 14),
+                            Expanded(
+                              child: Row(
+                                children: [
+                                  Radio(
+                                    value: MaritalStatus.unmarried,
+                                    groupValue: _maritalStatus,
+                                    activeColor:
+                                        ColorConstants.submitGreenColor,
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _maritalStatus = value as MaritalStatus;
+                                        _selectedMaritalStatus = "Unmarried";
+                                      });
+                                    },
+                                  ),
+                                  Text(
+                                    'Unmarried',
+                                    style: TextStyle(
+                                      fontFamily: 'Poppins-Medium',
+                                      color: ColorConstants.darkBlueThemeColor,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
-                      ),
-                      Expanded(
-                        child: Row(
-                          children: [
-                            Radio(
-                              value: MaritalStatus.unmarried,
-                              groupValue: _maritalStatus,
-                              onChanged: (value) {
-                                setState(() {
-                                  _maritalStatus = value as MaritalStatus;
-                                  _selectedMaritalStatus = "Unmarried";
-                                });
-                              },
-                            ),
-                            const Text(
-                              'Unmarried',
-                              style: TextStyle(
-                                  fontFamily: 'Poppins-Bold',
-                                  color: Colors.black54,
-                                  fontSize: 14),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                   SizedBox(height: 16),
                   TextFormField(
@@ -1633,32 +1402,15 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
                       return null;
                     },
                     controller: applicantProduceAtController,
-                    style: TextStyle(
-                      color: Colors.black54,
-                      fontFamily: 'Poppins-Bold',
-                    ),
+                    style: FormConstants.getTextStyle(),
                     decoration: InputDecoration(
                       labelText: 'To produce at',
-                      filled: true,
-                      fillColor: Color(0xffF6F6F6),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Color(0xffBDBDBD),
-                        ),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Color(0xffBDBDBD),
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      ),
+                      labelStyle: FormConstants.getLabelAndHintStyle(),
+                      // filled: true,
+                      // fillColor: Color(0xffF6F6F6),
+                      border: FormConstants.getEnabledBorder(),
+                      enabledBorder: FormConstants.getEnabledBorder(),
+                      focusedBorder: FormConstants.getFocusedBorder(),
                     ),
                   ),
                   SizedBox(height: 16),
@@ -1670,32 +1422,15 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
                       return null;
                     },
                     controller: applicantPurposeController,
-                    style: TextStyle(
-                      color: Colors.black54,
-                      fontFamily: 'Poppins-Bold',
-                    ),
+                    style: FormConstants.getTextStyle(),
                     decoration: InputDecoration(
                       labelText: 'Purpose',
-                      filled: true,
-                      fillColor: Color(0xffF6F6F6),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Color(0xffBDBDBD),
-                        ),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Color(0xffBDBDBD),
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      ),
+                      labelStyle: FormConstants.getLabelAndHintStyle(),
+                      // filled: true,
+                      // fillColor: Color(0xffF6F6F6),
+                      border: FormConstants.getEnabledBorder(),
+                      enabledBorder: FormConstants.getEnabledBorder(),
+                      focusedBorder: FormConstants.getFocusedBorder(),
                     ),
                   ),
                   SizedBox(height: 16),
@@ -1716,11 +1451,11 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
             key: _formKeys[1],
             child: Column(
               children: [
-                const Text(
+                Text(
                   'Upload Documents',
                   style: TextStyle(
                     fontFamily: 'Poppins-Bold',
-                    color: Colors.black,
+                    color: ColorConstants.darkBlueThemeColor,
                     fontSize: 20,
                   ),
                 ),
@@ -1737,228 +1472,235 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
                 const SizedBox(
                   height: 16,
                 ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Row(
-                      children: const [
-                        Expanded(
-                          child: Text(
-                            'Ration Card (Self Attested)',
-                            style: TextStyle(
-                              fontFamily: 'Poppins-Bold',
-                              fontSize: 14,
-                              color: Color(0xff21205b),
-                            ),
-                            textAlign: TextAlign.left,
+                Container(
+                  alignment: Alignment.centerLeft,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                        color: ColorConstants.formBorderColor, width: 2),
+                  ),
+                  padding: EdgeInsets.all(16.0),
+                  child: Column(
+                    children: [
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  'Ration Card (Self Attested)',
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins-Medium',
+                                    fontSize: 14,
+                                    color: ColorConstants.formLabelTextColor,
+                                  ),
+                                  textAlign: TextAlign.left,
+                                ),
+                              ),
+                              Text(
+                                'Required',
+                                style: TextStyle(
+                                  fontFamily: 'Poppins-Bold',
+                                  fontSize: 10,
+                                  color: Colors.red,
+                                ),
+                                textAlign: TextAlign.left,
+                              ),
+                            ],
                           ),
-                        ),
-                        Text(
-                          'Required',
-                          style: TextStyle(
-                            fontFamily: 'Poppins-Bold',
-                            fontSize: 10,
-                            color: Colors.red,
-                          ),
-                          textAlign: TextAlign.left,
-                        ),
-                      ],
-                    ),
-                    if (_fileMap.containsKey(_fileNames[0])) ...[
-                      _buildPDFListItem(_fileMap[_fileNames[0]]!, false)
-                    ] else ...[
-                      chooseFileButton(0)
-                    ],
-                  ],
-                ),
-                const SizedBox(
-                  height: 16,
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Row(
-                      children: const [
-                        Expanded(
-                          child: Text(
-                            'Aadhar Card (Self Attested)',
-                            style: TextStyle(
-                              fontFamily: 'Poppins-Bold',
-                              fontSize: 14,
-                              color: Color(0xff21205b),
-                            ),
-                            textAlign: TextAlign.left,
-                          ),
-                        ),
-                        Text(
-                          'Required',
-                          style: TextStyle(
-                            fontFamily: 'Poppins-Bold',
-                            fontSize: 10,
-                            color: Colors.red,
-                          ),
-                          textAlign: TextAlign.left,
-                        ),
-                      ],
-                    ),
-                    if (_fileMap.containsKey(_fileNames[1])) ...[
-                      _buildPDFListItem(_fileMap[_fileNames[1]]!, false)
-                    ] else ...[
-                      chooseFileButton(1)
-                    ],
-                  ],
-                ),
-                const SizedBox(
-                  height: 16,
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Row(
-                      children: const [
-                        Expanded(
-                          child: Text(
-                            'Form 16/ Salary Certificate/ Bank PassBook(Pensioner)',
-                            style: TextStyle(
-                              fontFamily: 'Poppins-Bold',
-                              fontSize: 14,
-                              color: Color(0xff21205b),
-                            ),
-                            textAlign: TextAlign.left,
-                          ),
-                        ),
-                        Text(
-                          'Required',
-                          style: TextStyle(
-                            fontFamily: 'Poppins-Bold',
-                            fontSize: 10,
-                            color: Colors.red,
-                          ),
-                          textAlign: TextAlign.left,
-                        ),
-                      ],
-                    ),
-                    DropdownButtonFormField(
-                      isExpanded: true,
-                      borderRadius: BorderRadius.circular(5),
-                      icon: Icon(
-                        Icons.arrow_drop_down_outlined,
-                        color: Colors.black,
+                          if (_fileMap.containsKey(_fileNames[0])) ...[
+                            _buildPDFListItem(_fileMap[_fileNames[0]]!, false)
+                          ] else ...[
+                            chooseFileButton(0)
+                          ],
+                        ],
                       ),
-                      value: _selectedFile3Type,
-                      items: _file3TypeMap.keys.map((String option) {
-                        return DropdownMenuItem<String>(
-                          value: option,
-                          child: Text(
-                            option,
-                            style: TextStyle(
-                              color: Colors.black54,
-                              fontFamily: 'Poppins-Bold',
-                            ),
+                      const SizedBox(
+                        height: 16,
+                      ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  'Aadhar Card (Self Attested)',
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins-Medium',
+                                    fontSize: 14,
+                                    color: ColorConstants.formLabelTextColor,
+                                  ),
+                                  textAlign: TextAlign.left,
+                                ),
+                              ),
+                              Text(
+                                'Required',
+                                style: TextStyle(
+                                  fontFamily: 'Poppins-Bold',
+                                  fontSize: 10,
+                                  color: Colors.red,
+                                ),
+                                textAlign: TextAlign.left,
+                              ),
+                            ],
                           ),
-                        );
-                      }).toList(),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          _selectedFile3Type = newValue!;
-                        });
-                      },
-                      validator: (value) {
-                        if (value == null) {
-                          // Add validation to check if a value is selected
-                          return 'Required';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(
-                      height: 16,
-                    ),
-                    if (_fileMap.containsKey(_fileNames[2])) ...[
-                      _buildPDFListItem(_fileMap[_fileNames[2]]!, false)
-                    ] else ...[
-                      chooseFileButton(2)
+                          if (_fileMap.containsKey(_fileNames[1])) ...[
+                            _buildPDFListItem(_fileMap[_fileNames[1]]!, false)
+                          ] else ...[
+                            chooseFileButton(1)
+                          ],
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 16,
+                      ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  'Form 16/ Salary Certificate/ Bank PassBook(Pensioner)',
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins-Medium',
+                                    fontSize: 14,
+                                    color: ColorConstants.formLabelTextColor,
+                                  ),
+                                  textAlign: TextAlign.left,
+                                ),
+                              ),
+                              Text(
+                                'Required',
+                                style: TextStyle(
+                                  fontFamily: 'Poppins-Bold',
+                                  fontSize: 10,
+                                  color: Colors.red,
+                                ),
+                                textAlign: TextAlign.left,
+                              ),
+                            ],
+                          ),
+                          DropdownButtonFormField(
+                            isExpanded: true,
+                            borderRadius: BorderRadius.circular(5),
+                            icon: FormConstants.getDropDownIcon(),
+                            value: _selectedFile3Type,
+                            items: _file3TypeMap.keys.map((String option) {
+                              return DropdownMenuItem<String>(
+                                value: option,
+                                child: Text(
+                                  option,
+                                  style: FormConstants.getDropDownTextStyle(),
+                                ),
+                              );
+                            }).toList(),
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                _selectedFile3Type = newValue!;
+                              });
+                            },
+                            validator: (value) {
+                              if (value == null) {
+                                // Add validation to check if a value is selected
+                                return 'Required';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(
+                            height: 16,
+                          ),
+                          if (_fileMap.containsKey(_fileNames[2])) ...[
+                            _buildPDFListItem(_fileMap[_fileNames[2]]!, false)
+                          ] else ...[
+                            chooseFileButton(2)
+                          ],
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 16,
+                      ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  'Self Declaration',
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins-Medium',
+                                    fontSize: 14,
+                                    color: ColorConstants.formLabelTextColor,
+                                  ),
+                                  textAlign: TextAlign.left,
+                                ),
+                              ),
+                              Text(
+                                'Required',
+                                style: TextStyle(
+                                  fontFamily: 'Poppins-Bold',
+                                  fontSize: 10,
+                                  color: Colors.red,
+                                ),
+                                textAlign: TextAlign.left,
+                              ),
+                            ],
+                          ),
+                          if (_fileMap.containsKey(_fileNames[3])) ...[
+                            _buildPDFListItem(_fileMap[_fileNames[3]]!, false)
+                          ] else ...[
+                            chooseFileButton(3)
+                          ],
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 16,
+                      ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  'Photo: (in JPEG File Format)',
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins-Medium',
+                                    fontSize: 14,
+                                    color: ColorConstants.formLabelTextColor,
+                                  ),
+                                  textAlign: TextAlign.left,
+                                ),
+                              ),
+                              Text(
+                                'Required',
+                                style: TextStyle(
+                                  fontFamily: 'Poppins-Bold',
+                                  fontSize: 10,
+                                  color: Colors.red,
+                                ),
+                                textAlign: TextAlign.left,
+                              ),
+                            ],
+                          ),
+                          if (_fileMap.containsKey(_fileNames[4])) ...[
+                            _buildPDFListItem(_fileMap[_fileNames[4]]!, true)
+                          ] else ...[
+                            chooseFileButton(4)
+                          ],
+                        ],
+                      ),
                     ],
-                  ],
-                ),
-                const SizedBox(
-                  height: 16,
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Row(
-                      children: const [
-                        Expanded(
-                          child: Text(
-                            'Self Declaration',
-                            style: TextStyle(
-                              fontFamily: 'Poppins-Bold',
-                              fontSize: 14,
-                              color: Color(0xff21205b),
-                            ),
-                            textAlign: TextAlign.left,
-                          ),
-                        ),
-                        Text(
-                          'Required',
-                          style: TextStyle(
-                            fontFamily: 'Poppins-Bold',
-                            fontSize: 10,
-                            color: Colors.red,
-                          ),
-                          textAlign: TextAlign.left,
-                        ),
-                      ],
-                    ),
-                    if (_fileMap.containsKey(_fileNames[3])) ...[
-                      _buildPDFListItem(_fileMap[_fileNames[3]]!, false)
-                    ] else ...[
-                      chooseFileButton(3)
-                    ],
-                  ],
-                ),
-                const SizedBox(
-                  height: 16,
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Row(
-                      children: const [
-                        Expanded(
-                          child: Text(
-                            'Photo: (in JPEG File Format)',
-                            style: TextStyle(
-                              fontFamily: 'Poppins-Bold',
-                              fontSize: 14,
-                              color: Color(0xff21205b),
-                            ),
-                            textAlign: TextAlign.left,
-                          ),
-                        ),
-                        Text(
-                          'Required',
-                          style: TextStyle(
-                            fontFamily: 'Poppins-Bold',
-                            fontSize: 10,
-                            color: Colors.red,
-                          ),
-                          textAlign: TextAlign.left,
-                        ),
-                      ],
-                    ),
-                    if (_fileMap.containsKey(_fileNames[4])) ...[
-                      _buildPDFListItem(_fileMap[_fileNames[4]]!, true)
-                    ] else ...[
-                      chooseFileButton(4)
-                    ],
-                  ],
+                  ),
                 ),
                 const SizedBox(
                   height: 16,
@@ -1984,19 +1726,53 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
     }
   }
 
+  // Widget chooseFileButton(int index) {
+  //   return ElevatedButton(
+  //     onPressed: () async {
+  //       if (index == 4) {
+  //         _pickFile(index, imageFileExtension);
+  //       } else {
+  //         _pickFile(index, pdfFileExtension);
+  //       }
+  //     },
+  //     style: ButtonStyle(
+  //       backgroundColor: MaterialStateProperty.all<Color>(Color(0xFF5386E4)),
+  //     ),
+  //     child: const Text('Choose file'),
+  //   );
+  // }
+
   Widget chooseFileButton(int index) {
-    return ElevatedButton(
-      onPressed: () async {
-        if (index == 4) {
-          _pickFile(index, imageFileExtension);
-        } else {
-          _pickFile(index, pdfFileExtension);
-        }
-      },
-      style: ButtonStyle(
-        backgroundColor: MaterialStateProperty.all<Color>(Color(0xFF5386E4)),
+    return Padding(
+      padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
+      child: InkWell(
+        onTap: () {
+          if (index == 4) {
+            _pickFile(index, imageFileExtension);
+          } else {
+            _pickFile(index, pdfFileExtension);
+          }
+        },
+        child: Ink(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: DottedBorder(
+            borderType: BorderType.RRect,
+            padding: EdgeInsets.all(16.0),
+            radius: const Radius.circular(20),
+            dashPattern: [10, 10],
+            color: ColorConstants.formLabelTextColor,
+            strokeWidth: 2,
+            child: Center(
+              child: Icon(
+                Icons.upload,
+                color: ColorConstants.formLabelTextColor,
+              ),
+            ),
+          ),
+        ),
       ),
-      child: const Text('Choose file'),
     );
   }
 
@@ -2049,8 +1825,9 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
         child: Container(
           padding: EdgeInsets.all(10.0),
           decoration: BoxDecoration(
-            border: Border.all(width: 1.0, color: Colors.grey),
-            borderRadius: BorderRadius.circular(8.0),
+            border: Border.all(
+                width: 2.0, color: ColorConstants.formLabelTextColor),
+            borderRadius: BorderRadius.circular(20.0),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -2076,14 +1853,16 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
                     children: [
                       Text(
                         file.path.split('/').last,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
+                        style: TextStyle(
+                          fontFamily: 'Poppins-Medium',
+                          overflow: TextOverflow.ellipsis,
+                          color: ColorConstants.darkBlueThemeColor,
                           fontSize: 14.0,
                         ),
                       ),
                       Text(
                         '${(file.lengthSync() / 1024).toStringAsFixed(2)} KB',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 12.0,
                           color: Colors.grey,
                         ),

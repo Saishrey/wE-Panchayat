@@ -53,6 +53,11 @@ android {
             signingConfig signingConfigs.debug
         }
     }
+
+    dependencies {
+        implementation 'androidx.appcompat:appcompat:1.6.1'
+    }
+
 }
 
 flutter {

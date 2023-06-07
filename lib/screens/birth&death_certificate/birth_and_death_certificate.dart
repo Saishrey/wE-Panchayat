@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
+
 import 'package:flutter/material.dart';
 import 'package:we_panchayat_dev/services/birth_and_death_certificate_api_service.dart';
+import '../../constants.dart';
 
 class BirthAndDeathCertificate extends StatefulWidget {
   BirthAndDeathCertificate({Key? key}) : super(key: key);
@@ -254,11 +256,11 @@ class _BirthAndDeathCertificateState extends State<BirthAndDeathCertificate>
     var result = await showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Are you sure you want to cancel?'),
+        return CupertinoAlertDialog(
+          title: Text('Are you sure you want to cancel?', style: AlertDialogBoxConstants.getNormalTextStyle(),),
           actions: <Widget>[
             TextButton(
-              child: const Text('No'),
+              child: Text('No', style: AlertDialogBoxConstants.getButtonTextStyle(),),
               onPressed: () {
                 if (isCancel) {
                   Navigator.of(context).pop();
@@ -268,7 +270,7 @@ class _BirthAndDeathCertificateState extends State<BirthAndDeathCertificate>
               },
             ),
             TextButton(
-              child: const Text('Yes'),
+              child: Text('Yes', style: AlertDialogBoxConstants.getButtonTextStyle(),),
               onPressed: () {
                 if (isCancel) {
                   Navigator.of(context).pop();
@@ -282,9 +284,9 @@ class _BirthAndDeathCertificateState extends State<BirthAndDeathCertificate>
         );
       },
     );
+
     return result ?? false;
   }
-
   @override
   void initState() {
     super.initState();
@@ -376,38 +378,34 @@ class _BirthAndDeathCertificateState extends State<BirthAndDeathCertificate>
                           child: Column(
                             children: [
                               const SizedBox(height: 16),
-                              const Text(
+                              Text(
                                 'Birth Certificate',
+                                textAlign: TextAlign.center,
                                 style: TextStyle(
                                     fontFamily: 'Poppins-Bold',
-                                    color: Colors.black,
+                                    color: ColorConstants.darkBlueThemeColor,
                                     fontSize: 20),
                               ),
                               const SizedBox(height: 16),
                               Container(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 10, vertical: 6),
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
-                                    border: Border.all(
-                                        color: Color(0xffBDBDBD), width: 1)),
+                                decoration: FormConstants.getDropDownBoxDecoration(),
                                 child: DropdownButtonFormField(
                                   menuMaxHeight: 200,
                                   isExpanded: true,
-                                  icon: Icon(
-                                    Icons.arrow_drop_down_outlined,
-                                    color: Colors.black,
+                                  decoration: const InputDecoration(
+                                    border: InputBorder
+                                        .none, // Remove the bottom border
                                   ),
+                                  icon: FormConstants.getDropDownIcon(),
                                   value: _selectedPanchayatBirth,
                                   items: _panchayatList.map((String option) {
                                     return DropdownMenuItem<String>(
                                       value: option,
                                       child: Text(
                                         option,
-                                        style: TextStyle(
-                                          color: Colors.black54,
-                                          fontFamily: 'Poppins-Bold',
-                                        ),
+                                          style: FormConstants.getDropDownTextStyle(),
                                       ),
                                     );
                                   }).toList(),
@@ -416,10 +414,7 @@ class _BirthAndDeathCertificateState extends State<BirthAndDeathCertificate>
                                   },
                                   hint: Text(
                                     "Panchayat",
-                                    style: TextStyle(
-                                      color: Colors.black54,
-                                      fontFamily: 'Poppins-Bold',
-                                    ),
+                                    style: FormConstants.getDropDownHintStyle(),
                                   ),
                                   validator: (value) {
                                     if (value == null) {
@@ -444,82 +439,38 @@ class _BirthAndDeathCertificateState extends State<BirthAndDeathCertificate>
                                   return null;
                                 },
                                 controller: birthRegistrationNumberController,
-                                style: TextStyle(
-                                  color: Colors.black54,
-                                  fontFamily: 'Poppins-Bold',
-                                ),
+                                style: FormConstants.getTextStyle(),
                                 decoration: InputDecoration(
                                   labelText: 'Registration Number',
-                                  filled: true,
-                                  fillColor: Color(0xffF6F6F6),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                    borderSide: BorderSide(
-                                      color: Color(0xffBDBDBD),
-                                    ),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                    borderSide: BorderSide(
-                                      color: Color(0xffBDBDBD),
-                                    ),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                    borderSide: BorderSide(
-                                      color: Theme.of(context).primaryColor,
-                                    ),
-                                  ),
+                                  labelStyle: FormConstants.getLabelAndHintStyle(),
+                                  // filled: true,
+                                  // fillColor: Color(0xffF6F6F6),
+                                  border: FormConstants.getEnabledBorder(),
+                                  enabledBorder: FormConstants.getEnabledBorder(),
+                                  focusedBorder: FormConstants.getFocusedBorder(),
                                 ),
                               ),
                               const SizedBox(
                                 height: 16,
                               ),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: TextFormField(
-                                      validator: (value) {
-                                        if (value?.isEmpty ?? true) {
-                                          return "Required";
-                                        }
-                                        return null;
-                                      },
-                                      controller: birthApplicantNameController,
-                                      style: TextStyle(
-                                        color: Colors.black54, //Name
-                                        fontFamily: 'Poppins-Bold',
-                                      ),
-                                      decoration: InputDecoration(
-                                        labelText: 'Name',
-                                        filled: true,
-                                        fillColor: Color(0xffF6F6F6),
-                                        border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          borderSide: BorderSide(
-                                            color: Color(0xffBDBDBD),
-                                          ),
-                                        ),
-                                        enabledBorder: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          borderSide: BorderSide(
-                                            color: Color(0xffBDBDBD),
-                                          ),
-                                        ),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          borderSide: BorderSide(
-                                            color:
-                                                Theme.of(context).primaryColor,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                              TextFormField(
+                                validator: (value) {
+                                  if (value?.isEmpty ?? true) {
+                                    return "Required";
+                                  }
+                                  return null;
+                                },
+                                controller: birthApplicantNameController,
+                                style: FormConstants.getTextStyle(),
+                                decoration: InputDecoration(
+                                  labelText: 'Name',
+                                  labelStyle: FormConstants.getLabelAndHintStyle(),
+                                  // filled: true,
+                                  // fillColor: Color(0xffF6F6F6),
+                                  border: FormConstants.getEnabledBorder(),
+                                  enabledBorder: FormConstants.getEnabledBorder(),
+                                  focusedBorder: FormConstants.getFocusedBorder(),
+                                ),
                               ),
                               SizedBox(height: 16),
                               Row(
@@ -534,106 +485,52 @@ class _BirthAndDeathCertificateState extends State<BirthAndDeathCertificate>
                                       },
                                       controller:
                                           birthApplicantFatherNameController,
-                                      style: TextStyle(
-                                        color: Colors.black54, //Name
-                                        fontFamily: 'Poppins-Bold',
-                                      ),
+                                      style: FormConstants.getTextStyle(),
                                       decoration: InputDecoration(
                                         labelText: 'Father\'s Name ',
-                                        filled: true,
-                                        fillColor: Color(0xffF6F6F6),
-                                        border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          borderSide: BorderSide(
-                                            color: Color(0xffBDBDBD),
-                                          ),
-                                        ),
-                                        enabledBorder: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          borderSide: BorderSide(
-                                            color: Color(0xffBDBDBD),
-                                          ),
-                                        ),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          borderSide: BorderSide(
-                                            color:
-                                                Theme.of(context).primaryColor,
-                                          ),
-                                        ),
+                                        labelStyle: FormConstants.getLabelAndHintStyle(),
+                                        // filled: true,
+                                        // fillColor: Color(0xffF6F6F6),
+                                        border: FormConstants.getEnabledBorder(),
+                                        enabledBorder: FormConstants.getEnabledBorder(),
+                                        focusedBorder: FormConstants.getFocusedBorder(),
                                       ),
                                     ),
                                   ),
                                 ],
                               ),
                               SizedBox(height: 16),
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: TextFormField(
-                                      validator: (value) {
-                                        if (value?.isEmpty ?? true) {
-                                          return "Required";
-                                        }
-                                        return null;
-                                      },
-                                      controller:
-                                          birthApplicantMotherNameController,
-                                      style: TextStyle(
-                                        color: Colors.black54, //Name
-                                        fontFamily: 'Poppins-Bold',
-                                      ),
-                                      decoration: InputDecoration(
-                                        labelText: 'Mother\'s Name',
-                                        filled: true,
-                                        fillColor: Color(0xffF6F6F6),
-                                        border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          borderSide: BorderSide(
-                                            color: Color(0xffBDBDBD),
-                                          ),
-                                        ),
-                                        enabledBorder: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          borderSide: BorderSide(
-                                            color: Color(0xffBDBDBD),
-                                          ),
-                                        ),
-                                        focusedBorder: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          borderSide: BorderSide(
-                                            color:
-                                                Theme.of(context).primaryColor,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                              TextFormField(
+                                validator: (value) {
+                                  if (value?.isEmpty ?? true) {
+                                    return "Required";
+                                  }
+                                  return null;
+                                },
+                                controller:
+                                    birthApplicantMotherNameController,
+                                style: FormConstants.getTextStyle(),
+                                decoration: InputDecoration(
+                                  labelText: 'Mother\'s Name',
+                                  labelStyle: FormConstants.getLabelAndHintStyle(),
+                                  // filled: true,
+                                  // fillColor: Color(0xffF6F6F6),
+                                  border: FormConstants.getEnabledBorder(),
+                                  enabledBorder: FormConstants.getEnabledBorder(),
+                                  focusedBorder: FormConstants.getFocusedBorder(),
+                                ),
                               ),
                               SizedBox(height: 16),
                               Container(
                                 padding: EdgeInsets.symmetric(
                                     horizontal: 10, vertical: 6),
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
-                                    border: Border.all(
-                                        color: Color(0xffBDBDBD), width: 1)),
+                                decoration: FormConstants.getDropDownBoxDecoration(),
                                 child: ListTile(
                                   title: Text(
                                     "Date Of Birth:    ${DateFormat('dd-MM-yyyy').format(_selectedDateOfBirth)}",
-                                    style: TextStyle(
-                                      color: Colors.black54,
-                                      fontFamily: 'Poppins-Bold',
-                                    ),
+                                    style: FormConstants.getTextStyle(),
                                   ),
-                                  trailing: Icon(Icons.calendar_month),
+                                  trailing: FormConstants.getCalenderIcon(),
                                   onTap: _pickDateOfBirth,
                                 ),
                               ),
@@ -657,25 +554,15 @@ class _BirthAndDeathCertificateState extends State<BirthAndDeathCertificate>
                                           _selectedDateOfBirth = DateTime.now();
                                         });
                                       },
-                                      child: Text(
-                                        'Clear',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontFamily: 'Poppins-Bold',
-                                          color: Colors.red,
-                                        ),
-                                      ),
                                       style: ButtonStyle(
-                                        backgroundColor:
-                                            MaterialStateProperty.all<Color>(
-                                                Colors.white),
+                                        backgroundColor: MaterialStateProperty.all<Color>(
+                                            Colors.white),
                                         shape: MaterialStateProperty.all<
                                             RoundedRectangleBorder>(
                                           RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10.0),
+                                            borderRadius: BorderRadius.circular(20.0),
                                             side: BorderSide(
-                                              color: Colors.red,
+                                              color: ColorConstants.formLabelTextColor,
                                             ),
                                           ),
                                         ),
@@ -683,6 +570,14 @@ class _BirthAndDeathCertificateState extends State<BirthAndDeathCertificate>
                                             EdgeInsets>(
                                           EdgeInsets.only(
                                               top: 15.0, bottom: 15.0),
+                                        ),
+                                      ),
+                                      child: Text(
+                                        'Clear',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontFamily: 'Poppins-Bold',
+                                          color: ColorConstants.formLabelTextColor,
                                         ),
                                       ),
                                     ),
@@ -718,6 +613,14 @@ class _BirthAndDeathCertificateState extends State<BirthAndDeathCertificate>
                                           };
 
                                           var response = await BirthAndDeathCertificateAPIService.getBirthCertificate(birthBody);
+
+                                          if(response.statusCode != 200) {
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              const SnackBar(
+                                                content: Text('Record does not exist.'),
+                                              ),
+                                            );
+                                          }
                                         }
                                       },
                                       child: Text(
@@ -728,14 +631,12 @@ class _BirthAndDeathCertificateState extends State<BirthAndDeathCertificate>
                                         ),
                                       ),
                                       style: ButtonStyle(
-                                        backgroundColor:
-                                            MaterialStateProperty.all<Color>(
-                                                Color(0xff6CC51D)),
+                                        backgroundColor: MaterialStateProperty.all<Color>(
+                                            ColorConstants.submitGreenColor),
                                         shape: MaterialStateProperty.all<
                                             RoundedRectangleBorder>(
                                           RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10.0),
+                                            borderRadius: BorderRadius.circular(20.0),
                                           ),
                                         ),
                                         padding: MaterialStateProperty.all<
@@ -769,38 +670,33 @@ class _BirthAndDeathCertificateState extends State<BirthAndDeathCertificate>
                           child: Column(
                             children: [
                               const SizedBox(height: 16),
-                              const Text(
+                              Text(
                                 'Death Certificate',
                                 style: TextStyle(
                                     fontFamily: 'Poppins-Bold',
-                                    color: Colors.black,
+                                    color: ColorConstants.darkBlueThemeColor,
                                     fontSize: 20),
                               ),
                               const SizedBox(height: 16),
                               Container(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 10, vertical: 6),
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
-                                    border: Border.all(
-                                        color: Color(0xffBDBDBD), width: 1)),
+                                decoration: FormConstants.getDropDownBoxDecoration(),
                                 child: DropdownButtonFormField(
                                   menuMaxHeight: 200,
                                   isExpanded: true,
-                                  icon: Icon(
-                                    Icons.arrow_drop_down_outlined,
-                                    color: Colors.black,
+                                  decoration: const InputDecoration(
+                                    border: InputBorder
+                                        .none, // Remove the bottom border
                                   ),
+                                  icon: FormConstants.getDropDownIcon(),
                                   value: _selectedPanchayatDeath,
                                   items: _panchayatList.map((String option) {
                                     return DropdownMenuItem<String>(
                                       value: option,
                                       child: Text(
                                         option,
-                                        style: TextStyle(
-                                          color: Colors.black54,
-                                          fontFamily: 'Poppins-Bold',
-                                        ),
+                                        style: FormConstants.getDropDownTextStyle(),
                                       ),
                                     );
                                   }).toList(),
@@ -809,10 +705,7 @@ class _BirthAndDeathCertificateState extends State<BirthAndDeathCertificate>
                                   },
                                   hint: Text(
                                     "Panchayat",
-                                    style: TextStyle(
-                                      color: Colors.black54,
-                                      fontFamily: 'Poppins-Bold',
-                                    ),
+                                    style: FormConstants.getDropDownHintStyle(),
                                   ),
                                   validator: (value) {
                                     if (value == null) {
@@ -837,32 +730,15 @@ class _BirthAndDeathCertificateState extends State<BirthAndDeathCertificate>
                                   return null;
                                 },
                                 controller: deathRegistrationNumberController,
-                                style: TextStyle(
-                                  color: Colors.black54,
-                                  fontFamily: 'Poppins-Bold',
-                                ),
+                                style: FormConstants.getTextStyle(),
                                 decoration: InputDecoration(
                                   labelText: 'Registration Number',
-                                  filled: true,
-                                  fillColor: Color(0xffF6F6F6),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                    borderSide: BorderSide(
-                                      color: Color(0xffBDBDBD),
-                                    ),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                    borderSide: BorderSide(
-                                      color: Color(0xffBDBDBD),
-                                    ),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                    borderSide: BorderSide(
-                                      color: Theme.of(context).primaryColor,
-                                    ),
-                                  ),
+                                  labelStyle: FormConstants.getLabelAndHintStyle(),
+                                  // filled: true,
+                                  // fillColor: Color(0xffF6F6F6),
+                                  border: FormConstants.getEnabledBorder(),
+                                  enabledBorder: FormConstants.getEnabledBorder(),
+                                  focusedBorder: FormConstants.getFocusedBorder(),
                                 ),
                               ),
                               const SizedBox(
@@ -876,32 +752,15 @@ class _BirthAndDeathCertificateState extends State<BirthAndDeathCertificate>
                                   return null;
                                 },
                                 controller: deathApplicantNameController,
-                                style: TextStyle(
-                                  color: Colors.black54, //Name
-                                  fontFamily: 'Poppins-Bold',
-                                ),
+                                style: FormConstants.getTextStyle(),
                                 decoration: InputDecoration(
                                   labelText: 'Name',
-                                  filled: true,
-                                  fillColor: Color(0xffF6F6F6),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                    borderSide: BorderSide(
-                                      color: Color(0xffBDBDBD),
-                                    ),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                    borderSide: BorderSide(
-                                      color: Color(0xffBDBDBD),
-                                    ),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                    borderSide: BorderSide(
-                                      color: Theme.of(context).primaryColor,
-                                    ),
-                                  ),
+                                  labelStyle: FormConstants.getLabelAndHintStyle(),
+                                  // filled: true,
+                                  // fillColor: Color(0xffF6F6F6),
+                                  border: FormConstants.getEnabledBorder(),
+                                  enabledBorder: FormConstants.getEnabledBorder(),
+                                  focusedBorder: FormConstants.getFocusedBorder(),
                                 ),
                               ),
                               SizedBox(height: 16),
@@ -913,51 +772,28 @@ class _BirthAndDeathCertificateState extends State<BirthAndDeathCertificate>
                                   return null;
                                 },
                                 controller: deathApplicantFatherNameController,
-                                style: TextStyle(
-                                  color: Colors.black54, //Name
-                                  fontFamily: 'Poppins-Bold',
-                                ),
+                                style: FormConstants.getTextStyle(),
                                 decoration: InputDecoration(
-                                  labelText: 'Father\'s Name ',
-                                  filled: true,
-                                  fillColor: Color(0xffF6F6F6),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                    borderSide: BorderSide(
-                                      color: Color(0xffBDBDBD),
-                                    ),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                    borderSide: BorderSide(
-                                      color: Color(0xffBDBDBD),
-                                    ),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10),
-                                    borderSide: BorderSide(
-                                      color: Theme.of(context).primaryColor,
-                                    ),
-                                  ),
+                                  labelText: 'Father\'s Name',
+                                  labelStyle: FormConstants.getLabelAndHintStyle(),
+                                  // filled: true,
+                                  // fillColor: Color(0xffF6F6F6),
+                                  border: FormConstants.getEnabledBorder(),
+                                  enabledBorder: FormConstants.getEnabledBorder(),
+                                  focusedBorder: FormConstants.getFocusedBorder(),
                                 ),
                               ),
                               SizedBox(height: 16),
                               Container(
                                 padding: EdgeInsets.symmetric(
                                     horizontal: 10, vertical: 6),
-                                decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
-                                    border: Border.all(
-                                        color: Color(0xffBDBDBD), width: 1)),
+                                decoration: FormConstants.getDropDownBoxDecoration(),
                                 child: ListTile(
                                   title: Text(
                                     "Date Of Death:    ${DateFormat('dd-MM-yyyy').format(_selectedDateOfDeath)}",
-                                    style: TextStyle(
-                                      color: Colors.black54,
-                                      fontFamily: 'Poppins-Bold',
-                                    ),
+                                    style: FormConstants.getTextStyle(),
                                   ),
-                                  trailing: Icon(Icons.calendar_month),
+                                  trailing: FormConstants.getCalenderIcon(),
                                   onTap: _pickDateOfDeath,
                                 ),
                               ),
@@ -979,25 +815,15 @@ class _BirthAndDeathCertificateState extends State<BirthAndDeathCertificate>
                                           _selectedDateOfDeath = DateTime.now();
                                         });
                                       },
-                                      child: Text(
-                                        'Clear',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontFamily: 'Poppins-Bold',
-                                          color: Colors.red,
-                                        ),
-                                      ),
                                       style: ButtonStyle(
-                                        backgroundColor:
-                                            MaterialStateProperty.all<Color>(
-                                                Colors.white),
+                                        backgroundColor: MaterialStateProperty.all<Color>(
+                                            Colors.white),
                                         shape: MaterialStateProperty.all<
                                             RoundedRectangleBorder>(
                                           RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10.0),
+                                            borderRadius: BorderRadius.circular(20.0),
                                             side: BorderSide(
-                                              color: Colors.red,
+                                              color: ColorConstants.formLabelTextColor,
                                             ),
                                           ),
                                         ),
@@ -1005,6 +831,14 @@ class _BirthAndDeathCertificateState extends State<BirthAndDeathCertificate>
                                             EdgeInsets>(
                                           EdgeInsets.only(
                                               top: 15.0, bottom: 15.0),
+                                        ),
+                                      ),
+                                      child: Text(
+                                        'Clear',
+                                        style: TextStyle(
+                                          fontSize: 16,
+                                          fontFamily: 'Poppins-Bold',
+                                          color: ColorConstants.formLabelTextColor,
                                         ),
                                       ),
                                     ),
@@ -1047,14 +881,12 @@ class _BirthAndDeathCertificateState extends State<BirthAndDeathCertificate>
                                         ),
                                       ),
                                       style: ButtonStyle(
-                                        backgroundColor:
-                                            MaterialStateProperty.all<Color>(
-                                                Color(0xff6CC51D)),
+                                        backgroundColor: MaterialStateProperty.all<Color>(
+                                            ColorConstants.submitGreenColor),
                                         shape: MaterialStateProperty.all<
                                             RoundedRectangleBorder>(
                                           RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10.0),
+                                            borderRadius: BorderRadius.circular(20.0),
                                           ),
                                         ),
                                         padding: MaterialStateProperty.all<

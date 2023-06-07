@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:we_panchayat_dev/constants.dart';
 import 'package:we_panchayat_dev/models/applications_response_model.dart';
 import 'package:we_panchayat_dev/models/income_certificate_response_model.dart';
 import 'package:we_panchayat_dev/models/trade_license_reponse_model.dart';
@@ -10,19 +11,22 @@ import 'package:we_panchayat_dev/services/income_certificate_api_service.dart';
 import 'package:we_panchayat_dev/services/trade_license_api_service.dart';
 
 class ApplicationsListView extends StatelessWidget {
-
   final List<ApplicationsListItem> entries;
 
   const ApplicationsListView({super.key, required this.entries});
 
-  final AssetImage _tradeLicenseIcon = const AssetImage("assets/images/trade_license.png");
-  final AssetImage _birthAndDeathIcon = const AssetImage("assets/images/birth_&_death.png");
-  final AssetImage _incomeCertIcon = const AssetImage("assets/images/income.png");
-  final AssetImage _houseTaxIcon = const AssetImage("assets/images/house_tax.png");
+  final AssetImage _tradeLicenseIcon =
+      const AssetImage("assets/images/trade_license.png");
+  final AssetImage _birthAndDeathIcon =
+      const AssetImage("assets/images/birth_&_death.png");
+  final AssetImage _incomeCertIcon =
+      const AssetImage("assets/images/income.png");
+  final AssetImage _houseTaxIcon =
+      const AssetImage("assets/images/house_tax.png");
   final AssetImage _defaultIcon = const AssetImage("assets/images/icon.png");
 
   AssetImage getImageIcon(String applicationsType) {
-    switch(applicationsType) {
+    switch (applicationsType) {
       case "Trade License & Signboard":
         return _tradeLicenseIcon;
       case "Birth & Death Certificate":
@@ -38,7 +42,6 @@ class ApplicationsListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return ListView.separated(
       itemCount: entries.length,
       separatorBuilder: (BuildContext context, int index) {
@@ -46,18 +49,19 @@ class ApplicationsListView extends StatelessWidget {
       },
       itemBuilder: (BuildContext context, int index) {
         return Ink(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.5),
-                spreadRadius: 2,
-                blurRadius: 5,
-                offset: const Offset(0, 3),
-              ),
-            ],
-          ),
+          // decoration: BoxDecoration(
+          //   color: Colors.white,
+          //   borderRadius: BorderRadius.circular(10),
+          //   boxShadow: [
+          //     BoxShadow(
+          //       color: Colors.grey.withOpacity(0.5),
+          //       spreadRadius: 2,
+          //       blurRadius: 5,
+          //       offset: const Offset(0, 3),
+          //     ),
+          //   ],
+          // ),
+          decoration: FormConstants.getDropDownBoxDecoration(),
           child: InkWell(
             child: ListTile(
               leading: Container(
@@ -76,26 +80,37 @@ class ApplicationsListView extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   fontSize: 14,
-                  fontFamily: 'Poppins-Bold',
-                  color: Color(0xff21205b),
+                  fontFamily: 'Poppins-Medium',
+                  color: ColorConstants.darkBlueThemeColor,
                 ),
               ),
               subtitle: Text(
-                entries[index].applicationId!,
-                style: TextStyle(fontSize: 10, fontWeight: FontWeight.w500),
+                "ID: ${entries[index].applicationId!}",
+                style: TextStyle(
+                  fontSize: 10,
+                  fontFamily: 'Poppins-Medium',
+                  color: ColorConstants.formLabelTextColor,
+                ),
                 overflow: TextOverflow.ellipsis,
               ),
               trailing: Text(
                 formatDate(entries[index].date!),
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                style: TextStyle(
+                  fontSize: 12,
+                  fontFamily: 'Poppins-Medium',
+                  color: ColorConstants.formLabelTextColor,
+                ),
                 textAlign: TextAlign.center,
               ),
               onTap: () {
-                if(entries[index].applicationType == "Trade License & Signboard") {
-                  _navigateToTradeLicenseDetails(context, entries[index].applicationId!);
+                if (entries[index].applicationType ==
+                    "Trade License & Signboard") {
+                  _navigateToTradeLicenseDetails(
+                      context, entries[index].applicationId!);
                 }
-                if(entries[index].applicationType == "Income Certificate") {
-                  _navigateToIncomeCertificateDetails(context, entries[index].applicationId!);
+                if (entries[index].applicationType == "Income Certificate") {
+                  _navigateToIncomeCertificateDetails(
+                      context, entries[index].applicationId!);
                 }
               },
             ),
@@ -110,9 +125,10 @@ class ApplicationsListView extends StatelessWidget {
     return DateFormat('MMMM dd yyyy').format(date);
   }
 
-  void _navigateToTradeLicenseDetails(BuildContext context, String applicationId) async {
+  void _navigateToTradeLicenseDetails(
+      BuildContext context, String applicationId) async {
     final licenseData = await _fetchLicenseDetails(applicationId);
-    if(licenseData.statusCode == 200) {
+    if (licenseData.statusCode == 200) {
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -121,25 +137,26 @@ class ApplicationsListView extends StatelessWidget {
           ),
         ),
       );
-    }
-    else {
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('Could not fetch details.')));
+          const SnackBar(content: Text('Could not fetch details.')));
     }
   }
 
-  Future<TradeLicenseFormResponseModel> _fetchLicenseDetails(String applicationId) async {
+  Future<TradeLicenseFormResponseModel> _fetchLicenseDetails(
+      String applicationId) async {
     Map<String, String> body1 = {
-      "application_id" : applicationId,
+      "application_id": applicationId,
     };
     var response = await TradeLicenseAPIService.retrieveForm(body1);
     return tradeLicenseFormResponseJson(response.body);
   }
 
-  void _navigateToIncomeCertificateDetails(BuildContext context, String applicationId) async {
-    final incomeCertificateData = await _fetchIncomeCertificateDetails(applicationId);
-    if(incomeCertificateData.statusCode == 200) {
+  void _navigateToIncomeCertificateDetails(
+      BuildContext context, String applicationId) async {
+    final incomeCertificateData =
+        await _fetchIncomeCertificateDetails(applicationId);
+    if (incomeCertificateData.statusCode == 200) {
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -148,20 +165,18 @@ class ApplicationsListView extends StatelessWidget {
           ),
         ),
       );
-    }
-    else {
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('Could not fetch details.')));
+          const SnackBar(content: Text('Could not fetch details.')));
     }
   }
 
-  Future<IncomeCertificateFormResponseModel> _fetchIncomeCertificateDetails(String applicationId) async {
+  Future<IncomeCertificateFormResponseModel> _fetchIncomeCertificateDetails(
+      String applicationId) async {
     Map<String, String> body1 = {
-      "application_id" : applicationId,
+      "application_id": applicationId,
     };
     var response = await IncomeCertificateAPIService.retrieveForm(body1);
     return incomeCertificateFormResponseJson(response.body);
   }
 }
-

@@ -1,11 +1,24 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:api_cache_manager/utils/cache_manager.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:we_panchayat_dev/screens/splash.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter_dialogs/flutter_dialogs.dart';
+
+import 'constants.dart';
+import 'package:flutter/services.dart';
+import 'package:local_auth/error_codes.dart' as error_code;
+import 'package:local_auth/local_auth.dart';
+import 'package:local_auth_android/local_auth_android.dart';
+import 'package:local_auth_ios/local_auth_ios.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,50 +39,10 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
 
-  var isLogin = false;
-
-  ConnectivityResult? _connectivityResult;
-
   @override
   void initState() {
     super.initState();
-    checkConnectivity();
-    Connectivity().onConnectivityChanged.listen((result) {
-      setState(() {
-        _connectivityResult = result;
-      });
-      if (result == ConnectivityResult.none) {
-        showNoInternetDialog();
-      }
-    });
-  }
 
-  Future<void> checkConnectivity() async {
-    final connectivityResult = await Connectivity().checkConnectivity();
-    setState(() {
-      _connectivityResult = connectivityResult;
-    });
-    if (connectivityResult == ConnectivityResult.none) {
-      showNoInternetDialog();
-    }
-  }
-
-  Future<void> showNoInternetDialog() async {
-    await showPlatformDialog(
-      context: context,
-      builder: (_) => BasicDialogAlert(
-        title: Text("No Internet Connection"),
-        content: Text("Please check your internet connection."),
-        actions: [
-          BasicDialogAction(
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            title: Text("OK"),
-          ),
-        ],
-      ),
-    );
   }
 
 
@@ -81,6 +54,7 @@ class _MyAppState extends State<MyApp> {
       DeviceOrientation.portraitDown,
     ]);
 
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'wE-Panchayat',
@@ -91,7 +65,7 @@ class _MyAppState extends State<MyApp> {
         ),
         brightness: Brightness.light,
         primarySwatch: Colors.blue,
-        accentColor: Colors.purpleAccent.shade700,
+        accentColor: Colors.lightBlueAccent.shade200,
       ),
       home: const Splash(),
       // routes: {
@@ -101,6 +75,5 @@ class _MyAppState extends State<MyApp> {
       // },
     );
   }
-
 }
 

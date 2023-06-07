@@ -4,10 +4,12 @@ import 'package:flutter/services.dart';
 
 import 'package:flutter/material.dart';
 import 'package:we_panchayat_dev/config.dart';
+import 'package:we_panchayat_dev/models/house_tax_response_model.dart';
 import 'package:we_panchayat_dev/services/house_tax_api_service.dart';
 
 import '../../models/login_response_model.dart';
 import '../../services/shared_service.dart';
+import '../../constants.dart';
 
 class HouseTax extends StatefulWidget {
   HouseTax({Key? key}) : super(key: key);
@@ -810,6 +812,16 @@ class _HouseTaxState extends State<HouseTax> {
   TextEditingController _emailController = TextEditingController();
   TextEditingController _mobileNumberController = TextEditingController();
 
+  final ScrollController _scrollController = ScrollController();
+  HouseTaxResponseModel? _model;
+  bool _isResponse = false;
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -874,16 +886,17 @@ class _HouseTaxState extends State<HouseTax> {
 
   void populateRevenueVillageMenuItem(List<String>? villages) {
     for (String village in villages!) {
-      villageMenuItems.add(DropdownMenuItem<String>(
-        child: Center(
-          child: Text(village,
-              style: TextStyle(
-                color: Colors.black54,
-                fontFamily: 'Poppins-Bold',
-              )),
+      villageMenuItems.add(
+        DropdownMenuItem<String>(
+          child: Center(
+            child: Text(
+              village,
+              style: FormConstants.getDropDownTextStyle(),
+            ),
+          ),
+          value: village,
         ),
-        value: village,
-      ));
+      );
     }
   }
 
@@ -892,11 +905,11 @@ class _HouseTaxState extends State<HouseTax> {
     var result = await showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Are you sure you want to cancel?'),
+        return CupertinoAlertDialog(
+          title: Text('Are you sure you want to cancel?', style: AlertDialogBoxConstants.getNormalTextStyle(),),
           actions: <Widget>[
             TextButton(
-              child: const Text('No'),
+              child: Text('No', style: AlertDialogBoxConstants.getButtonTextStyle(),),
               onPressed: () {
                 if (isCancel) {
                   Navigator.of(context).pop();
@@ -906,7 +919,7 @@ class _HouseTaxState extends State<HouseTax> {
               },
             ),
             TextButton(
-              child: const Text('Yes'),
+              child: Text('Yes', style: AlertDialogBoxConstants.getButtonTextStyle(),),
               onPressed: () {
                 if (isCancel) {
                   Navigator.of(context).pop();
@@ -953,380 +966,1207 @@ class _HouseTaxState extends State<HouseTax> {
               topRight: Radius.circular(30.0),
             ),
           ),
-          child: SingleChildScrollView(
-            child: Form(
-              key: _formKey,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  const SizedBox(height: 16),
-                  const Text(
-                    'House Tax',
-                    style: TextStyle(
-                        fontFamily: 'Poppins-Bold',
-                        color: Colors.black,
-                        fontSize: 20),
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 6),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                  color: Color(0xffBDBDBD), width: 1)),
-                          child: DropdownButtonFormField(
-                            menuMaxHeight: 200,
-                            isExpanded: true,
-                            icon: const Icon(
-                              Icons.arrow_drop_down_outlined,
-                              color: Colors.black,
+          child: ListView(
+            controller: _scrollController,
+            children: [
+              const SizedBox(height: 16),
+              Text(
+                'House Tax',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: 'Poppins-Bold',
+                  color: ColorConstants.darkBlueThemeColor,
+                  fontSize: 20,
+                ),
+              ),
+              Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 6),
+                            decoration:
+                                FormConstants.getDropDownBoxDecoration(),
+                            child: DropdownButtonFormField(
+                              menuMaxHeight: 200,
+                              decoration: const InputDecoration(
+                                border: InputBorder
+                                    .none, // Remove the bottom border
+                              ),
+                              isExpanded: true,
+                              icon: FormConstants.getDropDownIcon(),
+                              value: _selectedPanchayat,
+                              items: _mappedPanchayatAndRevenueVillages.keys
+                                  .map((String option) {
+                                return DropdownMenuItem<String>(
+                                  value: option,
+                                  child: Text(
+                                    option,
+                                    style: FormConstants.getDropDownTextStyle(),
+                                  ),
+                                );
+                              }).toList(),
+                              onChanged: (_value) => selected(_value),
+                              hint: Text(
+                                "Panchayat",
+                                style: FormConstants.getDropDownHintStyle(),
+                              ),
+                              validator: (value) {
+                                if (value == null) {
+                                  // Add validation to check if a value is selected
+                                  return 'Required';
+                                }
+                                return null;
+                              },
                             ),
-                            value: _selectedPanchayat,
-                            items: _mappedPanchayatAndRevenueVillages.keys
-                                .map((String option) {
-                              return DropdownMenuItem<String>(
-                                value: option,
-                                child: Text(
-                                  option,
-                                  style: TextStyle(
-                                    color: Colors.black54,
-                                    fontFamily: 'Poppins-Bold',
+                          ),
+                        ),
+                        const SizedBox(width: 10.0),
+                        Expanded(
+                          child: Container(
+                            padding: EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 6),
+                            decoration:
+                                FormConstants.getDropDownBoxDecoration(),
+                            child: DropdownButtonFormField(
+                              menuMaxHeight: 200,
+                              isExpanded: true,
+                              decoration: const InputDecoration(
+                                border: InputBorder
+                                    .none, // Remove the bottom border
+                              ),
+                              icon: FormConstants.getDropDownIcon(),
+                              value: _selectedRevenueVillage,
+                              items: villageMenuItems,
+                              onChanged: disabledVillageMenuItem
+                                  ? null
+                                  : (_value) => secondselected(_value),
+                              disabledHint: Text(
+                                "Revenue Village",
+                                style: FormConstants.getDropDownDisabledStyle(),
+                              ),
+                              validator: (value) {
+                                if (value == null) {
+                                  // Add validation to check if a value is selected
+                                  return 'Required';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Required';
+                        } else if (!RegExp(r"^\d{1,}(\/[A-Za-z0-9]+)*$")
+                            .hasMatch(value)) {
+                          return 'Invalid House No.';
+                        }
+                        return null;
+                      },
+                      controller: _houseNumberController,
+                      style: FormConstants.getTextStyle(),
+                      decoration: InputDecoration(
+                        labelText: 'House Number',
+                        labelStyle: FormConstants.getLabelAndHintStyle(),
+                        hintText: 'Eg. 12/345/',
+                        hintStyle: FormConstants.getLabelAndHintStyle(),
+                        // filled: true,
+                        // fillColor: Color(0xffF6F6F6),
+                        border: FormConstants.getEnabledBorder(),
+                        enabledBorder: FormConstants.getEnabledBorder(),
+                        focusedBorder: FormConstants.getFocusedBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      validator: (value) {
+                        if (value?.isEmpty ?? true) {
+                          return "Required";
+                        }
+                        return null;
+                      },
+                      controller: _nameOfPayeeController,
+                      style: FormConstants.getTextStyle(),
+                      decoration: InputDecoration(
+                        labelText: 'Name of Payee',
+                        labelStyle: FormConstants.getLabelAndHintStyle(),
+                        // filled: true,
+                        // fillColor: Color(0xffF6F6F6),
+                        border: FormConstants.getEnabledBorder(),
+                        enabledBorder: FormConstants.getEnabledBorder(),
+                        focusedBorder: FormConstants.getFocusedBorder(),
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                    TextFormField(
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return "Required";
+                        } else if (!RegExp(
+                                r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                            .hasMatch(value)) {
+                          return "Invalid email";
+                        }
+                      },
+                      controller: _emailController,
+                      style: FormConstants.getTextStyle(),
+                      decoration: InputDecoration(
+                        labelText: 'Email',
+                        labelStyle: FormConstants.getLabelAndHintStyle(),
+                        // filled: true,
+                        // fillColor: Color(0xffF6F6F6),
+                        border: FormConstants.getEnabledBorder(),
+                        enabledBorder: FormConstants.getEnabledBorder(),
+                        focusedBorder: FormConstants.getFocusedBorder(),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    TextFormField(
+                      keyboardType: TextInputType.phone,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        LengthLimitingTextInputFormatter(10)
+                      ],
+                      controller: _mobileNumberController,
+                      style: FormConstants.getTextStyle(),
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return "Required";
+                        } else if (!RegExp(r"^[789]\d{9}$").hasMatch(value)) {
+                          return "Invalid mobile no.";
+                        }
+                        return null;
+                      },
+                      decoration: InputDecoration(
+                        labelText: 'Mobile Number',
+                        labelStyle: FormConstants.getLabelAndHintStyle(),
+                        border: FormConstants.getEnabledBorder(),
+                        enabledBorder: FormConstants.getEnabledBorder(),
+                        focusedBorder: FormConstants.getFocusedBorder(),
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                _selectedPanchayat = null;
+                                _selectedRevenueVillage = null;
+                                disabledVillageMenuItem = true;
+
+                                _houseNumberController.clear();
+                                _nameOfPayeeController.clear();
+                                _emailController.clear();
+                                _mobileNumberController.clear();
+
+                                _isResponse = false;
+                              });
+                            },
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all<Color>(
+                                  Colors.white),
+                              shape: MaterialStateProperty.all<
+                                  RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20.0),
+                                  side: BorderSide(
+                                    color: ColorConstants.formLabelTextColor,
                                   ),
                                 ),
-                              );
-                            }).toList(),
-                            onChanged: (_value) => selected(_value),
-                            hint: const Text(
-                              "Panchayat",
-                              style: TextStyle(
-                                color: Colors.black54,
-                                fontFamily: 'Poppins-Bold',
-                                fontSize: 14,
+                              ),
+                              padding: MaterialStateProperty.all<EdgeInsets>(
+                                EdgeInsets.only(top: 15.0, bottom: 15.0),
                               ),
                             ),
-                            validator: (value) {
-                              if (value == null) {
-                                // Add validation to check if a value is selected
-                                return 'Required';
-                              }
-                              return null;
-                            },
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 10.0),
-                      Expanded(
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 6),
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                  color: Color(0xffBDBDBD), width: 1)),
-                          child: DropdownButtonFormField(
-                            menuMaxHeight: 200,
-                            isExpanded: true,
-                            icon: Icon(
-                              Icons.arrow_drop_down_outlined,
-                              color: Colors.black,
-                            ),
-                            value: _selectedRevenueVillage,
-                            items: villageMenuItems,
-                            onChanged: disabledVillageMenuItem
-                                ? null
-                                : (_value) => secondselected(_value),
-                            disabledHint: const Text(
-                              "Revenue Village",
+                            child: Text(
+                              'Clear',
                               style: TextStyle(
-                                color: Colors.black54,
+                                fontSize: 16,
                                 fontFamily: 'Poppins-Bold',
-                                fontSize: 14,
+                                color: ColorConstants.formLabelTextColor,
                               ),
                             ),
-                            validator: (value) {
-                              if (value == null) {
-                                // Add validation to check if a value is selected
-                                return 'Required';
-                              }
-                              return null;
-                            },
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Required';
-                      }
-                      else if(!RegExp(r"^\d{1,}(\/[A-Za-z0-9]+)*$").hasMatch(value)) {
-                        return 'Invalid House No.';
-                      }
-                      return null;
-                    },
-                    controller: _houseNumberController,
-                    style: TextStyle(
-                      color: Colors.black54,
-                      fontFamily: 'Poppins-Bold',
-                    ),
-                    decoration: InputDecoration(
-                      labelText: 'House Number',
-                      hintText: 'Eg. 12/345/',
-                      hintStyle: TextStyle(
-                        color: Colors.black26,
-                      ),
-                      filled: true,
-                      fillColor: Color(0xffF6F6F6),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Color(0xffBDBDBD),
-                        ),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Color(0xffBDBDBD),
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    validator: (value) {
-                      if (value?.isEmpty ?? true) {
-                        return "Required";
-                      }
-                      return null;
-                    },
-                    controller: _nameOfPayeeController,
-                    style: TextStyle(
-                      color: Colors.black54, //Name
-                      fontFamily: 'Poppins-Bold',
-                    ),
-                    decoration: InputDecoration(
-                      labelText: 'Name of Payee',
-                      filled: true,
-                      fillColor: Color(0xffF6F6F6),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Color(0xffBDBDBD),
-                        ),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Color(0xffBDBDBD),
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 16),
-                  TextFormField(
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return "Required";
-                      } else if (!RegExp(
-                              r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                          .hasMatch(value)) {
-                        return "Invalid email";
-                      }
-                    },
-                    controller: _emailController,
-                    style: TextStyle(
-                      color: Colors.black54,
-                      fontFamily: 'Poppins-Bold',
-                    ),
-                    decoration: InputDecoration(
-                      labelText: 'Email',
-                      filled: true,
-                      fillColor: Color(0xffF6F6F6),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Color(0xffBDBDBD),
-                        ),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Color(0xffBDBDBD),
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  TextFormField(
-                    keyboardType: TextInputType.phone,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                      LengthLimitingTextInputFormatter(10)
-                    ],
-                    controller: _mobileNumberController,
-                    style: TextStyle(
-                      color: Colors.black54,
-                      fontFamily: 'Poppins-Bold',
-                    ),
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return "Required";
-                      } else if (!RegExp(r"^[789]\d{9}$").hasMatch(value)) {
-                        return "Invalid mobile no.";
-                      }
-                      return null;
-                    },
-                    decoration: InputDecoration(
-                      labelText: 'Mobile Number',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Colors.grey.shade400,
-                          width: 2,
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Theme.of(context).primaryColor,
-                          width: 2,
-                        ),
-                      ),
-                      errorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Colors.red,
-                          width: 2,
-                        ),
-                      ),
-                      focusedErrorBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        borderSide: BorderSide(
-                          color: Colors.red,
-                          width: 2,
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            setState(() {
-                              _selectedPanchayat = null;
-                              _selectedRevenueVillage = null;
-                              disabledVillageMenuItem = true;
+                        SizedBox(width: 10.0),
+                        Expanded(
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              // Validate the form inputs
+                              if (_formKey.currentState!.validate()) {
+                                // Form is valid, do something here
+                                print('Form is valid!');
 
-                              _houseNumberController.clear();
-                              _nameOfPayeeController.clear();
-                              _emailController.clear();
-                              _mobileNumberController.clear();
-                            });
-                          },
-                          child: Text(
-                            'Clear',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontFamily: 'Poppins-Bold',
-                              color: Colors.red,
-                            ),
-                          ),
-                          style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(
-                                Colors.white),
-                            shape: MaterialStateProperty.all<
-                                RoundedRectangleBorder>(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                                side: BorderSide(
-                                  color: Colors.red,
+                                Map<String, String> body = {
+                                  "panchayat": _selectedPanchayat!,
+                                  "revenue_village": _selectedRevenueVillage!,
+                                  "house_no": _houseNumberController.text,
+                                  // "applicants_name": applicantNameController.text,
+                                  // "applicants_address": applicantAddressController.text,
+                                  // "phone": applicantPhoneNoController.text,
+                                  // "email": applicantEmailController.text,
+                                };
+
+                                var res =
+                                    await HouseTaxAPIService.getTaxDetails(
+                                        body);
+
+                                if (res.statusCode == 200) {
+                                  setState(() {
+                                    _model = houseTaxResponseJson(res.body);
+                                    _isResponse = true;
+                                  });
+
+                                  // Scroll the form upwards after receiving the response
+                                  _scrollController.animateTo(
+                                    540,
+                                    duration: Duration(milliseconds: 1000),
+                                    curve: Curves.easeInOut,
+                                  );
+                                } else {
+                                  if (_isResponse) {
+                                    setState(() {
+                                      _isResponse = false;
+                                      _model = null;
+                                    });
+                                  }
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Record does not exist.'),
+                                    ),
+                                  );
+                                }
+                              }
+                            },
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all<Color>(
+                                  ColorConstants.darkBlueThemeColor),
+                              shape: MaterialStateProperty.all<
+                                  RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20.0),
                                 ),
                               ),
-                            ),
-                            padding: MaterialStateProperty.all<EdgeInsets>(
-                              EdgeInsets.only(top: 15.0, bottom: 15.0),
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 10.0),
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () async {
-                            // Validate the form inputs
-                            if (_formKey.currentState!.validate()) {
-                              // Form is valid, do something here
-                              print('Form is valid!');
-
-                              Map<String, String> body = {
-                                "panchayat": _selectedPanchayat!,
-                                "revenue_village": _selectedRevenueVillage!,
-                                "house_no": _houseNumberController.text,
-                                // "applicants_name": applicantNameController.text,
-                                // "applicants_address": applicantAddressController.text,
-                                // "phone": applicantPhoneNoController.text,
-                                // "email": applicantEmailController.text,
-                              };
-
-                              var response = await HouseTaxAPIService.getTaxDetails(body);
-                            }
-                          },
-                          child: Text(
-                            'Search',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontFamily: 'Poppins-Bold',
-                            ),
-                          ),
-                          style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all<Color>(
-                                Color(0xff6CC51D)),
-                            shape: MaterialStateProperty.all<
-                                RoundedRectangleBorder>(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10.0),
+                              padding: MaterialStateProperty.all<EdgeInsets>(
+                                EdgeInsets.only(top: 15.0, bottom: 15.0),
                               ),
                             ),
-                            padding: MaterialStateProperty.all<EdgeInsets>(
-                              EdgeInsets.only(top: 15.0, bottom: 15.0),
+                            child: const Text(
+                              'Search',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontFamily: 'Poppins-Bold',
+                              ),
                             ),
                           ),
                         ),
+                      ],
+                    ),
+                    SizedBox(height: 20),
+                  ],
+                ),
+              ),
+              if (_isResponse) ...[
+                const SizedBox(
+                  height: 20,
+                ),
+                Container(
+                  child: Column(
+                    children: [
+                      const SizedBox(
+                        height: 8.0,
                       ),
+                      Text(
+                        "For Financial Year\n April 2023 to March 2024",
+                        style: TextStyle(
+                          fontFamily: 'Poppins-Bold',
+                          color: Color(0xff21205b),
+                          fontSize: 24,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(
+                        height: 8.0,
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              "House Number : ",
+                              style: TextStyle(
+                                fontFamily: 'Poppins-Medium',
+                                color: Color(0xff7b7f9e),
+                                fontSize: 14,
+                              ),
+                              textAlign: TextAlign.right,
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          Expanded(
+                            child: Text(
+                              "${_model?.data?.houseNo!}",
+                              style: TextStyle(
+                                fontFamily: 'Poppins-Medium',
+                                color: Colors.black54,
+                                fontSize: 14,
+                              ),
+                              textAlign: TextAlign.left,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 8.0,
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              "Name of Owner : ",
+                              style: TextStyle(
+                                fontFamily: 'Poppins-Medium',
+                                color: Color(0xff7b7f9e),
+                                fontSize: 14,
+                              ),
+                              textAlign: TextAlign.right,
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          Expanded(
+                            child: Text(
+                              "${_model?.data?.ownerName!}",
+                              style: TextStyle(
+                                fontFamily: 'Poppins-Medium',
+                                color: Colors.black54,
+                                fontSize: 14,
+                              ),
+                              textAlign: TextAlign.left,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 8.0,
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              "Address : ",
+                              style: TextStyle(
+                                fontFamily: 'Poppins-Medium',
+                                color: Color(0xff7b7f9e),
+                                fontSize: 14,
+                              ),
+                              textAlign: TextAlign.right,
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          Expanded(
+                            child: Text(
+                              "${_model?.data?.address!}",
+                              style: TextStyle(
+                                fontFamily: 'Poppins-Medium',
+                                color: Colors.black54,
+                                fontSize: 14,
+                              ),
+                              textAlign: TextAlign.left,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 30.0,
+                      ),
+                      Text(
+                        "Amount Payable",
+                        style: TextStyle(
+                          fontFamily: 'Poppins-Medium',
+                          color: Color(0xff7b7f9e),
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 10.0,
+                      ),
+                      Text(
+                        "Rs. ${_model?.data?.amountPayable!}",
+                        style: TextStyle(
+                          fontFamily: 'Poppins-Bold',
+                          color: Color(0xff6CC51D),
+                          fontSize: 26,
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 10.0,
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              "Status : ",
+                              style: TextStyle(
+                                fontFamily: 'Poppins-Medium',
+                                color: Color(0xff7b7f9e),
+                                fontSize: 14,
+                              ),
+                              textAlign: TextAlign.right,
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          if (_model?.data?.paid! == true) ...[
+                            Expanded(
+                              child: Text(
+                                "Paid",
+                                style: TextStyle(
+                                  fontFamily: 'Poppins-Bold',
+                                  color: ColorConstants.submitGreenColor,
+                                  fontSize: 14,
+                                ),
+                                textAlign: TextAlign.left,
+                              ),
+                            ),
+                          ] else ...[
+                            Expanded(
+                              child: Text(
+                                "Unpaid",
+                                style: TextStyle(
+                                  fontFamily: 'Poppins-Bold',
+                                  color: Colors.red,
+                                  fontSize: 14,
+                                ),
+                                textAlign: TextAlign.left,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 10.0,
+                      ),
+                      Container(
+                        alignment: Alignment.centerLeft,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                              color: ColorConstants.formBorderColor, width: 2),
+                        ),
+                        padding: EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: const [
+                                Icon(
+                                  Icons.house_outlined,
+                                  color: Color(0xff7b7f9e),
+                                ),
+                                Text(
+                                  "House tax",
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins-Medium',
+                                    color: Color(0xff7b7f9e),
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Table(
+                              // border: TableBorder.all(),
+                              children: [
+                                TableRow(
+                                  children: [
+                                    TableCell(
+                                      child: Container(),
+                                    ),
+                                    TableCell(
+                                      child: Container(
+                                        padding: EdgeInsets.all(8.0),
+                                        // color: Colors.grey[300],
+                                        child: Text(
+                                          'Demand Amount',
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins-Bold',
+                                            color: Color(0xff21205b),
+                                            fontSize: 14,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                    TableCell(
+                                      child: Container(
+                                        padding: EdgeInsets.all(8.0),
+                                        // color: Colors.grey[300],
+                                        child: Text(
+                                          'Collection Amount',
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins-Bold',
+                                            color: Color(0xff21205b),
+                                            fontSize: 14,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                TableRow(
+                                  children: [
+                                    TableCell(
+                                      child: Container(
+                                        padding: EdgeInsets.all(8.0),
+                                        // color: Colors.grey[300],
+                                        child: Text(
+                                          'Notice Fee',
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins-Bold',
+                                            color: Color(0xff21205b),
+                                            fontSize: 14,
+                                          ),
+                                          textAlign: TextAlign.left,
+                                        ),
+                                      ),
+                                    ),
+                                    TableCell(
+                                      child: Container(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          '${_model?.data?.houseNoticeFeeDa!}',
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins-Medium',
+                                            color: Colors.black54,
+                                            fontSize: 14,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                    TableCell(
+                                      child: Container(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          '${_model?.data?.houseNoticeFeeCa!}',
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins-Medium',
+                                            color: Colors.black54,
+                                            fontSize: 14,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                TableRow(
+                                  children: [
+                                    TableCell(
+                                      child: Container(
+                                        padding: EdgeInsets.all(8.0),
+                                        // color: Colors.grey[300],
+                                        child: Text(
+                                          'Warrant Fee',
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins-Bold',
+                                            color: Color(0xff21205b),
+                                            fontSize: 14,
+                                          ),
+                                          textAlign: TextAlign.left,
+                                        ),
+                                      ),
+                                    ),
+                                    TableCell(
+                                      child: Container(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          '${_model?.data?.houseWarrantFeeDa!}',
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins-Medium',
+                                            color: Colors.black54,
+                                            fontSize: 14,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                    TableCell(
+                                      child: Container(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          '${_model?.data?.houseWarrantFeeCa!}',
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins-Medium',
+                                            color: Colors.black54,
+                                            fontSize: 14,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                TableRow(
+                                  children: [
+                                    TableCell(
+                                      child: Container(
+                                        padding: EdgeInsets.all(8.0),
+                                        // color: Colors.grey[300],
+                                        child: Text(
+                                          'Arrears',
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins-Bold',
+                                            color: Color(0xff21205b),
+                                            fontSize: 14,
+                                          ),
+                                          textAlign: TextAlign.left,
+                                        ),
+                                      ),
+                                    ),
+                                    TableCell(
+                                      child: Container(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          '${_model?.data?.houseArrearsDa!}',
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins-Medium',
+                                            color: Colors.black54,
+                                            fontSize: 14,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                    TableCell(
+                                      child: Container(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          '${_model?.data?.houseArrearsCa!}',
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins-Medium',
+                                            color: Colors.black54,
+                                            fontSize: 14,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                TableRow(
+                                  children: [
+                                    TableCell(
+                                      child: Container(
+                                        padding: EdgeInsets.all(8.0),
+                                        // color: Colors.grey[300],
+                                        child: Text(
+                                          'Penalty',
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins-Bold',
+                                            color: Color(0xff21205b),
+                                            fontSize: 14,
+                                          ),
+                                          textAlign: TextAlign.left,
+                                        ),
+                                      ),
+                                    ),
+                                    TableCell(
+                                      child: Container(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          '${_model?.data?.housePenaltyDa!}',
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins-Medium',
+                                            color: Colors.black54,
+                                            fontSize: 14,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                    TableCell(
+                                      child: Container(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          '${_model?.data?.housePenaltyCa!}',
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins-Medium',
+                                            color: Colors.black54,
+                                            fontSize: 14,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                TableRow(
+                                  children: [
+                                    TableCell(
+                                      child: Container(
+                                        padding: EdgeInsets.all(8.0),
+                                        // color: Colors.grey[300],
+                                        child: Text(
+                                          'Current',
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins-Bold',
+                                            color: Color(0xff21205b),
+                                            fontSize: 14,
+                                          ),
+                                          textAlign: TextAlign.left,
+                                        ),
+                                      ),
+                                    ),
+                                    TableCell(
+                                      child: Container(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          '${_model?.data?.houseCurrentDa!}',
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins-Medium',
+                                            color: Colors.black54,
+                                            fontSize: 14,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                    TableCell(
+                                      child: Container(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          '${_model?.data?.houseCurrentCa!}',
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins-Medium',
+                                            color: Colors.black54,
+                                            fontSize: 14,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 16.0,
+                      ),
+                      Container(
+                        alignment: Alignment.centerLeft,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                              color: ColorConstants.formBorderColor, width: 2),
+                        ),
+                        padding: EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.delete_outline,
+                                  color: Color(0xff7b7f9e),
+                                ),
+                                Text(
+                                  "Garbage tax",
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins-Medium',
+                                    color: Color(0xff7b7f9e),
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Table(
+                              // border: TableBorder.all(),
+                              children: [
+                                TableRow(
+                                  children: [
+                                    TableCell(
+                                      child: Container(),
+                                    ),
+                                    TableCell(
+                                      child: Container(
+                                        padding: EdgeInsets.all(8.0),
+                                        // color: Colors.grey[300],
+                                        child: Text(
+                                          'Demand Amount',
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins-Bold',
+                                            color: Color(0xff21205b),
+                                            fontSize: 14,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                    TableCell(
+                                      child: Container(
+                                        padding: EdgeInsets.all(8.0),
+                                        // color: Colors.grey[300],
+                                        child: Text(
+                                          'Collection Amount',
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins-Bold',
+                                            color: Color(0xff21205b),
+                                            fontSize: 14,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                TableRow(
+                                  children: [
+                                    TableCell(
+                                      child: Container(
+                                        padding: EdgeInsets.all(8.0),
+                                        // color: Colors.grey[300],
+                                        child: Text(
+                                          'Arrears',
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins-Bold',
+                                            color: Color(0xff21205b),
+                                            fontSize: 14,
+                                          ),
+                                          textAlign: TextAlign.left,
+                                        ),
+                                      ),
+                                    ),
+                                    TableCell(
+                                      child: Container(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          '${_model?.data?.garbageArrearsDa!}',
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins-Medium',
+                                            color: Colors.black54,
+                                            fontSize: 14,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                    TableCell(
+                                      child: Container(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          '${_model?.data?.garbageArrearsCa!}',
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins-Medium',
+                                            color: Colors.black54,
+                                            fontSize: 14,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                TableRow(
+                                  children: [
+                                    TableCell(
+                                      child: Container(
+                                        padding: EdgeInsets.all(8.0),
+                                        // color: Colors.grey[300],
+                                        child: Text(
+                                          'Current',
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins-Bold',
+                                            color: Color(0xff21205b),
+                                            fontSize: 14,
+                                          ),
+                                          textAlign: TextAlign.left,
+                                        ),
+                                      ),
+                                    ),
+                                    TableCell(
+                                      child: Container(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          '${_model?.data?.garbageCurrentDa!}',
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins-Medium',
+                                            color: Colors.black54,
+                                            fontSize: 14,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                    TableCell(
+                                      child: Container(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          '${_model?.data?.garbageArrearsCa!}',
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins-Medium',
+                                            color: Colors.black54,
+                                            fontSize: 14,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 16.0,
+                      ),
+                      Container(
+                        alignment: Alignment.centerLeft,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                              color: ColorConstants.formBorderColor, width: 2),
+                        ),
+                        padding: EdgeInsets.all(16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.currency_rupee,
+                                  color: Color(0xff7b7f9e),
+                                ),
+                                Text(
+                                  "Total tax",
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins-Medium',
+                                    color: Color(0xff7b7f9e),
+                                    fontSize: 16,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Table(
+                              // border: TableBorder.all(),
+                              children: [
+                                TableRow(
+                                  children: [
+                                    TableCell(
+                                      child: Container(
+                                        padding: EdgeInsets.all(8.0),
+                                        // color: Colors.grey[300],
+                                        child: Text(
+                                          'House Tax',
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins-Bold',
+                                            color: Color(0xff21205b),
+                                            fontSize: 14,
+                                          ),
+                                          textAlign: TextAlign.left,
+                                        ),
+                                      ),
+                                    ),
+                                    TableCell(
+                                      child: Container(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          '${_model?.data?.totalHouseTax!}',
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins-Medium',
+                                            color: Colors.black54,
+                                            fontSize: 14,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                TableRow(
+                                  children: [
+                                    TableCell(
+                                      child: Container(
+                                        padding: EdgeInsets.all(8.0),
+                                        // color: Colors.grey[300],
+                                        child: Text(
+                                          'Garbage Tax',
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins-Bold',
+                                            color: Color(0xff21205b),
+                                            fontSize: 14,
+                                          ),
+                                          textAlign: TextAlign.left,
+                                        ),
+                                      ),
+                                    ),
+                                    TableCell(
+                                      child: Container(
+                                        padding: EdgeInsets.all(8.0),
+                                        child: Text(
+                                          '${_model?.data?.totalGarbageTax!}',
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins-Medium',
+                                            color: Colors.black54,
+                                            fontSize: 14,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                TableRow(
+                                  children: [
+                                    TableCell(
+                                      child: Container(
+                                        padding: EdgeInsets.all(8.0),
+                                        // color: Colors.grey[300],
+                                        decoration: const BoxDecoration(
+                                          border: Border(
+                                            top: BorderSide(
+                                                width: 1.0,
+                                                color: Colors.black45),
+                                          ),
+                                        ),
+                                        child: Text(
+                                          'Amount Payable',
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins-Bold',
+                                            color: Color(0xff21205b),
+                                            fontSize: 14,
+                                          ),
+                                          textAlign: TextAlign.left,
+                                        ),
+                                      ),
+                                    ),
+                                    TableCell(
+                                      child: Container(
+                                        padding: EdgeInsets.all(8.0),
+                                        decoration: const BoxDecoration(
+                                          border: Border(
+                                            top: BorderSide(
+                                                width: 1.0,
+                                                color: Colors.black45),
+                                          ),
+                                        ),
+                                        child: Text(
+                                          '${_model?.data?.amountPayable!}',
+                                          style: TextStyle(
+                                            fontFamily: 'Poppins-Medium',
+                                            color: Colors.black54,
+                                            fontSize: 14,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 10.0,
+                            ),
+                            Container(
+                              // color: Colors.grey,
+                              decoration: BoxDecoration(
+                                color: ColorConstants.formBorderColor,
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              padding: EdgeInsets.all(16.0),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Icon(
+                                    Icons.info_outline,
+                                    color: ColorConstants.darkBlueThemeColor,
+                                  ),
+                                  const SizedBox(
+                                    width: 16.0,
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                      "In case of any discrepency in data, kindly contact Village Panchayat Office.",
+                                      style: TextStyle(
+                                        fontFamily: 'Poppins-Medium',
+                                        fontSize: 12,
+                                        color:
+                                            ColorConstants.darkBlueThemeColor,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (_model?.data?.paid! == false) ...[
+                        const SizedBox(
+                          height: 16.0,
+                        ),
+                        Container(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            onPressed: () {},
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all<Color>(
+                                  ColorConstants.submitGreenColor),
+                              shape: MaterialStateProperty.all<
+                                  RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20.0),
+                                ),
+                              ),
+                              padding: MaterialStateProperty.all<EdgeInsets>(
+                                EdgeInsets.only(top: 15.0, bottom: 15.0),
+                              ),
+                            ),
+                            child: const Text(
+                              'Proceed to payment',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontFamily: 'Poppins-Bold',
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ],
                   ),
-                  SizedBox(height: 20),
-                ],
+                ),
+              ],
+              const SizedBox(
+                height: 40,
               ),
-            ),
+            ],
           ),
         ),
       ),

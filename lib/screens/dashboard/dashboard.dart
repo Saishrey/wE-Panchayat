@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:we_panchayat_dev/models/login_request_model.dart';
 import 'package:we_panchayat_dev/models/login_response_model.dart';
+import '../../constants.dart';
 import '../../services/api_service.dart';
 import '../../services/shared_service.dart';
 import '../dashboard/griddashboard.dart';
@@ -32,62 +33,25 @@ class DashBoardState extends State<DashBoard> {
   //   Image.asset('assets/carousel_images/carousel_img_3.jpeg'),
   // ];
 
+  int _currentImageIndex = 0;
+
   @override
   Widget build(BuildContext context) {
 
-    return Column(
+    return ListView(
       children: <Widget>[
-        // Padding(
-        //   padding: EdgeInsets.only(left: 16, right: 16),
-        //   child: Row(
-        //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        //     children: <Widget>[
-        //       Row(
-        //         crossAxisAlignment: CrossAxisAlignment.start,
-        //         children: <Widget>[
-        //           Image.asset(
-        //             'assets/images/icon.png',
-        //             height: 60.0,
-        //             width: 60.0,
-        //           ),
-        //           SizedBox(
-        //             width: 10,
-        //           ),
-        //           userName(),
-        //         ],
-        //       ),
-        //       IconButton(
-        //         alignment: Alignment.topCenter,
-        //         padding: EdgeInsets.all(0),
-        //         // icon: Image.asset(
-        //         //   "assets/images/user.png",
-        //         //   width: 75,
-        //         // ),
-        //         icon: const Icon(
-        //           Icons.logout,
-        //           color: Colors.black54,
-        //         ),
-        //         onPressed: () async {
-        //           await APIService.logout(context);
-        //           ScaffoldMessenger.of(context)
-        //               .showSnackBar(const SnackBar(content: Text('Logged out.')));
-        //         },
-        //       )
-        //     ],
-        //   ),
-        // ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         SearchBar(),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         GridDashboard(),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         Align(
@@ -104,7 +68,7 @@ class DashBoardState extends State<DashBoard> {
             ),
           ),
         ),
-        SizedBox(
+        const SizedBox(
           height: 10,
         ),
         CarouselSlider(
@@ -114,6 +78,11 @@ class DashBoardState extends State<DashBoard> {
             enlargeCenterPage: true,
             aspectRatio: 20 / 9,
             viewportFraction: 1,
+            onPageChanged: (index, reason) {
+              setState(() {
+                _currentImageIndex = index;
+              });
+            },
           ),
           items: _carouselImages.map((imagePath) {
             return Builder(
@@ -126,10 +95,33 @@ class DashBoardState extends State<DashBoard> {
             );
           }).toList(),
         ),
-        SizedBox(
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: _carouselImages.map((img) {
+              int? index = _carouselImages
+                  .indexOf(img);
+              return Container(
+                width: 8.0,
+                height: 8.0,
+                margin:
+                EdgeInsets.symmetric(horizontal: 2.0),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: _currentImageIndex == index
+                      ? ColorConstants.darkBlueThemeColor
+                      : Colors.grey,
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+        const SizedBox(
           height: 20,
         ),
       ],
     );
   }
 }
+

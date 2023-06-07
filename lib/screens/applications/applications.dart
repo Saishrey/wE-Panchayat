@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:we_panchayat_dev/models/applications_response_model.dart';
+import 'package:we_panchayat_dev/models/grievance_retrieve_all_response_model.dart';
 import 'package:we_panchayat_dev/models/login_response_model.dart';
+import 'package:we_panchayat_dev/services/grievance_api_service.dart';
 import 'package:we_panchayat_dev/services/shared_service.dart';
 import '../../services/applications_api_service.dart';
 import '../dashboard/griddashboard.dart';
 import '../dashboard/searchbar.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
+import 'grievances_listview.dart';
 import 'listview.dart';
 
 class Applications extends StatefulWidget {
@@ -21,19 +24,24 @@ class ApplicationsState extends State<Applications> {
   final List<String> _applicationTypes = [
     "All",
     "Trade License & Signboard",
-    "Birth & Death Certificate",
+    // "Birth & Death Certificate",
     "Income Certificate",
-    "Pay House Tax"
+    // "Pay House Tax",
+    "Grievances",
   ];
   String _selectedApplicationType = "All";
-  String _searchString = '';
 
   ApplicationsResponseModel? _applicationsResponseModel;
+  GrievanceRetrieveAllResponseModel? _grievancesResponseModel;
 
   List<ApplicationsListItem>? _applications;
+  List<GrievancesListItem>? _grievances;
+
+  List<ApplicationsListItem>? _applicationsList;
 
   @override
   Widget build(BuildContext context) {
+
     return Column(
       children: <Widget>[
         Container(
@@ -73,20 +81,23 @@ class ApplicationsState extends State<Applications> {
                     onChanged: (value) {
                       setState(() {
                         _selectedApplicationType = value!;
+                        _applicationsList = _filteredApplications!;
                       });
                     },
                     items: _applicationTypes
-                        .map((type) => DropdownMenuItem<String>(
-                              value: type,
-                              child: Text(
-                                type,
-                                style: TextStyle(
-                                  fontFamily: 'Poppins-Medium',
-                                  fontSize: 14,
-                                  color: Color(0xff21205b),
-                                ),
+                        .map(
+                          (type) => DropdownMenuItem<String>(
+                            value: type,
+                            child: Text(
+                              type,
+                              style: TextStyle(
+                                fontFamily: 'Poppins-Medium',
+                                fontSize: 14,
+                                color: Color(0xff21205b),
                               ),
-                            ))
+                            ),
+                          ),
+                        )
                         .toList(),
                   ),
                 ),
@@ -116,7 +127,14 @@ class ApplicationsState extends State<Applications> {
               ),
             ),
           ),
-        ] else if (_filteredApplications?.isEmpty ?? true) ...[
+        ] else if (_selectedApplicationType == "Grievances") ...[
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
+              child: GrievancesListView(entries: _grievances ?? []),
+            ),
+          ),
+        ] else if (_applicationsList?.isEmpty ?? true) ...[
           Expanded(
             child: Center(
               child: Text(
@@ -133,7 +151,7 @@ class ApplicationsState extends State<Applications> {
           Expanded(
             child: Container(
               padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
-              child: ApplicationsListView(entries: _filteredApplications ?? []),
+              child: ApplicationsListView(entries: _applicationsList ?? []),
             ),
           ),
         ],
@@ -145,8 +163,10 @@ class ApplicationsState extends State<Applications> {
   }
 
   List<ApplicationsListItem>? get _filteredApplications {
+    print(_selectedApplicationType);
     if (_selectedApplicationType == 'All') {
-      _applications?.sort((a, b) => DateTime.parse(b.date!).compareTo(DateTime.parse(a.date!)));
+      _applications?.sort(
+          (a, b) => DateTime.parse(b.date!).compareTo(DateTime.parse(a.date!)));
       return _applications;
     } else {
       List<ApplicationsListItem>? filteredList = _applications
@@ -156,11 +176,18 @@ class ApplicationsState extends State<Applications> {
         // If there are no items that match the selected filter, return an empty list
         return [];
       } else {
-        filteredList?.sort((a, b) => DateTime.parse(b.date!).compareTo(DateTime.parse(a.date!)));
+        filteredList?.sort((a, b) =>
+            DateTime.parse(b.date!).compareTo(DateTime.parse(a.date!)));
         return filteredList;
       }
     }
   }
+
+  // List<GrievancesListItem>? get _filteredGrievances {
+  //     _grievances?.sort(
+  //             (a, b) => DateTime.parse(b.date!).compareTo(DateTime.parse(a.date!)));
+  //     return _grievances;
+  // }
 
   @override
   void initState() {
@@ -170,9 +197,20 @@ class ApplicationsState extends State<Applications> {
   void fetchApplicationsList() async {
     ApplicationsResponseModel? responseModel =
         await ApplicationsAPIService.retrieveAllApplications();
+
+    GrievanceRetrieveAllResponseModel grievanceRetrieveAllResponseModel =
+        await GrievanceAPIService.retrieveAllGrievances();
+
+
+
     setState(() {
       _applicationsResponseModel = responseModel;
       _applications = _applicationsResponseModel?.data?.reversed.toList();
+      _applicationsList = _filteredApplications;
+
+      _grievancesResponseModel = grievanceRetrieveAllResponseModel;
+      _grievances = _grievancesResponseModel?.data?.reversed.toList();
     });
+
   }
 }

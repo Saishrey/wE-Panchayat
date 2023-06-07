@@ -32,9 +32,6 @@ class HouseTaxAPIService {
     Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
     requestHeaders['cookie'] = cookieHeaders!['cookie']!;
 
-    // var response = await client.get(url);
-    // print(response.body);
-
     print(requestHeaders);
 
     print(body);
@@ -46,15 +43,5 @@ class HouseTaxAPIService {
     print("${response.body}");
 
     return response;
-    // print("${response.runtimeType}");
-    //
-    // if (response.statusCode == 200) {
-    //   print("Trade License Form Data Successfully Submitted.");
-    //
-    //   return true;
-    // }
-    //
-    // print("Failed to Submit Trade License Form.");
-    // return false;
   }
 }

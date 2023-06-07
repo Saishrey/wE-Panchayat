@@ -47,7 +47,7 @@ class APIService {
     }
   }
 
-  static Future<bool> login(LoginRequestModel model) async {
+  static Future<http.Response> login(LoginRequestModel model) async {
     // 'username':'abc@gmail.com', 'password':'Asdfg@123',
 
     Map<String, String> requestHeaders = {
@@ -77,11 +77,11 @@ class APIService {
 
       // getOtp();
 
-      return true;
+      return response;
     }
 
     print("Failed to log in.");
-    return false;
+    return response;
   }
 
 
@@ -301,6 +301,34 @@ class APIService {
 
     print("Failed to Sign up.");
     return false;
+  }
+
+  static Future<http.Response> blockAccount(Map<String, String> body) async {
+    // 'username':'abc@gmail.com', 'password':'Asdfg@123',
+
+    Map<String, String> requestHeaders = {
+      "Content-Type": "application/json",
+    };
+
+    final url = Uri.http(Config.apiURL, Config.blockUserAPI);
+    print(url);
+
+
+    var response = await client.post(url, body: body);
+
+    print("${response.statusCode}");
+    print("${response.body}");
+
+    if (response.statusCode == 200) {
+
+
+      print("Account has been blocked.");
+
+      return response;
+    }
+
+    print("Failed to block account.");
+    return response;
   }
 
   static Map<String, String> getCookieHeader() {

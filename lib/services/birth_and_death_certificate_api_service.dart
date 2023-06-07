@@ -40,12 +40,7 @@ class BirthAndDeathCertificateAPIService {
     var response = await client.post(url,
         body: body, headers: requestHeaders);
 
-    print("${response.body}");
-
-    if(response.statusCode == 200) {
-      BirthAndDeathCertificatePDFResponseModel model = birthAndDeathCertificatePDFResponseJson(response.body);
-      displayPDF(body['name']!, model.certificate?.data);
-    }
+    // print("${response.body}");
 
     return response;
   }
@@ -74,13 +69,6 @@ class BirthAndDeathCertificateAPIService {
         body: body, headers: requestHeaders);
 
     // print("${response.body}");
-
-
-    if(response.statusCode == 200) {
-      BirthAndDeathCertificatePDFResponseModel model = birthAndDeathCertificatePDFResponseJson(response.body);
-
-      displayPDF(body['name']!, model.certificate?.data);
-    }
 
     return response;
   }

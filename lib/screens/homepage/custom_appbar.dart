@@ -34,7 +34,7 @@ class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
             // icon: Icon(Icons.person),
             icon: ClipOval(
               child: Image.asset(
-                'assets/images/user_icon.jpeg',
+                'assets/images/user_profile_blue.png',
               ),
             ),
             onPressed: () {

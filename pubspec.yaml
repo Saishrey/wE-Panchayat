@@ -131,6 +131,7 @@ flutter:
     - assets/carousel_images/carousel_img_1.jpg
     - assets/carousel_images/carousel_img_2.jpg
     - assets/carousel_images/carousel_img_3.jpeg
+    - assets/images/user_profile_blue.png
     - assets/animations/application-submitted-animation.json
 
 

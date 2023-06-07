@@ -19,7 +19,7 @@ class NavBar extends StatelessWidget {
             currentAccountPicture: CircleAvatar(
               child: ClipOval(
                 child: Image.asset(
-                  'assets/images/user_icon.jpeg',
+                  'assets/images/user_profile_blue.png',
                   fit: BoxFit.cover,
                   width: 90,
                   height: 90,

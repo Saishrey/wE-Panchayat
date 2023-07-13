@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:we_panchayat_dev/constants.dart';
 import 'package:we_panchayat_dev/models/login_request_model.dart';
 
 import 'package:we_panchayat_dev/screens/homepage/homepage.dart';
@@ -48,7 +49,7 @@ class _UsernameInputState extends State<UsernameInput> {
       height: double.infinity,
       decoration: const BoxDecoration(
         image: DecorationImage(
-          image: AssetImage('assets/images/bg.png'),
+          image: AssetImage('assets/images/auth_bg.png'),
           fit: BoxFit.cover,
         ),
       ),
@@ -99,9 +100,13 @@ class _UsernameInputState extends State<UsernameInput> {
                     SizedBox(height: 16),
                     Padding(
                       padding: const EdgeInsets.all(15.0),
-                      child: const Text(
+                      child: Text(
                         'Enter your mobile number for verification process, we will send you a 6 digits code.',
                         textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontFamily: 'Poppins-Light',
+                          color: ColorConstants.formLabelTextColor,
+                        ),
                       ),
                     ),
                     Center(
@@ -135,32 +140,18 @@ class _UsernameInputState extends State<UsernameInput> {
                                   inputFormatters: [
                                     new LengthLimitingTextInputFormatter(10),
                                   ],
-                                  style: TextStyle(
-                                    color: Colors.black54,
-                                    fontFamily: 'Poppins-Bold',
-                                  ),
+                                  style: AuthConstants.getTextStyle(),
                                   decoration: InputDecoration(
                                     labelText: 'Mobile No.',
+                                    labelStyle:
+                                    AuthConstants.getLabelAndHintStyle(),
                                     filled: true,
-                                    fillColor: Color(0xffF6F6F6),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                        color: Color(0xffBDBDBD),
-                                      ),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                        color: Color(0xffBDBDBD),
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                        color: Theme.of(context).primaryColor,
-                                      ),
-                                    ),
+                                    fillColor: Colors.white,
+                                    border: AuthConstants.getEnabledBorder(),
+                                    enabledBorder:
+                                    AuthConstants.getEnabledBorder(),
+                                    focusedBorder:
+                                    AuthConstants.getFocusedBorder(),
                                   ),
                                 ),
                                 SizedBox(height: 16),
@@ -221,13 +212,14 @@ class _UsernameInputState extends State<UsernameInput> {
                                         fontSize: 16,
                                         fontFamily: 'Poppins-Bold',
                                       )),
-                                  style: ElevatedButton.styleFrom(
-                                    primary: Color(0xFF5386E4),
-                                    onPrimary: Colors.white,
-                                    shape: StadiumBorder(),
-                                    padding: EdgeInsets.only(
-                                        top: 15.0, bottom: 15.0),
-                                  ),
+                                  // style: ElevatedButton.styleFrom(
+                                  //   primary: Color(0xFF5386E4),
+                                  //   onPrimary: Colors.white,
+                                  //   shape: StadiumBorder(),
+                                  //   padding: EdgeInsets.only(
+                                  //       top: 15.0, bottom: 15.0),
+                                  // ),
+                                  style: AuthConstants.getSubmitButtonStyle(),
                                 ),
                               ],
                             ),
@@ -247,7 +239,7 @@ class _UsernameInputState extends State<UsernameInput> {
                   Divider(
                     height: 1,
                     thickness: 0.8,
-                    color: Colors.black54,
+                    color: ColorConstants.formBorderColor,
                   ),
                   Padding(
                     padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
@@ -259,10 +251,10 @@ class _UsernameInputState extends State<UsernameInput> {
                           child: Text(
                             "Already have an account? Log in",
                             style: TextStyle(
-                              color: Color(0xFF5386E4),
+                              color: ColorConstants.colorHuntCode2,
                               fontWeight: FontWeight.w700,
-                              fontSize: 15,
-                              fontFamily: 'Poppins-Bold',
+                              fontSize: 14,
+                              fontFamily: 'Poppins-Medium',
                             ),
                             // Your bottom element goes here
                           ),

@@ -677,7 +677,7 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
                             style: TextStyle(
                               fontSize: 16,
                               fontFamily: 'Poppins-Bold',
-                              color: Colors.black54,
+                              color: ColorConstants.formLabelTextColor,
                             ),
                           ),
                           style: ButtonStyle(

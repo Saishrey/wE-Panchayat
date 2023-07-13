@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:we_panchayat_dev/screens/profile/user_profile.dart';
 import 'package:we_panchayat_dev/screens/settings/settings.dart';
 
 import '../../models/login_response_model.dart';
@@ -37,10 +38,18 @@ class NavBar extends StatelessWidget {
           ),
           ListTile(
             leading: Icon(Icons.info),
-            title: Text('Personal Info', style: TextStyle(
+            title: Text('My Profile', style: TextStyle(
               fontFamily: 'Poppins-Medium',
             ),),
-            onTap: () => null,
+            onTap: () {
+              print("Tapped on My profile");
+              Navigator.of(context).pop();
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => UserProfile()),
+              );
+            },
           ),
           // ListTile(
           //   leading: Icon(Icons.description),

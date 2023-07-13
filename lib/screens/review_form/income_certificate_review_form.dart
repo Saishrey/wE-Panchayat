@@ -13,6 +13,7 @@ import 'package:we_panchayat_dev/screens/income_certificate/income_certificate.d
 import 'package:we_panchayat_dev/services/income_certificate_api_service.dart';
 import 'package:we_panchayat_dev/services/trade_license_api_service.dart';
 
+import '../../constants.dart';
 import '../../services/applications_api_service.dart';
 
 import 'package:path_provider/path_provider.dart';
@@ -37,9 +38,9 @@ class _IncomeCertificateReviewFormState
   final Map<String, String> fileNamesMap = {
     "rationCard": "Ration Card",
     "aadharCard": "Aadhar Card",
-    "form16" : "Form 16",
-    "salaryCertificate" : "Salary Certificate",
-    "bankPassbook" : "Bank Passbook",
+    "form16": "Form 16",
+    "salaryCertificate": "Salary Certificate",
+    "bankPassbook": "Bank Passbook",
     "selfDeclaration": "Self Declaration",
     "photo": "Photo",
   };
@@ -57,6 +58,8 @@ class _IncomeCertificateReviewFormState
   final Color _darkBlueButton = const Color(0xff356899);
 
   bool _isTabChanged = false;
+
+  bool _isEdit = true;
 
   late int _applicationStatusActiveIndex = 4;
 
@@ -85,7 +88,8 @@ class _IncomeCertificateReviewFormState
       }
 
       _formData = {
-        "application_id": _incomeCertificateFormResponseModel.data.applicationId ?? 'null',
+        "application_id":
+            _incomeCertificateFormResponseModel.data.applicationId ?? 'null',
         "mongo_id": _incomeCertificateFormResponseModel.data.mongoId ?? 'null',
         "taluka": _incomeCertificateFormResponseModel.data.taluka ?? 'null',
         "panchayat":
@@ -122,12 +126,15 @@ class _IncomeCertificateReviewFormState
         "to_produce_at":
             _incomeCertificateFormResponseModel.data.toProduceAt ?? 'null',
         "purpose": _incomeCertificateFormResponseModel.data.purpose ?? 'null',
+        "can_edit_from": _incomeCertificateFormResponseModel.data.canUpdate.toString(),
       };
 
       _applicationStatusActiveIndex = incomeCertificateApplicationStatus
           .indexOf(_incomeCertificateFormResponseModel.data.status!);
       _applicationRemark =
           _incomeCertificateFormResponseModel.data.remark ?? "Remark";
+
+      _isEdit = _incomeCertificateFormResponseModel.data.canUpdate!;
     });
 
     List<int>? binaryData;
@@ -142,21 +149,25 @@ class _IncomeCertificateReviewFormState
     assignFile(fileNamesMap.keys.elementAt(1), fileNamesMap.values.elementAt(1),
         binaryData, false);
 
-    if(_incomeCertificateFormResponseModel.data.documents?.form16 != null) {
+    if (_incomeCertificateFormResponseModel.data.documents?.form16 != null) {
       binaryData =
           _incomeCertificateFormResponseModel.data.documents?.form16?.data;
-      assignFile(fileNamesMap.keys.elementAt(2), fileNamesMap.values.elementAt(2),
-          binaryData, false);
-    } else if(_incomeCertificateFormResponseModel.data.documents?.bankPassbook != null) {
-      binaryData =
-          _incomeCertificateFormResponseModel.data.documents?.bankPassbook?.data;
-      assignFile(fileNamesMap.keys.elementAt(4), fileNamesMap.values.elementAt(4),
-          binaryData, false);
-    } else if(_incomeCertificateFormResponseModel.data.documents?.salaryCertificate != null) {
-      binaryData =
-          _incomeCertificateFormResponseModel.data.documents?.salaryCertificate?.data;
-      assignFile(fileNamesMap.keys.elementAt(3), fileNamesMap.values.elementAt(3),
-          binaryData, false);
+      assignFile(fileNamesMap.keys.elementAt(2),
+          fileNamesMap.values.elementAt(2), binaryData, false);
+    } else if (_incomeCertificateFormResponseModel
+            .data.documents?.bankPassbook !=
+        null) {
+      binaryData = _incomeCertificateFormResponseModel
+          .data.documents?.bankPassbook?.data;
+      assignFile(fileNamesMap.keys.elementAt(4),
+          fileNamesMap.values.elementAt(4), binaryData, false);
+    } else if (_incomeCertificateFormResponseModel
+            .data.documents?.salaryCertificate !=
+        null) {
+      binaryData = _incomeCertificateFormResponseModel
+          .data.documents?.salaryCertificate?.data;
+      assignFile(fileNamesMap.keys.elementAt(3),
+          fileNamesMap.values.elementAt(3), binaryData, false);
     }
 
     binaryData = _incomeCertificateFormResponseModel
@@ -215,7 +226,7 @@ class _IncomeCertificateReviewFormState
     // final directory = await getTemporaryDirectory();
     if (binaryData != null && _tempPath != null) {
       final File file;
-      if(isImage) {
+      if (isImage) {
         // Decode binary data to image
         img.Image? image = img.decodeImage(binaryData);
         // Encode image to JPEG format
@@ -226,8 +237,7 @@ class _IncomeCertificateReviewFormState
         await file.writeAsBytes(jpeg);
 
         return file;
-      }
-      else {
+      } else {
         file = File('$_tempPath/$filename.pdf');
         print('$filename.pdf');
       }
@@ -271,15 +281,22 @@ class _IncomeCertificateReviewFormState
         ),
         elevation: 0,
         actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.edit_document),
-            onPressed: () {
-              // do something
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => IncomeCertificate(fileMap: {..._fileMap}, formData: {..._formData}, isEdit: true)),
-              );
-            },
+          Visibility(
+            visible: _isEdit,
+            child: IconButton(
+              icon: const Icon(Icons.edit_document),
+              onPressed: () {
+                // do something
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => IncomeCertificate(
+                          fileMap: {..._fileMap},
+                          formData: {..._formData},
+                          isEdit: true)),
+                );
+              },
+            ),
           ),
         ],
         actionsIconTheme: IconThemeData(
@@ -402,7 +419,8 @@ class _IncomeCertificateReviewFormState
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontFamily: 'Poppins-Bold',
-                                          color: Colors.black54,
+                                          color:
+                                              ColorConstants.formLabelTextColor,
                                         ),
                                       ),
                                       style: ButtonStyle(
@@ -413,9 +431,11 @@ class _IncomeCertificateReviewFormState
                                             RoundedRectangleBorder>(
                                           RoundedRectangleBorder(
                                             borderRadius:
-                                                BorderRadius.circular(10.0),
+                                                BorderRadius.circular(20.0),
                                             side: BorderSide(
-                                                color: Colors.black54),
+                                              color: ColorConstants
+                                                  .formLabelTextColor,
+                                            ),
                                           ),
                                         ),
                                         padding: MaterialStateProperty.all<
@@ -441,12 +461,13 @@ class _IncomeCertificateReviewFormState
                                       style: ButtonStyle(
                                         backgroundColor:
                                             MaterialStateProperty.all<Color>(
-                                                Color(0xFF5386E4)),
+                                                ColorConstants
+                                                    .darkBlueThemeColor),
                                         shape: MaterialStateProperty.all<
                                             RoundedRectangleBorder>(
                                           RoundedRectangleBorder(
                                             borderRadius:
-                                                BorderRadius.circular(10.0),
+                                                BorderRadius.circular(20.0),
                                           ),
                                         ),
                                         padding: MaterialStateProperty.all<
@@ -537,8 +558,8 @@ class _IncomeCertificateReviewFormState
                                             _incomeCertificateFormResponseModel
                                                 .data.applicationId!,
                                       };
-                                      IncomeCertificateAPIService.generateCertificatePDF(
-                                          body);
+                                      IncomeCertificateAPIService
+                                          .generateCertificatePDF(body);
                                     }
                                   : null,
                               style: ButtonStyle(
@@ -551,7 +572,7 @@ class _IncomeCertificateReviewFormState
                                 shape: MaterialStateProperty.all<
                                     RoundedRectangleBorder>(
                                   RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(50.0),
+                                    borderRadius: BorderRadius.circular(20.0),
                                     // side: BorderSide(
                                     //     color: _applicationStatusActiveIndex ==
                                     //             getDetailsSteps().length - 1
@@ -605,8 +626,9 @@ class _IncomeCertificateReviewFormState
             child: Container(
               padding: EdgeInsets.all(10.0),
               decoration: BoxDecoration(
-                border: Border.all(width: 1.0, color: Colors.grey),
-                borderRadius: BorderRadius.circular(8.0),
+                border: Border.all(
+                    width: 2.0, color: ColorConstants.formLabelTextColor),
+                borderRadius: BorderRadius.circular(20.0),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -632,8 +654,10 @@ class _IncomeCertificateReviewFormState
                         children: [
                           Text(
                             file.path.split('/').last,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
+                            style: TextStyle(
+                              fontFamily: 'Poppins-Medium',
+                              overflow: TextOverflow.ellipsis,
+                              color: ColorConstants.darkBlueThemeColor,
                               fontSize: 14.0,
                             ),
                             overflow: TextOverflow.ellipsis,
@@ -649,7 +673,7 @@ class _IncomeCertificateReviewFormState
                       ),
                     ),
                   ),
-                  Icon(
+                  const Icon(
                     Icons.cloud_done,
                     color: Color(0xFF5386E4),
                   ),
@@ -789,19 +813,25 @@ class _IncomeCertificateReviewFormState
   //This will be your screens
   List<Step> getDetailsSteps() => [
         Step(
-          title: const Text('Applicant', style: TextStyle(
-            fontFamily: 'Poppins-Medium',
-            color: Colors.black54,
-          ),),
+          title: const Text(
+            'Applicant',
+            style: TextStyle(
+              fontFamily: 'Poppins-Medium',
+              color: Colors.black54,
+            ),
+          ),
           state: _currentStep > 0 ? StepState.complete : StepState.indexed,
           isActive: _currentStep >= 0,
           content: Column(
             children: [
-              const Text('Applicant Details',
-                  style: TextStyle(
-                      fontFamily: 'Poppins-Bold',
-                      color: Colors.black,
-                      fontSize: 20)),
+               Text(
+                'Applicant Details',
+                style: TextStyle(
+                  fontFamily: 'Poppins-Bold',
+                  color: ColorConstants.darkBlueThemeColor,
+                  fontSize: 20,
+                ),
+              ),
               const SizedBox(height: 16),
               SizedBox(
                 width: 150.0,
@@ -822,38 +852,16 @@ class _IncomeCertificateReviewFormState
                       enabled: false,
                       controller:
                           TextEditingController(text: _formData["taluka"]),
-                      style: TextStyle(
-                        color: Colors.black54, //Name
-                        fontFamily: 'Poppins-Bold',
-                      ),
+                      style: FormConstants.getTextStyle(),
                       decoration: InputDecoration(
                         labelText: "Taluka",
+                        labelStyle: FormConstants.getLabelAndHintStyle(),
                         filled: true,
-                        fillColor: Color(0xffF6F6F6),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(
-                            color: Color(0xffBDBDBD),
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(
-                            color: Color(0xffBDBDBD),
-                          ),
-                        ),
-                        disabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(
-                            color: Color(0xffBDBDBD),
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(
-                            color: Theme.of(context).primaryColor,
-                          ),
-                        ),
+                        fillColor: Colors.white,
+                        border: FormConstants.getEnabledBorder(),
+                        enabledBorder: FormConstants.getEnabledBorder(),
+                        focusedBorder: FormConstants.getFocusedBorder(),
+                        disabledBorder: FormConstants.getEnabledBorder(),
                       ),
                     ),
                   ),
@@ -863,38 +871,16 @@ class _IncomeCertificateReviewFormState
                       enabled: false,
                       controller:
                           TextEditingController(text: _formData["panchayat"]),
-                      style: TextStyle(
-                        color: Colors.black54, //Name
-                        fontFamily: 'Poppins-Bold',
-                      ),
+                      style: FormConstants.getTextStyle(),
                       decoration: InputDecoration(
                         labelText: "Panchayat",
+                        labelStyle: FormConstants.getLabelAndHintStyle(),
                         filled: true,
-                        fillColor: Color(0xffF6F6F6),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(
-                            color: Color(0xffBDBDBD),
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(
-                            color: Color(0xffBDBDBD),
-                          ),
-                        ),
-                        disabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(
-                            color: Color(0xffBDBDBD),
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(
-                            color: Theme.of(context).primaryColor,
-                          ),
-                        ),
+                        fillColor: Colors.white,
+                        border: FormConstants.getEnabledBorder(),
+                        enabledBorder: FormConstants.getEnabledBorder(),
+                        focusedBorder: FormConstants.getFocusedBorder(),
+                        disabledBorder: FormConstants.getEnabledBorder(),
                       ),
                     ),
                   ),
@@ -904,38 +890,16 @@ class _IncomeCertificateReviewFormState
               TextFormField(
                 enabled: false,
                 controller: TextEditingController(text: _formData["title"]),
-                style: TextStyle(
-                  color: Colors.black54, //Name
-                  fontFamily: 'Poppins-Bold',
-                ),
+                style: FormConstants.getTextStyle(),
                 decoration: InputDecoration(
                   labelText: "Title",
+                  labelStyle: FormConstants.getLabelAndHintStyle(),
                   filled: true,
-                  fillColor: Color(0xffF6F6F6),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
+                  fillColor: Colors.white,
+                  border: FormConstants.getEnabledBorder(),
+                  enabledBorder: FormConstants.getEnabledBorder(),
+                  focusedBorder: FormConstants.getFocusedBorder(),
+                  disabledBorder: FormConstants.getEnabledBorder(),
                 ),
               ),
               SizedBox(height: 16),
@@ -943,38 +907,16 @@ class _IncomeCertificateReviewFormState
                 enabled: false,
                 controller:
                     TextEditingController(text: _formData["applicants_name"]),
-                style: TextStyle(
-                  color: Colors.black54,
-                  fontFamily: 'Poppins-Bold',
-                ),
+                style: FormConstants.getTextStyle(),
                 decoration: InputDecoration(
                   labelText: "Applicant's Name",
+                  labelStyle: FormConstants.getLabelAndHintStyle(),
                   filled: true,
-                  fillColor: Color(0xffF6F6F6),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
+                  fillColor: Colors.white,
+                  border: FormConstants.getEnabledBorder(),
+                  enabledBorder: FormConstants.getEnabledBorder(),
+                  focusedBorder: FormConstants.getFocusedBorder(),
+                  disabledBorder: FormConstants.getEnabledBorder(),
                 ),
               ),
               SizedBox(height: 16),
@@ -982,38 +924,16 @@ class _IncomeCertificateReviewFormState
                 enabled: false,
                 controller:
                     TextEditingController(text: _formData["parents_name"]),
-                style: TextStyle(
-                  color: Colors.black54,
-                  fontFamily: 'Poppins-Bold',
-                ),
+                style: FormConstants.getTextStyle(),
                 decoration: InputDecoration(
                   labelText: "Parent's/ Husband's Name",
+                  labelStyle: FormConstants.getLabelAndHintStyle(),
                   filled: true,
-                  fillColor: Color(0xffF6F6F6),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
+                  fillColor: Colors.white,
+                  border: FormConstants.getEnabledBorder(),
+                  enabledBorder: FormConstants.getEnabledBorder(),
+                  focusedBorder: FormConstants.getFocusedBorder(),
+                  disabledBorder: FormConstants.getEnabledBorder(),
                 ),
               ),
               SizedBox(height: 16),
@@ -1021,114 +941,48 @@ class _IncomeCertificateReviewFormState
               TextFormField(
                 enabled: false,
                 controller: TextEditingController(text: _formData["phone"]),
-                style: TextStyle(
-                  color: Colors.black54,
-                  fontFamily: 'Poppins-Bold',
-                ),
+                style: FormConstants.getTextStyle(),
                 decoration: InputDecoration(
                   labelText: 'Mobile No.',
+                  labelStyle: FormConstants.getLabelAndHintStyle(),
                   filled: true,
-                  fillColor: Color(0xffF6F6F6),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
+                  fillColor: Colors.white,
+                  border: FormConstants.getEnabledBorder(),
+                  enabledBorder: FormConstants.getEnabledBorder(),
+                  focusedBorder: FormConstants.getFocusedBorder(),
+                  disabledBorder: FormConstants.getEnabledBorder(),
                 ),
               ),
               SizedBox(height: 16),
               TextFormField(
                 enabled: false,
                 controller: TextEditingController(text: _formData["email"]),
-                style: TextStyle(
-                  color: Colors.black54,
-                  fontFamily: 'Poppins-Bold',
-                ),
+                style: FormConstants.getTextStyle(),
                 decoration: InputDecoration(
                   labelText: 'Email',
+                  labelStyle: FormConstants.getLabelAndHintStyle(),
                   filled: true,
-                  fillColor: Color(0xffF6F6F6),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
+                  fillColor: Colors.white,
+                  border: FormConstants.getEnabledBorder(),
+                  enabledBorder: FormConstants.getEnabledBorder(),
+                  focusedBorder: FormConstants.getFocusedBorder(),
+                  disabledBorder: FormConstants.getEnabledBorder(),
                 ),
               ),
               SizedBox(height: 16),
               TextFormField(
                 enabled: false,
                 controller: TextEditingController(text: _formData["id_proof"]),
-                style: TextStyle(
-                  color: Colors.black54,
-                  fontFamily: 'Poppins-Bold',
-                ),
+                style: FormConstants.getTextStyle(),
                 decoration: InputDecoration(
                   labelText: 'Id Proof',
+                  labelStyle: FormConstants.getLabelAndHintStyle(),
                   filled: true,
-                  fillColor: Color(0xffF6F6F6),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
+                  fillColor: Colors.white,
+                  border: FormConstants.getEnabledBorder(),
+                  enabledBorder: FormConstants.getEnabledBorder(),
+                  focusedBorder: FormConstants.getFocusedBorder(),
+                  disabledBorder: FormConstants.getEnabledBorder(),
                 ),
               ),
               SizedBox(height: 16),
@@ -1136,77 +990,33 @@ class _IncomeCertificateReviewFormState
                 enabled: false,
                 controller:
                     TextEditingController(text: _formData["id_proof_no"]),
-                style: TextStyle(
-                  color: Colors.black54,
-                  fontFamily: 'Poppins-Bold',
-                ),
+                style: FormConstants.getTextStyle(),
                 decoration: InputDecoration(
                   labelText: 'Id Proof Number',
+                  labelStyle: FormConstants.getLabelAndHintStyle(),
                   filled: true,
-                  fillColor: Color(0xffF6F6F6),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
+                  fillColor: Colors.white,
+                  border: FormConstants.getEnabledBorder(),
+                  enabledBorder: FormConstants.getEnabledBorder(),
+                  focusedBorder: FormConstants.getFocusedBorder(),
+                  disabledBorder: FormConstants.getEnabledBorder(),
                 ),
               ),
               SizedBox(height: 16),
               TextFormField(
                 enabled: false,
-                controller:
-                    TextEditingController(text: formatDate(_formData["date_of_birth"]!)),
-                style: TextStyle(
-                  color: Colors.black54,
-                  fontFamily: 'Poppins-Bold',
-                ),
+                controller: TextEditingController(
+                    text: formatDate(_formData["date_of_birth"]!)),
+                style: FormConstants.getTextStyle(),
                 decoration: InputDecoration(
                   labelText: 'Date Of Birth',
+                  labelStyle: FormConstants.getLabelAndHintStyle(),
                   filled: true,
-                  fillColor: Color(0xffF6F6F6),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
+                  fillColor: Colors.white,
+                  border: FormConstants.getEnabledBorder(),
+                  enabledBorder: FormConstants.getEnabledBorder(),
+                  focusedBorder: FormConstants.getFocusedBorder(),
+                  disabledBorder: FormConstants.getEnabledBorder(),
                 ),
               ),
               SizedBox(height: 16),
@@ -1214,38 +1024,16 @@ class _IncomeCertificateReviewFormState
                 enabled: false,
                 controller:
                     TextEditingController(text: _formData["place_of_birth"]),
-                style: TextStyle(
-                  color: Colors.black54,
-                  fontFamily: 'Poppins-Bold',
-                ),
+                style: FormConstants.getTextStyle(),
                 decoration: InputDecoration(
                   labelText: 'Place Of Birth',
+                  labelStyle: FormConstants.getLabelAndHintStyle(),
                   filled: true,
-                  fillColor: Color(0xffF6F6F6),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
+                  fillColor: Colors.white,
+                  border: FormConstants.getEnabledBorder(),
+                  enabledBorder: FormConstants.getEnabledBorder(),
+                  focusedBorder: FormConstants.getFocusedBorder(),
+                  disabledBorder: FormConstants.getEnabledBorder(),
                 ),
               ),
               SizedBox(height: 16),
@@ -1253,38 +1041,16 @@ class _IncomeCertificateReviewFormState
                 enabled: false,
                 controller: TextEditingController(
                     text: _formData["applicants_relation"]),
-                style: TextStyle(
-                  color: Colors.black54,
-                  fontFamily: 'Poppins-Bold',
-                ),
+                style: FormConstants.getTextStyle(),
                 decoration: InputDecoration(
                   labelText: "Applicant's Relation",
+                  labelStyle: FormConstants.getLabelAndHintStyle(),
                   filled: true,
-                  fillColor: Color(0xffF6F6F6),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
+                  fillColor: Colors.white,
+                  border: FormConstants.getEnabledBorder(),
+                  enabledBorder: FormConstants.getEnabledBorder(),
+                  focusedBorder: FormConstants.getFocusedBorder(),
+                  disabledBorder: FormConstants.getEnabledBorder(),
                 ),
               ),
               SizedBox(height: 16),
@@ -1292,38 +1058,16 @@ class _IncomeCertificateReviewFormState
                 enabled: false,
                 controller: TextEditingController(
                     text: _formData["applicants_address"]),
-                style: TextStyle(
-                  color: Colors.black54,
-                  fontFamily: 'Poppins-Bold',
-                ),
+                style: FormConstants.getTextStyle(),
                 decoration: InputDecoration(
                   labelText: "Applicant's Address",
+                  labelStyle: FormConstants.getLabelAndHintStyle(),
                   filled: true,
-                  fillColor: Color(0xffF6F6F6),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
+                  fillColor: Colors.white,
+                  border: FormConstants.getEnabledBorder(),
+                  enabledBorder: FormConstants.getEnabledBorder(),
+                  focusedBorder: FormConstants.getFocusedBorder(),
+                  disabledBorder: FormConstants.getEnabledBorder(),
                 ),
               ),
               SizedBox(height: 16),
@@ -1332,38 +1076,16 @@ class _IncomeCertificateReviewFormState
                 enabled: false,
                 controller:
                     TextEditingController(text: _formData["occupation"]),
-                style: TextStyle(
-                  color: Colors.black54,
-                  fontFamily: 'Poppins-Bold',
-                ),
+                style: FormConstants.getTextStyle(),
                 decoration: InputDecoration(
                   labelText: 'Occupation',
+                  labelStyle: FormConstants.getLabelAndHintStyle(),
                   filled: true,
-                  fillColor: Color(0xffF6F6F6),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
+                  fillColor: Colors.white,
+                  border: FormConstants.getEnabledBorder(),
+                  enabledBorder: FormConstants.getEnabledBorder(),
+                  focusedBorder: FormConstants.getFocusedBorder(),
+                  disabledBorder: FormConstants.getEnabledBorder(),
                 ),
               ),
               SizedBox(height: 16),
@@ -1372,38 +1094,16 @@ class _IncomeCertificateReviewFormState
                 enabled: false,
                 controller:
                     TextEditingController(text: _formData["annual_income"]),
-                style: TextStyle(
-                  color: Colors.black54,
-                  fontFamily: 'Poppins-Bold',
-                ),
+                style: FormConstants.getTextStyle(),
                 decoration: InputDecoration(
                   labelText: 'Annual Income',
+                  labelStyle: FormConstants.getLabelAndHintStyle(),
                   filled: true,
-                  fillColor: Color(0xffF6F6F6),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
+                  fillColor: Colors.white,
+                  border: FormConstants.getEnabledBorder(),
+                  enabledBorder: FormConstants.getEnabledBorder(),
+                  focusedBorder: FormConstants.getFocusedBorder(),
+                  disabledBorder: FormConstants.getEnabledBorder(),
                 ),
               ),
               SizedBox(height: 16),
@@ -1411,38 +1111,16 @@ class _IncomeCertificateReviewFormState
               TextFormField(
                 enabled: false,
                 controller: TextEditingController(text: _formData["from_year"]),
-                style: TextStyle(
-                  color: Colors.black54,
-                  fontFamily: 'Poppins-Bold',
-                ),
+                style: FormConstants.getTextStyle(),
                 decoration: InputDecoration(
                   labelText: 'From Year',
+                  labelStyle: FormConstants.getLabelAndHintStyle(),
                   filled: true,
-                  fillColor: Color(0xffF6F6F6),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
+                  fillColor: Colors.white,
+                  border: FormConstants.getEnabledBorder(),
+                  enabledBorder: FormConstants.getEnabledBorder(),
+                  focusedBorder: FormConstants.getFocusedBorder(),
+                  disabledBorder: FormConstants.getEnabledBorder(),
                 ),
               ),
               SizedBox(height: 16),
@@ -1450,38 +1128,16 @@ class _IncomeCertificateReviewFormState
               TextFormField(
                 enabled: false,
                 controller: TextEditingController(text: _formData["to_year"]),
-                style: TextStyle(
-                  color: Colors.black54,
-                  fontFamily: 'Poppins-Bold',
-                ),
+                style: FormConstants.getTextStyle(),
                 decoration: InputDecoration(
                   labelText: 'To Year',
+                  labelStyle: FormConstants.getLabelAndHintStyle(),
                   filled: true,
-                  fillColor: Color(0xffF6F6F6),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
+                  fillColor: Colors.white,
+                  border: FormConstants.getEnabledBorder(),
+                  enabledBorder: FormConstants.getEnabledBorder(),
+                  focusedBorder: FormConstants.getFocusedBorder(),
+                  disabledBorder: FormConstants.getEnabledBorder(),
                 ),
               ),
               SizedBox(height: 16),
@@ -1490,38 +1146,16 @@ class _IncomeCertificateReviewFormState
                 enabled: false,
                 controller:
                     TextEditingController(text: _formData["marital_status"]),
-                style: TextStyle(
-                  color: Colors.black54,
-                  fontFamily: 'Poppins-Bold',
-                ),
+                style: FormConstants.getTextStyle(),
                 decoration: InputDecoration(
                   labelText: 'Marital Status',
+                  labelStyle: FormConstants.getLabelAndHintStyle(),
                   filled: true,
-                  fillColor: Color(0xffF6F6F6),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
+                  fillColor: Colors.white,
+                  border: FormConstants.getEnabledBorder(),
+                  enabledBorder: FormConstants.getEnabledBorder(),
+                  focusedBorder: FormConstants.getFocusedBorder(),
+                  disabledBorder: FormConstants.getEnabledBorder(),
                 ),
               ),
               SizedBox(height: 16),
@@ -1530,38 +1164,16 @@ class _IncomeCertificateReviewFormState
                 enabled: false,
                 controller:
                     TextEditingController(text: _formData["to_produce_at"]),
-                style: TextStyle(
-                  color: Colors.black54,
-                  fontFamily: 'Poppins-Bold',
-                ),
+                style: FormConstants.getTextStyle(),
                 decoration: InputDecoration(
                   labelText: 'Purpose',
+                  labelStyle: FormConstants.getLabelAndHintStyle(),
                   filled: true,
-                  fillColor: Color(0xffF6F6F6),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
+                  fillColor: Colors.white,
+                  border: FormConstants.getEnabledBorder(),
+                  enabledBorder: FormConstants.getEnabledBorder(),
+                  focusedBorder: FormConstants.getFocusedBorder(),
+                  disabledBorder: FormConstants.getEnabledBorder(),
                 ),
               ),
               SizedBox(height: 16),
@@ -1569,38 +1181,16 @@ class _IncomeCertificateReviewFormState
               TextFormField(
                 enabled: false,
                 controller: TextEditingController(text: _formData["purpose"]),
-                style: TextStyle(
-                  color: Colors.black54,
-                  fontFamily: 'Poppins-Bold',
-                ),
+                style: FormConstants.getTextStyle(),
                 decoration: InputDecoration(
                   labelText: 'Purpose',
+                  labelStyle: FormConstants.getLabelAndHintStyle(),
                   filled: true,
-                  fillColor: Color(0xffF6F6F6),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
+                  fillColor: Colors.white,
+                  border: FormConstants.getEnabledBorder(),
+                  enabledBorder: FormConstants.getEnabledBorder(),
+                  focusedBorder: FormConstants.getFocusedBorder(),
+                  disabledBorder: FormConstants.getEnabledBorder(),
                 ),
               ),
             ],
@@ -1609,243 +1199,261 @@ class _IncomeCertificateReviewFormState
         Step(
           state: _currentStep > 1 ? StepState.complete : StepState.indexed,
           isActive: _currentStep >= 1,
-          title: const Text('Documents', style: TextStyle(
-            fontFamily: 'Poppins-Medium',
-            color: Colors.black54,
-          ),),
+          title: const Text(
+            'Documents',
+            style: TextStyle(
+              fontFamily: 'Poppins-Medium',
+              color: Colors.black54,
+            ),
+          ),
           content: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
+                Text(
                   'Uploaded Documents',
                   style: TextStyle(
                     fontFamily: 'Poppins-Bold',
-                    color: Colors.black,
+                    color: ColorConstants.darkBlueThemeColor,
                     fontSize: 20,
                   ),
                 ),
                 const SizedBox(
                   height: 16,
                 ),
-                if (_fileMap["rationCard"] != null) ...[
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                Container(
+                  alignment: Alignment.centerLeft,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                        color: ColorConstants.formBorderColor, width: 2),
+                  ),
+                  padding: EdgeInsets.all(16.0),
+                  child: Column(
                     children: [
-                      Row(
-                        children: const [
-                          Expanded(
-                            child: Text(
-                              'Ration Card (Self Attested)',
-                              style: TextStyle(
-                                fontFamily: 'Poppins-Bold',
-                                fontSize: 14,
-                                color: Color(0xff21205b),
-                              ),
-                              textAlign: TextAlign.left,
+                      if (_fileMap["rationCard"] != null) ...[
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    'Ration Card (Self Attested)',
+                                    style: TextStyle(
+                                      fontFamily: 'Poppins-Medium',
+                                      fontSize: 14,
+                                      color: ColorConstants.formLabelTextColor,
+                                    ),
+                                    textAlign: TextAlign.left,
+                                  ),
+                                ),
+                                Text(
+                                  'Required',
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins-Bold',
+                                    fontSize: 10,
+                                    color: Colors.red,
+                                  ),
+                                  textAlign: TextAlign.left,
+                                ),
+                              ],
                             ),
-                          ),
-                          Text(
-                            'Required',
-                            style: TextStyle(
-                              fontFamily: 'Poppins-Bold',
-                              fontSize: 10,
-                              color: Colors.red,
+                            _buildPDFListItem(_fileMap["rationCard"]!, false),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 16,
+                        ),
+                      ],
+                      if (_fileMap["aadharCard"] != null) ...[
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    'Aadhar Card (Self Attested)',
+                                    style: TextStyle(
+                                      fontFamily: 'Poppins-Medium',
+                                      fontSize: 14,
+                                      color: ColorConstants.formLabelTextColor,
+                                    ),
+                                    textAlign: TextAlign.left,
+                                  ),
+                                ),
+                                Text(
+                                  'Required',
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins-Bold',
+                                    fontSize: 10,
+                                    color: Colors.red,
+                                  ),
+                                  textAlign: TextAlign.left,
+                                ),
+                              ],
                             ),
-                            textAlign: TextAlign.left,
-                          ),
-                        ],
-                      ),
-                      _buildPDFListItem(_fileMap["rationCard"]!, false),
+                            _buildPDFListItem(_fileMap["aadharCard"]!, false),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 16,
+                        ),
+                      ],
+                      if (_fileMap["form16"] != null) ...[
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    'Form 16',
+                                    style: TextStyle(
+                                      fontFamily: 'Poppins-Medium',
+                                      fontSize: 14,
+                                      color: ColorConstants.formLabelTextColor,
+                                    ),
+                                    textAlign: TextAlign.left,
+                                    // overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                Text(
+                                  'Required',
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins-Bold',
+                                    fontSize: 10,
+                                    color: Colors.red,
+                                  ),
+                                  textAlign: TextAlign.left,
+                                ),
+                              ],
+                            ),
+                            _buildPDFListItem(_fileMap["form16"]!, false),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 16,
+                        ),
+                      ],
+                      if (_fileMap["bankPassbook"] != null) ...[
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    'Bank PassBook(Pensioner)',
+                                    style: TextStyle(
+                                      fontFamily: 'Poppins-Medium',
+                                      fontSize: 14,
+                                      color: ColorConstants.formLabelTextColor,
+                                    ),
+                                    textAlign: TextAlign.left,
+                                    // overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                Text(
+                                  'Required',
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins-Bold',
+                                    fontSize: 10,
+                                    color: Colors.red,
+                                  ),
+                                  textAlign: TextAlign.left,
+                                ),
+                              ],
+                            ),
+                            _buildPDFListItem(_fileMap["bankPassbook"]!, false),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 16,
+                        ),
+                      ],
+                      if (_fileMap["salaryCertificate"] != null) ...[
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    'Salary Certificate',
+                                    style: TextStyle(
+                                      fontFamily: 'Poppins-Medium',
+                                      fontSize: 14,
+                                      color: ColorConstants.formLabelTextColor,
+                                    ),
+                                    textAlign: TextAlign.left,
+                                    // overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                Text(
+                                  'Required',
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins-Bold',
+                                    fontSize: 10,
+                                    color: Colors.red,
+                                  ),
+                                  textAlign: TextAlign.left,
+                                ),
+                              ],
+                            ),
+                            _buildPDFListItem(
+                                _fileMap["salaryCertificate"]!, false),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 16,
+                        ),
+                      ],
+                      if (_fileMap["selfDeclaration"] != null) ...[
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    'Self Declaration',
+                                    style: TextStyle(
+                                      fontFamily: 'Poppins-Medium',
+                                      fontSize: 14,
+                                      color: ColorConstants.formLabelTextColor,
+                                    ),
+                                    textAlign: TextAlign.left,
+                                    // overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                Text(
+                                  'Required',
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins-Bold',
+                                    fontSize: 10,
+                                    color: Colors.red,
+                                  ),
+                                  textAlign: TextAlign.left,
+                                ),
+                              ],
+                            ),
+                            _buildPDFListItem(
+                                _fileMap["selfDeclaration"]!, false),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                      ],
                     ],
                   ),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                ],
-                if (_fileMap["aadharCard"] != null) ...[
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Row(
-                        children: const [
-                          Expanded(
-                            child: Text(
-                              'Aadhar Card (Self Attested)',
-                              style: TextStyle(
-                                fontFamily: 'Poppins-Bold',
-                                fontSize: 14,
-                                color: Color(0xff21205b),
-                              ),
-                              textAlign: TextAlign.left,
-                            ),
-                          ),
-                          Text(
-                            'Required',
-                            style: TextStyle(
-                              fontFamily: 'Poppins-Bold',
-                              fontSize: 10,
-                              color: Colors.red,
-                            ),
-                            textAlign: TextAlign.left,
-                          ),
-                        ],
-                      ),
-                      _buildPDFListItem(_fileMap["aadharCard"]!, false),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                ],
-                if (_fileMap["form16"] != null) ...[
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Row(
-                        children: const [
-                          Expanded(
-                            child: Text(
-                              'Form 16',
-                              style: TextStyle(
-                                fontFamily: 'Poppins-Bold',
-                                fontSize: 14,
-                                color: Color(0xff21205b),
-                              ),
-                              textAlign: TextAlign.left,
-                              // overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          Text(
-                            'Required',
-                            style: TextStyle(
-                              fontFamily: 'Poppins-Bold',
-                              fontSize: 10,
-                              color: Colors.red,
-                            ),
-                            textAlign: TextAlign.left,
-                          ),
-                        ],
-                      ),
-                      _buildPDFListItem(_fileMap["form16"]!, false),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                ],
-                if (_fileMap["bankPassbook"] != null) ...[
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Row(
-                        children: const [
-                          Expanded(
-                            child: Text(
-                              'Bank PassBook(Pensioner)',
-                              style: TextStyle(
-                                fontFamily: 'Poppins-Bold',
-                                fontSize: 14,
-                                color: Color(0xff21205b),
-                              ),
-                              textAlign: TextAlign.left,
-                              // overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          Text(
-                            'Required',
-                            style: TextStyle(
-                              fontFamily: 'Poppins-Bold',
-                              fontSize: 10,
-                              color: Colors.red,
-                            ),
-                            textAlign: TextAlign.left,
-                          ),
-                        ],
-                      ),
-                      _buildPDFListItem(_fileMap["bankPassbook"]!, false),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                ],
-                if (_fileMap["salaryCertificate"] != null) ...[
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Row(
-                        children: const [
-                          Expanded(
-                            child: Text(
-                              'Salary Certificate',
-                              style: TextStyle(
-                                fontFamily: 'Poppins-Bold',
-                                fontSize: 14,
-                                color: Color(0xff21205b),
-                              ),
-                              textAlign: TextAlign.left,
-                              // overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          Text(
-                            'Required',
-                            style: TextStyle(
-                              fontFamily: 'Poppins-Bold',
-                              fontSize: 10,
-                              color: Colors.red,
-                            ),
-                            textAlign: TextAlign.left,
-                          ),
-                        ],
-                      ),
-                      _buildPDFListItem(_fileMap["salaryCertificate"]!, false),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                ],
-                if (_fileMap["selfDeclaration"] != null) ...[
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Row(
-                        children: const [
-                          Expanded(
-                            child: Text(
-                              'Self Declaration',
-                              style: TextStyle(
-                                fontFamily: 'Poppins-Bold',
-                                fontSize: 14,
-                                color: Color(0xff21205b),
-                              ),
-                              textAlign: TextAlign.left,
-                              // overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          Text(
-                            'Required',
-                            style: TextStyle(
-                              fontFamily: 'Poppins-Bold',
-                              fontSize: 10,
-                              color: Colors.red,
-                            ),
-                            textAlign: TextAlign.left,
-                          ),
-                        ],
-                      ),
-                      _buildPDFListItem(_fileMap["selfDeclaration"]!, false),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                ],
+                ),
               ],
             ),
           ),

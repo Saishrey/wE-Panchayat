@@ -72,7 +72,7 @@ class Data {
   String? _status;
   String? _remark;
   bool? _signboardDetails;
-  String? _canUpdate;
+  bool? _canUpdate;
   Documents? _documents;
 
   Data(
@@ -105,7 +105,7 @@ class Data {
         required String status,
         required String remark,
         required bool signboardDetails,
-        required String canUpdate,
+        required bool canUpdate,
         required Documents documents}) {
     this._applicationId = applicationId;
     this._mongoId = mongoId;
@@ -206,8 +206,8 @@ class Data {
   bool? get signboardDetails => _signboardDetails;
   set signboardDetails(bool? signboardDetails) =>
       _signboardDetails = signboardDetails;
-  String? get canUpdate => _canUpdate;
-  set canUpdate(String? canUpdate) => _canUpdate = canUpdate;
+  bool? get canUpdate => _canUpdate;
+  set canUpdate(bool? canUpdate) => _canUpdate = canUpdate;
   Documents? get documents => _documents;
   set documents(Documents? documents) => _documents = documents;
 

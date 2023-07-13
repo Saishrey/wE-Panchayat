@@ -14,6 +14,8 @@ import 'package:we_panchayat_dev/screens/auth/login.dart';
 
 import 'package:we_panchayat_dev/screens/otp/otp.dart';
 
+import '../../constants.dart';
+
 class SignUpMobileInput extends StatefulWidget {
   const SignUpMobileInput({Key? key}) : super(key: key);
 
@@ -49,7 +51,7 @@ class _SignUpMobileInputState extends State<SignUpMobileInput> {
       height: double.infinity,
       decoration: const BoxDecoration(
         image: DecorationImage(
-          image: AssetImage('assets/images/bg.png'),
+          image: AssetImage('assets/images/auth_bg.png'),
           fit: BoxFit.cover,
         ),
       ),
@@ -100,9 +102,13 @@ class _SignUpMobileInputState extends State<SignUpMobileInput> {
                     SizedBox(height: 16),
                     Padding(
                       padding: const EdgeInsets.all(15.0),
-                      child: const Text(
+                      child: Text(
                         'Enter your mobile number for verification process, we will send you a 6 digits code.',
                         textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontFamily: 'Poppins-Light',
+                          color: ColorConstants.formLabelTextColor,
+                        ),
                       ),
                     ),
                     Center(
@@ -136,32 +142,18 @@ class _SignUpMobileInputState extends State<SignUpMobileInput> {
                                   inputFormatters: [
                                     new LengthLimitingTextInputFormatter(10),
                                   ],
-                                  style: TextStyle(
-                                    color: Colors.black54,
-                                    fontFamily: 'Poppins-Bold',
-                                  ),
+                                  style: AuthConstants.getTextStyle(),
                                   decoration: InputDecoration(
                                     labelText: 'Mobile No.',
-                                    filled: true,
-                                    fillColor: Color(0xffF6F6F6),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                        color: Color(0xffBDBDBD),
-                                      ),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                        color: Color(0xffBDBDBD),
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                        color: Theme.of(context).primaryColor,
-                                      ),
-                                    ),
+                                    labelStyle:
+                                    AuthConstants.getLabelAndHintStyle(),
+                                    // filled: true,
+                                    // fillColor: Color(0xffF6F6F6),
+                                    border: AuthConstants.getEnabledBorder(),
+                                    enabledBorder:
+                                    AuthConstants.getEnabledBorder(),
+                                    focusedBorder:
+                                    AuthConstants.getFocusedBorder(),
                                   ),
                                 ),
                                 SizedBox(height: 16),
@@ -221,13 +213,14 @@ class _SignUpMobileInputState extends State<SignUpMobileInput> {
                                         fontSize: 16,
                                         fontFamily: 'Poppins-Bold',
                                       )),
-                                  style: ElevatedButton.styleFrom(
-                                    primary: Color(0xFF5386E4),
-                                    onPrimary: Colors.white,
-                                    shape: StadiumBorder(),
-                                    padding: EdgeInsets.only(
-                                        top: 15.0, bottom: 15.0),
-                                  ),
+                                  // style: ElevatedButton.styleFrom(
+                                  //   primary: Color(0xFF5386E4),
+                                  //   onPrimary: Colors.white,
+                                  //   shape: StadiumBorder(),
+                                  //   padding: EdgeInsets.only(
+                                  //       top: 15.0, bottom: 15.0),
+                                  // ),
+                                  style: AuthConstants.getSubmitButtonStyle(),
                                 ),
                               ],
                             ),
@@ -247,7 +240,7 @@ class _SignUpMobileInputState extends State<SignUpMobileInput> {
                   Divider(
                     height: 1,
                     thickness: 0.8,
-                    color: Colors.black54,
+                    color: ColorConstants.formBorderColor,
                   ),
                   Padding(
                     padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
@@ -259,9 +252,9 @@ class _SignUpMobileInputState extends State<SignUpMobileInput> {
                           child: Text(
                             "Already have an account? Log in",
                             style: TextStyle(
-                              color: Color(0xFF5386E4),
+                              color: ColorConstants.colorHuntCode2,
                               fontWeight: FontWeight.w700,
-                              fontSize: 15,
+                              fontSize: 14,
                               fontFamily: 'Poppins-Bold',
                             ),
                             // Your bottom element goes here

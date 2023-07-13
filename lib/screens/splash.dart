@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screen_lock/flutter_screen_lock.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -12,13 +13,7 @@ import '../services/api_service.dart';
 import '../services/shared_service.dart';
 import 'homepage/homepage.dart';
 import 'package:connectivity/connectivity.dart';
-import 'dart:io';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:local_auth/error_codes.dart' as error_code;
-import 'package:local_auth/local_auth.dart';
-import 'package:local_auth_android/local_auth_android.dart';
-import 'package:local_auth_ios/local_auth_ios.dart';
+
 class Splash extends StatefulWidget {
   const Splash({Key? key}) : super(key: key);
 
@@ -39,6 +34,48 @@ class _SplashState extends State<Splash> {
 
   bool _isConnectedToInternet = true;
 
+  Future<void> localAuth(BuildContext context) async {
+    final localAuth = LocalAuthentication();
+    final didAuthenticate = await localAuth.authenticate(
+      localizedReason: 'Please authenticate',
+      options: const AuthenticationOptions(biometricOnly: true),
+    );
+    if (didAuthenticate) {
+      Navigator.pop(context);
+    }
+  }
+
+  showPinDialogue(BuildContext context, String mpin) => showDialog<void>(
+        context: context,
+        builder: (context) {
+          return ScreenLock(
+            correctString: mpin,
+            onCancelled: Navigator.of(context).pop,
+            onUnlocked: () async {
+              await Future.delayed(Duration(milliseconds: 250));
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Home(),
+                ),
+              );
+            }
+          );
+        },
+      );
+
+  Future<bool> getAppLockState() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool isEnabled = prefs.getBool('appLockEnabled') ?? false;
+    return isEnabled;
+  }
+
+  Future<bool> getMPINState() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool isEnabled = prefs.getBool('mpinEnabled') ?? false;
+    return isEnabled;
+  }
+
   void checkLoginSession() async {
     bool result = await SharedService.isLoggedIn();
 
@@ -52,15 +89,28 @@ class _SplashState extends State<Splash> {
       if (isSessionActive == 0) {
         showSessionExpiryDialogBox();
       } else if (isSessionActive == 1) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            // builder: (context) => const MyHomePage(
-            //       title: 'wE-Panchayat',
-            //     )
-            builder: (context) => Home(),
-          ),
-        );
+        bool isAppLockEnabled = await getAppLockState();
+
+        bool isMPINEnabled = await getMPINState();
+
+
+        if(isAppLockEnabled) {
+          if(isMPINEnabled) {
+            String? mpin = await SharedService.getMPIN();
+            showPinDialogue(context, mpin!);
+          }
+        }
+        else {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              // builder: (context) => const MyHomePage(
+              //       title: 'wE-Panchayat',
+              //     )
+              builder: (context) => Home(),
+            ),
+          );
+        }
       }
       // else {
       //   showDialog(
@@ -143,8 +193,6 @@ class _SplashState extends State<Splash> {
       await Future.delayed(Duration(seconds: 1));
     }
   }
-
-
 
   showConnectivityDialogBox() => showCupertinoDialog<String>(
         context: context,
@@ -258,58 +306,57 @@ class _SplashState extends State<Splash> {
         // CircularProgressIndicator(),
       ),
     );
-
   }
 
-  // Future<void> _getAvailableBiometrics() async {
-  //   try {
-  //     availableBiometrics = await auth?.getAvailableBiometrics();
-  //     print("bioMetric: $availableBiometrics");
-  //
-  //     if (availableBiometrics!.contains(BiometricType.strong) || availableBiometrics!.contains(BiometricType.fingerprint)) {
-  //       final bool didAuthenticate = await auth!.authenticate(
-  //           localizedReason: 'Unlock your screen   face  or fingerprint',
-  //           options: const AuthenticationOptions(biometricOnly: true, stickyAuth: true),
-  //           authMessages: const <AuthMessages>[
-  //             AndroidAuthMessages(
-  //               signInTitle: 'wepanchayat',
-  //               cancelButton: 'No thanks',
-  //             ),
-  //             IOSAuthMessages(
-  //               cancelButton: 'No thanks',
-  //             ),
-  //           ]);
-  //       if (!didAuthenticate) {
-  //         exit(0);
-  //       }
-  //     } else if (availableBiometrics!.contains(BiometricType.weak) || availableBiometrics!.contains(BiometricType.face)) {
-  //       final bool didAuthenticate = await auth!.authenticate(
-  //           localizedReason: 'Unlock your screen with  face  or fingerprint',
-  //           options: const AuthenticationOptions(stickyAuth: true),
-  //           authMessages: const <AuthMessages>[
-  //             AndroidAuthMessages(
-  //               signInTitle: 'wepanchayat',
-  //               cancelButton: 'No thanks',
-  //             ),
-  //             IOSAuthMessages(
-  //               cancelButton: 'No thanks',
-  //             ),
-  //           ]);
-  //       if (!didAuthenticate) {
-  //         exit(0);
-  //       }
-  //     }
-  //   } on PlatformException catch (e) {
-  //     // availableBiometrics = <BiometricType>[];
-  //     if (e.code == error_code.passcodeNotSet) {
-  //       exit(0);
-  //     }
-  //     print("error: $e");
-  //   }
-  // }
-  //
-  // void deviceCapability() async {
-  //   final bool isCapable = await auth!.canCheckBiometrics;
-  //   isDeviceSupport = isCapable || await auth!.isDeviceSupported();
-  // }
+// Future<void> _getAvailableBiometrics() async {
+//   try {
+//     availableBiometrics = await auth?.getAvailableBiometrics();
+//     print("bioMetric: $availableBiometrics");
+//
+//     if (availableBiometrics!.contains(BiometricType.strong) || availableBiometrics!.contains(BiometricType.fingerprint)) {
+//       final bool didAuthenticate = await auth!.authenticate(
+//           localizedReason: 'Unlock your screen   face  or fingerprint',
+//           options: const AuthenticationOptions(biometricOnly: true, stickyAuth: true),
+//           authMessages: const <AuthMessages>[
+//             AndroidAuthMessages(
+//               signInTitle: 'wepanchayat',
+//               cancelButton: 'No thanks',
+//             ),
+//             IOSAuthMessages(
+//               cancelButton: 'No thanks',
+//             ),
+//           ]);
+//       if (!didAuthenticate) {
+//         exit(0);
+//       }
+//     } else if (availableBiometrics!.contains(BiometricType.weak) || availableBiometrics!.contains(BiometricType.face)) {
+//       final bool didAuthenticate = await auth!.authenticate(
+//           localizedReason: 'Unlock your screen with  face  or fingerprint',
+//           options: const AuthenticationOptions(stickyAuth: true),
+//           authMessages: const <AuthMessages>[
+//             AndroidAuthMessages(
+//               signInTitle: 'wepanchayat',
+//               cancelButton: 'No thanks',
+//             ),
+//             IOSAuthMessages(
+//               cancelButton: 'No thanks',
+//             ),
+//           ]);
+//       if (!didAuthenticate) {
+//         exit(0);
+//       }
+//     }
+//   } on PlatformException catch (e) {
+//     // availableBiometrics = <BiometricType>[];
+//     if (e.code == error_code.passcodeNotSet) {
+//       exit(0);
+//     }
+//     print("error: $e");
+//   }
+// }
+//
+// void deviceCapability() async {
+//   final bool isCapable = await auth!.canCheckBiometrics;
+//   isDeviceSupport = isCapable || await auth!.isDeviceSupported();
+// }
 }

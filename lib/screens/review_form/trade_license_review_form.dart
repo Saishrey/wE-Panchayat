@@ -7,8 +7,9 @@ import 'package:we_panchayat_dev/models/trade_license_reponse_model.dart';
 import 'package:we_panchayat_dev/screens/tradelicense/tradelicense.dart';
 import 'package:we_panchayat_dev/services/trade_license_api_service.dart';
 
-
 import 'package:path_provider/path_provider.dart';
+
+import '../../constants.dart';
 
 class TradeLicenseReviewForm extends StatefulWidget {
   final TradeLicenseFormResponseModel license;
@@ -56,6 +57,8 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
 
   bool _isTabChanged = false;
 
+  bool _isEdit = true;
+
   late int _applicationStatusActiveIndex = 7;
 
   late String _applicationRemark = "Remark";
@@ -77,13 +80,17 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
   void _initTempPath() async {
     Directory? tempDir = await getExternalStorageDirectory();
 
+    print("CAN UPDATE : ${_licenseFormResponseModel.data.canUpdate}");
+    print(_licenseFormResponseModel.data.canUpdate.toString() == "true");
+
     setState(() {
       if (tempDir != null) {
         _tempPath = tempDir.path;
       }
 
       _formData = {
-        "application_id": _licenseFormResponseModel.data.applicationId ?? 'null',
+        "application_id":
+            _licenseFormResponseModel.data.applicationId ?? 'null',
         "signboard_id": _licenseFormResponseModel.data.signboardId ?? 'null',
         "mongo_id": _licenseFormResponseModel.data.mongoId ?? 'null',
         "taluka": _licenseFormResponseModel.data.taluka ?? 'null',
@@ -123,6 +130,8 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
       _applicationStatusActiveIndex = tradeLicenseApplicationStatus
           .indexOf(_licenseFormResponseModel.data.status!);
       _applicationRemark = _licenseFormResponseModel.data.remark ?? "Remark";
+
+      _isEdit = _licenseFormResponseModel.data.canUpdate!;
     });
 
     List<int>? binaryData;
@@ -263,16 +272,23 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
               fontSize: 18),
         ),
         elevation: 0,
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.edit_document),
-            onPressed: () {
-              // do something
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => TradeLicense(fileMap: {..._fileMap}, formData: {..._formData}, isEdit: true)),
-              );
-            },
+        actions:  <Widget>[
+          Visibility(
+            visible: _isEdit,
+            child: IconButton(
+              icon: const Icon(Icons.edit_document),
+              onPressed: () {
+                // do something
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => TradeLicense(
+                          fileMap: {..._fileMap},
+                          formData: {..._formData},
+                          isEdit: true)),
+                );
+              },
+            ),
           ),
         ],
         actionsIconTheme: IconThemeData(
@@ -395,20 +411,19 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontFamily: 'Poppins-Bold',
-                                          color: Colors.black54,
+                                          color: ColorConstants.formLabelTextColor,
                                         ),
                                       ),
                                       style: ButtonStyle(
                                         backgroundColor:
                                             MaterialStateProperty.all<Color>(
                                                 Colors.white),
-                                        shape: MaterialStateProperty.all<
-                                            RoundedRectangleBorder>(
+                                        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                                           RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10.0),
+                                            borderRadius: BorderRadius.circular(20.0),
                                             side: BorderSide(
-                                                color: Colors.black54),
+                                              color: ColorConstants.formLabelTextColor,
+                                            ),
                                           ),
                                         ),
                                         padding: MaterialStateProperty.all<
@@ -437,12 +452,11 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
                                       style: ButtonStyle(
                                         backgroundColor:
                                             MaterialStateProperty.all<Color>(
-                                                Color(0xFF5386E4)),
-                                        shape: MaterialStateProperty.all<
-                                            RoundedRectangleBorder>(
+                                                ColorConstants.darkBlueThemeColor),
+                                        shape:
+                                        MaterialStateProperty.all<RoundedRectangleBorder>(
                                           RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10.0),
+                                            borderRadius: BorderRadius.circular(20.0),
                                           ),
                                         ),
                                         padding: MaterialStateProperty.all<
@@ -547,7 +561,7 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
                                 shape: MaterialStateProperty.all<
                                     RoundedRectangleBorder>(
                                   RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(50.0),
+                                    borderRadius: BorderRadius.circular(20.0),
                                     // side: BorderSide(
                                     //     color: _applicationStatusActiveIndex ==
                                     //             getDetailsSteps().length - 1
@@ -601,8 +615,9 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
             child: Container(
               padding: EdgeInsets.all(10.0),
               decoration: BoxDecoration(
-                border: Border.all(width: 1.0, color: Colors.grey),
-                borderRadius: BorderRadius.circular(8.0),
+                border: Border.all(
+                    width: 2.0, color: ColorConstants.formLabelTextColor),
+                borderRadius: BorderRadius.circular(20.0),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -620,11 +635,12 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
                         children: [
                           Text(
                             pdfFile.path.split('/').last,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
+                            style: TextStyle(
+                              fontFamily: 'Poppins-Medium',
+                              overflow: TextOverflow.ellipsis,
+                              color: ColorConstants.darkBlueThemeColor,
                               fontSize: 14.0,
                             ),
-                            overflow: TextOverflow.ellipsis,
                           ),
                           Text(
                             '${(pdfFile.lengthSync() / 1024).toStringAsFixed(2)} KB',
@@ -637,7 +653,7 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
                       ),
                     ),
                   ),
-                  Icon(
+                  const Icon(
                     Icons.cloud_done,
                     color: Color(0xFF5386E4),
                   ),
@@ -849,19 +865,25 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
   //This will be your screens
   List<Step> getDetailsSteps() => [
         Step(
-            title: const Text('Applicant', style: TextStyle(
-              fontFamily: 'Poppins-Medium',
-              color: Colors.black54,
-            ),),
+            title: const Text(
+              'Applicant',
+              style: TextStyle(
+                fontFamily: 'Poppins-Medium',
+                color: Colors.black54,
+              ),
+            ),
             state: _currentStep > 0 ? StepState.complete : StepState.indexed,
             isActive: _currentStep >= 0,
             content: Column(
               children: [
-                Text('Applicant Details',
-                    style: TextStyle(
-                        fontFamily: 'Poppins-Bold',
-                        color: Colors.black,
-                        fontSize: 20)),
+                Text(
+                  'Applicant Details',
+                  style: TextStyle(
+                    fontFamily: 'Poppins-Bold',
+                    color: ColorConstants.darkBlueThemeColor,
+                    fontSize: 20,
+                  ),
+                ),
                 SizedBox(height: 16),
                 Row(
                   children: [
@@ -870,38 +892,16 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
                         enabled: false,
                         controller:
                             TextEditingController(text: _formData["taluka"]),
-                        style: TextStyle(
-                          color: Colors.black54, //Name
-                          fontFamily: 'Poppins-Bold',
-                        ),
+                        style: FormConstants.getTextStyle(),
                         decoration: InputDecoration(
                           labelText: "Taluka",
+                          labelStyle: FormConstants.getLabelAndHintStyle(),
                           filled: true,
-                          fillColor: Color(0xffF6F6F6),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(
-                              color: Color(0xffBDBDBD),
-                            ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(
-                              color: Color(0xffBDBDBD),
-                            ),
-                          ),
-                          disabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(
-                              color: Color(0xffBDBDBD),
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(
-                              color: Theme.of(context).primaryColor,
-                            ),
-                          ),
+                          fillColor: Colors.white,
+                          border: FormConstants.getEnabledBorder(),
+                          enabledBorder: FormConstants.getEnabledBorder(),
+                          focusedBorder: FormConstants.getFocusedBorder(),
+                          disabledBorder: FormConstants.getEnabledBorder(),
                         ),
                       ),
                     ),
@@ -911,38 +911,16 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
                         enabled: false,
                         controller:
                             TextEditingController(text: _formData["panchayat"]),
-                        style: TextStyle(
-                          color: Colors.black54, //Name
-                          fontFamily: 'Poppins-Bold',
-                        ),
+                        style: FormConstants.getTextStyle(),
                         decoration: InputDecoration(
                           labelText: "Panchayat",
+                          labelStyle: FormConstants.getLabelAndHintStyle(),
                           filled: true,
-                          fillColor: Color(0xffF6F6F6),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(
-                              color: Color(0xffBDBDBD),
-                            ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(
-                              color: Color(0xffBDBDBD),
-                            ),
-                          ),
-                          disabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(
-                              color: Color(0xffBDBDBD),
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(
-                              color: Theme.of(context).primaryColor,
-                            ),
-                          ),
+                          fillColor: Colors.white,
+                          border: FormConstants.getEnabledBorder(),
+                          enabledBorder: FormConstants.getEnabledBorder(),
+                          focusedBorder: FormConstants.getFocusedBorder(),
+                          disabledBorder: FormConstants.getEnabledBorder(),
                         ),
                       ),
                     ),
@@ -953,38 +931,16 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
                   enabled: false,
                   controller:
                       TextEditingController(text: _formData["applicants_name"]),
-                  style: TextStyle(
-                    color: Colors.black54, //Name
-                    fontFamily: 'Poppins-Bold',
-                  ),
+                  style: FormConstants.getTextStyle(),
                   decoration: InputDecoration(
                     labelText: "Applicant's Name",
+                    labelStyle: FormConstants.getLabelAndHintStyle(),
                     filled: true,
-                    fillColor: Color(0xffF6F6F6),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: Color(0xffBDBDBD),
-                      ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: Color(0xffBDBDBD),
-                      ),
-                    ),
-                    disabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: Color(0xffBDBDBD),
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: Theme.of(context).primaryColor,
-                      ),
-                    ),
+                    fillColor: Colors.white,
+                    border: FormConstants.getEnabledBorder(),
+                    enabledBorder: FormConstants.getEnabledBorder(),
+                    focusedBorder: FormConstants.getFocusedBorder(),
+                    disabledBorder: FormConstants.getEnabledBorder(),
                   ),
                 ),
                 SizedBox(height: 16),
@@ -993,38 +949,16 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
                   enabled: false,
                   controller: TextEditingController(
                       text: _formData["applicants_address"]),
-                  style: TextStyle(
-                    color: Colors.black54,
-                    fontFamily: 'Poppins-Bold',
-                  ),
+                  style: FormConstants.getTextStyle(),
                   decoration: InputDecoration(
                     labelText: "Applicant's Address",
+                    labelStyle: FormConstants.getLabelAndHintStyle(),
                     filled: true,
-                    fillColor: Color(0xffF6F6F6),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: Color(0xffBDBDBD),
-                      ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: Color(0xffBDBDBD),
-                      ),
-                    ),
-                    disabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: Color(0xffBDBDBD),
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: Theme.of(context).primaryColor,
-                      ),
-                    ),
+                    fillColor: Colors.white,
+                    border: FormConstants.getEnabledBorder(),
+                    enabledBorder: FormConstants.getEnabledBorder(),
+                    focusedBorder: FormConstants.getFocusedBorder(),
+                    disabledBorder: FormConstants.getEnabledBorder(),
                   ),
                 ),
                 SizedBox(height: 16),
@@ -1032,38 +966,16 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
                 TextFormField(
                   enabled: false,
                   controller: TextEditingController(text: _formData["phone"]),
-                  style: TextStyle(
-                    color: Colors.black54,
-                    fontFamily: 'Poppins-Bold',
-                  ),
+                  style: FormConstants.getTextStyle(),
                   decoration: InputDecoration(
                     labelText: 'Mobile No.',
+                    labelStyle: FormConstants.getLabelAndHintStyle(),
                     filled: true,
-                    fillColor: Color(0xffF6F6F6),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: Color(0xffBDBDBD),
-                      ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: Color(0xffBDBDBD),
-                      ),
-                    ),
-                    disabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: Color(0xffBDBDBD),
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: Theme.of(context).primaryColor,
-                      ),
-                    ),
+                    fillColor: Colors.white,
+                    border: FormConstants.getEnabledBorder(),
+                    enabledBorder: FormConstants.getEnabledBorder(),
+                    focusedBorder: FormConstants.getFocusedBorder(),
+                    disabledBorder: FormConstants.getEnabledBorder(),
                   ),
                 ),
                 SizedBox(height: 16),
@@ -1075,38 +987,16 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
                         controller:
                             TextEditingController(text: _formData["ward_no"]),
                         keyboardType: TextInputType.number,
-                        style: TextStyle(
-                          color: Colors.black54, //Name
-                          fontFamily: 'Poppins-Bold',
-                        ),
+                        style: FormConstants.getTextStyle(),
                         decoration: InputDecoration(
                           labelText: 'Ward No.',
+                          labelStyle: FormConstants.getLabelAndHintStyle(),
                           filled: true,
-                          fillColor: Color(0xffF6F6F6),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(
-                              color: Color(0xffBDBDBD),
-                            ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(
-                              color: Color(0xffBDBDBD),
-                            ),
-                          ),
-                          disabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(
-                              color: Color(0xffBDBDBD),
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(
-                              color: Theme.of(context).primaryColor,
-                            ),
-                          ),
+                          fillColor: Colors.white,
+                          border: FormConstants.getEnabledBorder(),
+                          enabledBorder: FormConstants.getEnabledBorder(),
+                          focusedBorder: FormConstants.getFocusedBorder(),
+                          disabledBorder: FormConstants.getEnabledBorder(),
                         ),
                       ),
                     ),
@@ -1117,38 +1007,16 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
                         controller:
                             TextEditingController(text: _formData["shop_no"]),
                         keyboardType: TextInputType.number,
-                        style: TextStyle(
-                          color: Colors.black54,
-                          fontFamily: 'Poppins-Bold',
-                        ),
+                        style: FormConstants.getTextStyle(),
                         decoration: InputDecoration(
                           labelText: 'Shop No.',
+                          labelStyle: FormConstants.getLabelAndHintStyle(),
                           filled: true,
-                          fillColor: Color(0xffF6F6F6),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(
-                              color: Color(0xffBDBDBD),
-                            ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(
-                              color: Color(0xffBDBDBD),
-                            ),
-                          ),
-                          disabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(
-                              color: Color(0xffBDBDBD),
-                            ),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: BorderSide(
-                              color: Theme.of(context).primaryColor,
-                            ),
-                          ),
+                          fillColor: Colors.white,
+                          border: FormConstants.getEnabledBorder(),
+                          enabledBorder: FormConstants.getEnabledBorder(),
+                          focusedBorder: FormConstants.getFocusedBorder(),
+                          disabledBorder: FormConstants.getEnabledBorder(),
                         ),
                       ),
                     ),
@@ -1157,10 +1025,13 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
               ],
             )),
         Step(
-          title: const Text('Trade', style: TextStyle(
-            fontFamily: 'Poppins-Medium',
-            color: Colors.black54,
-          ),),
+          title: const Text(
+            'Trade',
+            style: TextStyle(
+              fontFamily: 'Poppins-Medium',
+              color: Colors.black54,
+            ),
+          ),
           state: _currentStep > 1 ? StepState.complete : StepState.indexed,
           isActive: _currentStep >= 1,
           content: Column(
@@ -1168,45 +1039,23 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
               Text('Trade Details',
                   style: TextStyle(
                       fontFamily: 'Poppins-Bold',
-                      color: Colors.black,
+                      color: ColorConstants.darkBlueThemeColor,
                       fontSize: 20)),
               SizedBox(height: 16),
               TextFormField(
                 enabled: false,
                 controller:
                     TextEditingController(text: _formData["owner_name"]),
-                style: TextStyle(
-                  color: Colors.black54,
-                  fontFamily: 'Poppins-Bold',
-                ),
+                style: FormConstants.getTextStyle(),
                 decoration: InputDecoration(
                   labelText: 'Name of Owner',
+                  labelStyle: FormConstants.getLabelAndHintStyle(),
                   filled: true,
-                  fillColor: Color(0xffF6F6F6),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
+                  fillColor: Colors.white,
+                  border: FormConstants.getEnabledBorder(),
+                  enabledBorder: FormConstants.getEnabledBorder(),
+                  focusedBorder: FormConstants.getFocusedBorder(),
+                  disabledBorder: FormConstants.getEnabledBorder(),
                 ),
               ),
               SizedBox(height: 16),
@@ -1214,38 +1063,16 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
                 enabled: false,
                 controller:
                     TextEditingController(text: _formData["trade_name"]),
-                style: TextStyle(
-                  color: Colors.black54,
-                  fontFamily: 'Poppins-Bold',
-                ),
+                style: FormConstants.getTextStyle(),
                 decoration: InputDecoration(
                   labelText: 'Name of Trade',
+                  labelStyle: FormConstants.getLabelAndHintStyle(),
                   filled: true,
-                  fillColor: Color(0xffF6F6F6),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
+                  fillColor: Colors.white,
+                  border: FormConstants.getEnabledBorder(),
+                  enabledBorder: FormConstants.getEnabledBorder(),
+                  focusedBorder: FormConstants.getFocusedBorder(),
+                  disabledBorder: FormConstants.getEnabledBorder(),
                 ),
               ),
               SizedBox(height: 16),
@@ -1253,38 +1080,16 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
                 enabled: false,
                 controller:
                     TextEditingController(text: _formData["trade_address"]),
-                style: TextStyle(
-                  color: Colors.black54,
-                  fontFamily: 'Poppins-Bold',
-                ),
+                style: FormConstants.getTextStyle(),
                 decoration: InputDecoration(
                   labelText: 'Trade Address',
+                  labelStyle: FormConstants.getLabelAndHintStyle(),
                   filled: true,
-                  fillColor: Color(0xffF6F6F6),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
+                  fillColor: Colors.white,
+                  border: FormConstants.getEnabledBorder(),
+                  enabledBorder: FormConstants.getEnabledBorder(),
+                  focusedBorder: FormConstants.getFocusedBorder(),
+                  disabledBorder: FormConstants.getEnabledBorder(),
                 ),
               ),
               SizedBox(height: 16),
@@ -1292,38 +1097,16 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
                 enabled: false,
                 controller: TextEditingController(
                     text: _formData["applicants_relation"]),
-                style: TextStyle(
-                  color: Colors.black54,
-                  fontFamily: 'Poppins-Bold',
-                ),
+                style: FormConstants.getTextStyle(),
                 decoration: InputDecoration(
                   labelText: "Applicant's Relation",
+                  labelStyle: FormConstants.getLabelAndHintStyle(),
                   filled: true,
-                  fillColor: Color(0xffF6F6F6),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
+                  fillColor: Colors.white,
+                  border: FormConstants.getEnabledBorder(),
+                  enabledBorder: FormConstants.getEnabledBorder(),
+                  focusedBorder: FormConstants.getFocusedBorder(),
+                  disabledBorder: FormConstants.getEnabledBorder(),
                 ),
               ),
               SizedBox(height: 16),
@@ -1331,38 +1114,16 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
                 enabled: false,
                 controller:
                     TextEditingController(text: _formData["trade_type"]),
-                style: TextStyle(
-                  color: Colors.black54,
-                  fontFamily: 'Poppins-Bold',
-                ),
+                style: FormConstants.getTextStyle(),
                 decoration: InputDecoration(
                   labelText: "Type of Trade",
+                  labelStyle: FormConstants.getLabelAndHintStyle(),
                   filled: true,
-                  fillColor: Color(0xffF6F6F6),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
+                  fillColor: Colors.white,
+                  border: FormConstants.getEnabledBorder(),
+                  enabledBorder: FormConstants.getEnabledBorder(),
+                  focusedBorder: FormConstants.getFocusedBorder(),
+                  disabledBorder: FormConstants.getEnabledBorder(),
                 ),
               ),
               SizedBox(height: 16),
@@ -1370,38 +1131,16 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
                 enabled: false,
                 controller:
                     TextEditingController(text: _formData["business_nature"]),
-                style: TextStyle(
-                  color: Colors.black54,
-                  fontFamily: 'Poppins-Bold',
-                ),
+                style: FormConstants.getTextStyle(),
                 decoration: InputDecoration(
                   labelText: 'Nature of Business',
+                  labelStyle: FormConstants.getLabelAndHintStyle(),
                   filled: true,
-                  fillColor: Color(0xffF6F6F6),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
+                  fillColor: Colors.white,
+                  border: FormConstants.getEnabledBorder(),
+                  enabledBorder: FormConstants.getEnabledBorder(),
+                  focusedBorder: FormConstants.getFocusedBorder(),
+                  disabledBorder: FormConstants.getEnabledBorder(),
                 ),
               ),
               SizedBox(height: 16),
@@ -1409,38 +1148,16 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
                 enabled: false,
                 controller: TextEditingController(
                     text: _formData["waste_management_facility"]),
-                style: TextStyle(
-                  color: Colors.black54,
-                  fontFamily: 'Poppins-Bold',
-                ),
+                style: FormConstants.getTextStyle(),
                 decoration: InputDecoration(
                   labelText: 'Waste Management-facility',
+                  labelStyle: FormConstants.getLabelAndHintStyle(),
                   filled: true,
-                  fillColor: Color(0xffF6F6F6),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
+                  fillColor: Colors.white,
+                  border: FormConstants.getEnabledBorder(),
+                  enabledBorder: FormConstants.getEnabledBorder(),
+                  focusedBorder: FormConstants.getFocusedBorder(),
+                  disabledBorder: FormConstants.getEnabledBorder(),
                 ),
               ),
               SizedBox(height: 16),
@@ -1448,38 +1165,16 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
                 enabled: false,
                 controller: TextEditingController(text: _formData["lease_pay"]),
                 keyboardType: TextInputType.number,
-                style: TextStyle(
-                  color: Colors.black54,
-                  fontFamily: 'Poppins-Bold',
-                ),
+                style: FormConstants.getTextStyle(),
                 decoration: InputDecoration(
                   labelText: 'Lease Pay',
+                  labelStyle: FormConstants.getLabelAndHintStyle(),
                   filled: true,
-                  fillColor: Color(0xffF6F6F6),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
+                  fillColor: Colors.white,
+                  border: FormConstants.getEnabledBorder(),
+                  enabledBorder: FormConstants.getEnabledBorder(),
+                  focusedBorder: FormConstants.getFocusedBorder(),
+                  disabledBorder: FormConstants.getEnabledBorder(),
                 ),
               ),
               SizedBox(height: 16),
@@ -1488,38 +1183,16 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
                 keyboardType: TextInputType.number,
                 controller:
                     TextEditingController(text: _formData['trade_area']),
-                style: TextStyle(
-                  color: Colors.black54,
-                  fontFamily: 'Poppins-Bold',
-                ),
+                style: FormConstants.getTextStyle(),
                 decoration: InputDecoration(
                   labelText: 'Trade Area (sq.Mts)',
+                  labelStyle: FormConstants.getLabelAndHintStyle(),
                   filled: true,
-                  fillColor: Color(0xffF6F6F6),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
+                  fillColor: Colors.white,
+                  border: FormConstants.getEnabledBorder(),
+                  enabledBorder: FormConstants.getEnabledBorder(),
+                  focusedBorder: FormConstants.getFocusedBorder(),
+                  disabledBorder: FormConstants.getEnabledBorder(),
                 ),
               ),
               SizedBox(height: 16),
@@ -1528,38 +1201,16 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
                 keyboardType: TextInputType.number,
                 controller:
                     TextEditingController(text: _formData["no_of_employee"]),
-                style: TextStyle(
-                  color: Colors.black54,
-                  fontFamily: 'Poppins-Bold',
-                ),
+                style: FormConstants.getTextStyle(),
                 decoration: InputDecoration(
                   labelText: 'No. of Employees',
+                  labelStyle: FormConstants.getLabelAndHintStyle(),
                   filled: true,
-                  fillColor: Color(0xffF6F6F6),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  disabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Color(0xffBDBDBD),
-                    ),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(
-                      color: Theme.of(context).primaryColor,
-                    ),
-                  ),
+                  fillColor: Colors.white,
+                  border: FormConstants.getEnabledBorder(),
+                  enabledBorder: FormConstants.getEnabledBorder(),
+                  focusedBorder: FormConstants.getFocusedBorder(),
+                  disabledBorder: FormConstants.getEnabledBorder(),
                 ),
               ),
               SizedBox(height: 32),
@@ -1567,45 +1218,23 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
                 Text('Signboard Details',
                     style: TextStyle(
                         fontFamily: 'Poppins-Bold',
-                        color: Colors.black,
+                        color: ColorConstants.darkBlueThemeColor,
                         fontSize: 20)),
                 SizedBox(height: 16),
                 TextFormField(
                   enabled: false,
                   controller: TextEditingController(
                       text: _formData["signboard_location"]),
-                  style: TextStyle(
-                    color: Colors.black54,
-                    fontFamily: 'Poppins-Bold',
-                  ),
+                  style: FormConstants.getTextStyle(),
                   decoration: InputDecoration(
                     labelText: 'Signboard Location',
+                    labelStyle: FormConstants.getLabelAndHintStyle(),
                     filled: true,
-                    fillColor: Color(0xffF6F6F6),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: Color(0xffBDBDBD),
-                      ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: Color(0xffBDBDBD),
-                      ),
-                    ),
-                    disabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: Color(0xffBDBDBD),
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: Theme.of(context).primaryColor,
-                      ),
-                    ),
+                    fillColor: Colors.white,
+                    border: FormConstants.getEnabledBorder(),
+                    enabledBorder: FormConstants.getEnabledBorder(),
+                    focusedBorder: FormConstants.getFocusedBorder(),
+                    disabledBorder: FormConstants.getEnabledBorder(),
                   ),
                 ),
                 SizedBox(height: 16),
@@ -1613,38 +1242,16 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
                   enabled: false,
                   controller:
                       TextEditingController(text: _formData["signboard_type"]),
-                  style: TextStyle(
-                    color: Colors.black54,
-                    fontFamily: 'Poppins-Bold',
-                  ),
+                  style: FormConstants.getTextStyle(),
                   decoration: InputDecoration(
                     labelText: 'Signboard Type',
+                    labelStyle: FormConstants.getLabelAndHintStyle(),
                     filled: true,
-                    fillColor: Color(0xffF6F6F6),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: Color(0xffBDBDBD),
-                      ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: Color(0xffBDBDBD),
-                      ),
-                    ),
-                    disabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: Color(0xffBDBDBD),
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: Theme.of(context).primaryColor,
-                      ),
-                    ),
+                    fillColor: Colors.white,
+                    border: FormConstants.getEnabledBorder(),
+                    enabledBorder: FormConstants.getEnabledBorder(),
+                    focusedBorder: FormConstants.getFocusedBorder(),
+                    disabledBorder: FormConstants.getEnabledBorder(),
                   ),
                 ),
                 SizedBox(height: 16),
@@ -1652,38 +1259,16 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
                   enabled: false,
                   controller: TextEditingController(
                       text: _formData["signboard_content"]),
-                  style: TextStyle(
-                    color: Colors.black54,
-                    fontFamily: 'Poppins-Bold',
-                  ),
+                  style: FormConstants.getTextStyle(),
                   decoration: InputDecoration(
                     labelText: 'Content on Board',
+                    labelStyle: FormConstants.getLabelAndHintStyle(),
                     filled: true,
-                    fillColor: Color(0xffF6F6F6),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: Color(0xffBDBDBD),
-                      ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: Color(0xffBDBDBD),
-                      ),
-                    ),
-                    disabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: Color(0xffBDBDBD),
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: Theme.of(context).primaryColor,
-                      ),
-                    ),
+                    fillColor: Colors.white,
+                    border: FormConstants.getEnabledBorder(),
+                    enabledBorder: FormConstants.getEnabledBorder(),
+                    focusedBorder: FormConstants.getFocusedBorder(),
+                    disabledBorder: FormConstants.getEnabledBorder(),
                   ),
                 ),
                 SizedBox(
@@ -1694,38 +1279,16 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
                   keyboardType: TextInputType.number,
                   controller:
                       TextEditingController(text: _formData["signboard_area"]),
-                  style: TextStyle(
-                    color: Colors.black54,
-                    fontFamily: 'Poppins-Bold',
-                  ),
+                  style: FormConstants.getTextStyle(),
                   decoration: InputDecoration(
                     labelText: 'Area(sq.Ft)',
+                    labelStyle: FormConstants.getLabelAndHintStyle(),
                     filled: true,
-                    fillColor: Color(0xffF6F6F6),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: Color(0xffBDBDBD),
-                      ),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: Color(0xffBDBDBD),
-                      ),
-                    ),
-                    disabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: Color(0xffBDBDBD),
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: Theme.of(context).primaryColor,
-                      ),
-                    ),
+                    fillColor: Colors.white,
+                    border: FormConstants.getEnabledBorder(),
+                    enabledBorder: FormConstants.getEnabledBorder(),
+                    focusedBorder: FormConstants.getFocusedBorder(),
+                    disabledBorder: FormConstants.getEnabledBorder(),
                   ),
                 ),
               ],
@@ -1735,333 +1298,364 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
         Step(
           state: _currentStep > 2 ? StepState.complete : StepState.indexed,
           isActive: _currentStep >= 2,
-          title: const Text('Documents', style: TextStyle(
-            fontFamily: 'Poppins-Medium',
-            color: Colors.black54,
-          ),),
+          title: const Text(
+            'Documents',
+            style: TextStyle(
+              fontFamily: 'Poppins-Medium',
+              color: Colors.black54,
+            ),
+          ),
           content: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
+                Text(
                   'Uploaded Documents',
                   style: TextStyle(
                     fontFamily: 'Poppins-Bold',
-                    color: Colors.black,
+                    color: ColorConstants.darkBlueThemeColor,
                     fontSize: 20,
                   ),
                 ),
                 const SizedBox(
                   height: 16,
                 ),
-                if (_fileMap["identityProof"] != null) ...[
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                Container(
+                  alignment: Alignment.centerLeft,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                        color: ColorConstants.formBorderColor, width: 2),
+                  ),
+                  padding: EdgeInsets.all(16.0),
+                  child: Column(
                     children: [
-                      Row(
-                        children: const [
-                          Expanded(
-                            child: Text(
-                              'Identity Proof',
-                              style: TextStyle(
-                                fontFamily: 'Poppins-Bold',
-                                fontSize: 14,
-                                color: Color(0xff21205b),
-                              ),
-                              textAlign: TextAlign.left,
+                      if (_fileMap["identityProof"] != null) ...[
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Row(
+                              children:  [
+                                Expanded(
+                                  child: Text(
+                                    'Identity Proof',
+                                    style: TextStyle(
+                                      fontFamily: 'Poppins-Medium',
+                                      fontSize: 14,
+                                      color: ColorConstants.formLabelTextColor,
+                                    ),
+                                    textAlign: TextAlign.left,
+                                  ),
+                                ),
+                                Text(
+                                  'Required',
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins-Bold',
+                                    fontSize: 10,
+                                    color: Colors.red,
+                                  ),
+                                  textAlign: TextAlign.left,
+                                ),
+                              ],
                             ),
-                          ),
-                          Text(
-                            'Required',
-                            style: TextStyle(
-                              fontFamily: 'Poppins-Bold',
-                              fontSize: 10,
-                              color: Colors.red,
+                            _buildPDFListItem(_fileMap["identityProof"]!),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 16,
+                        ),
+                      ],
+                      if (_fileMap["houseTax"] != null) ...[
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Row(
+                              children:  [
+                                Expanded(
+                                  child: Text(
+                                    'Housetax Receipt',
+                                    style: TextStyle(
+                                      fontFamily: 'Poppins-Medium',
+                                      fontSize: 14,
+                                      color: ColorConstants.formLabelTextColor,
+                                    ),
+                                    textAlign: TextAlign.left,
+                                  ),
+                                ),
+                                Text(
+                                  'Required',
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins-Bold',
+                                    fontSize: 10,
+                                    color: Colors.red,
+                                  ),
+                                  textAlign: TextAlign.left,
+                                ),
+                              ],
                             ),
-                            textAlign: TextAlign.left,
-                          ),
-                        ],
-                      ),
-                      _buildPDFListItem(_fileMap["identityProof"]!),
+                            _buildPDFListItem(_fileMap["houseTax"]!),
+                          ],
+                        ),
+                        const SizedBox(
+                          height: 16,
+                        ),
+                      ],
+                      if (_fileMap["ownershipDocument"] != null) ...[
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Row(
+                              children:  [
+                                Expanded(
+                                  child: Text(
+                                    'No Objection Certificate/ Lease argreement/ Ownership document',
+                                    style: TextStyle(
+                                      fontFamily: 'Poppins-Medium',
+                                      fontSize: 14,
+                                      color: ColorConstants.formLabelTextColor,
+                                    ),
+                                    textAlign: TextAlign.left,
+                                    // overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                Text(
+                                  'Required',
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins-Bold',
+                                    fontSize: 10,
+                                    color: Colors.red,
+                                  ),
+                                  textAlign: TextAlign.left,
+                                ),
+                              ],
+                            ),
+                            _buildPDFListItem(_fileMap["ownershipDocument"]!),
+                          ],
+                        ),
+                      ],
                     ],
                   ),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                ],
-                if (_fileMap["houseTax"] != null) ...[
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Row(
-                        children: const [
-                          Expanded(
-                            child: Text(
-                              'Housetax Receipt',
-                              style: TextStyle(
-                                fontFamily: 'Poppins-Bold',
-                                fontSize: 14,
-                                color: Color(0xff21205b),
-                              ),
-                              textAlign: TextAlign.left,
-                            ),
-                          ),
-                          Text(
-                            'Required',
-                            style: TextStyle(
-                              fontFamily: 'Poppins-Bold',
-                              fontSize: 10,
-                              color: Colors.red,
-                            ),
-                            textAlign: TextAlign.left,
-                          ),
-                        ],
-                      ),
-                      _buildPDFListItem(_fileMap["houseTax"]!),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                ],
-                if (_fileMap["ownershipDocument"] != null) ...[
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Row(
-                        children: const [
-                          Expanded(
-                            child: Text(
-                              'No Objection Certificate/ Lease argreement/ Ownership document',
-                              style: TextStyle(
-                                fontFamily: 'Poppins-Bold',
-                                fontSize: 14,
-                                color: Color(0xff21205b),
-                              ),
-                              textAlign: TextAlign.left,
-                              // overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          Text(
-                            'Required',
-                            style: TextStyle(
-                              fontFamily: 'Poppins-Bold',
-                              fontSize: 10,
-                              color: Colors.red,
-                            ),
-                            textAlign: TextAlign.left,
-                          ),
-                        ],
-                      ),
-                      _buildPDFListItem(_fileMap["ownershipDocument"]!),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 40,
-                  ),
-                ],
+                ),
+                const SizedBox(
+                  height: 40,
+                ),
                 if (_fileMap.length > 3) ...[
-                  const Text(
-                    'Permissions granted by the Authorities as per requirement',
-                    style: TextStyle(
-                      fontFamily: 'Poppins-Bold',
-                      fontSize: 14,
+                  Container(
+                    alignment: Alignment.centerLeft,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                          color: ColorConstants.formBorderColor, width: 2),
+                    ),
+                    padding: EdgeInsets.all(16.0),
+                    child: Column(
+                      children: [
+                        Text(
+                          'Permissions granted by the Authorities as per requirement',
+                          style: TextStyle(
+                            fontFamily: 'Poppins-Bold',
+                            color: ColorConstants.darkBlueThemeColor,
+                            fontSize: 14,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        if (_fileMap["permissionsGranted.foodAndDrugs"] != null) ...[
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Text(
+                                'Foods & Drugs',
+                                style: TextStyle(
+                                  fontFamily: 'Poppins-Medium',
+                                  fontSize: 14,
+                                  color: ColorConstants.formLabelTextColor,
+                                ),
+                                textAlign: TextAlign.left,
+                                // overflow: TextOverflow.ellipsis,
+                              ),
+                              _buildPDFListItem(
+                                  _fileMap["permissionsGranted.foodAndDrugs"]!),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                        ],
+                        if (_fileMap["permissionsGranted.excise"] != null) ...[
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Text(
+                                'Excise',
+                                style: TextStyle(
+                                  fontFamily: 'Poppins-Medium',
+                                  fontSize: 14,
+                                  color: ColorConstants.formLabelTextColor,
+                                ),
+                                textAlign: TextAlign.left,
+                                // overflow: TextOverflow.ellipsis,
+                              ),
+                              _buildPDFListItem(_fileMap["permissionsGranted.excise"]!),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                        ],
+                        if (_fileMap["permissionsGranted.policeDepartment"] !=
+                            null) ...[
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Text(
+                                'Police Dept.',
+                                style: TextStyle(
+                                  fontFamily: 'Poppins-Medium',
+                                  fontSize: 14,
+                                  color: ColorConstants.formLabelTextColor,
+                                ),
+                                textAlign: TextAlign.left,
+                                // overflow: TextOverflow.ellipsis,
+                              ),
+                              _buildPDFListItem(
+                                  _fileMap["permissionsGranted.policeDepartment"]!),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                        ],
+                        if (_fileMap["permissionsGranted.crz"] != null) ...[
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Text(
+                                'CRZ',
+                                style: TextStyle(
+                                  fontFamily: 'Poppins-Medium',
+                                  fontSize: 14,
+                                  color: ColorConstants.formLabelTextColor,
+                                ),
+                                textAlign: TextAlign.left,
+                                // overflow: TextOverflow.ellipsis,
+                              ),
+                              _buildPDFListItem(_fileMap["permissionsGranted.crz"]!),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                        ],
+                        if (_fileMap["permissionsGranted.tourism"] != null) ...[
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Text(
+                                'Tourism',
+                                style: TextStyle(
+                                  fontFamily: 'Poppins-Medium',
+                                  fontSize: 14,
+                                  color: ColorConstants.formLabelTextColor,
+                                ),
+                                textAlign: TextAlign.left,
+                                // overflow: TextOverflow.ellipsis,
+                              ),
+                              _buildPDFListItem(
+                                  _fileMap["permissionsGranted.tourism"]!),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                        ],
+                        if (_fileMap["permissionsGranted.fireAndBridge"] != null) ...[
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Text(
+                                'Fire Brigade',
+                                style: TextStyle(
+                                  fontFamily: 'Poppins-Medium',
+                                  fontSize: 14,
+                                  color: ColorConstants.formLabelTextColor,
+                                ),
+                                textAlign: TextAlign.left,
+                                // overflow: TextOverflow.ellipsis,
+                              ),
+                              _buildPDFListItem(
+                                  _fileMap["permissionsGranted.fireAndBridge"]!),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                        ],
+                        if (_fileMap["permissionsGranted.factoriesAndBoilers"] !=
+                            null) ...[
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Text(
+                                'Factories & Boilers',
+                                style: TextStyle(
+                                  fontFamily: 'Poppins-Medium',
+                                  fontSize: 14,
+                                  color: ColorConstants.formLabelTextColor,
+                                ),
+                                textAlign: TextAlign.left,
+                                // overflow: TextOverflow.ellipsis,
+                              ),
+                              _buildPDFListItem(
+                                  _fileMap["permissionsGranted.factoriesAndBoilers"]!),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                        ],
+                        if (_fileMap["permissionsGranted.healthServices"] != null) ...[
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Text(
+                                'Health Services',
+                                style: TextStyle(
+                                  fontFamily: 'Poppins-Medium',
+                                  fontSize: 14,
+                                  color: ColorConstants.formLabelTextColor,
+                                ),
+                                textAlign: TextAlign.left,
+                                // overflow: TextOverflow.ellipsis,
+                              ),
+                              _buildPDFListItem(
+                                  _fileMap["permissionsGranted.healthServices"]!),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                        ],
+                        if (_fileMap["permissionsGranted.others.file"] != null) ...[
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Text(
+                                'Others',
+                                style: TextStyle(
+                                  fontFamily: 'Poppins-Medium',
+                                  fontSize: 14,
+                                  color: ColorConstants.formLabelTextColor,
+                                ),
+                                textAlign: TextAlign.left,
+                                // overflow: TextOverflow.ellipsis,
+                              ),
+                              _buildPDFListItem(
+                                  _fileMap["permissionsGranted.others.file"]!),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                        ],
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 16),
                 ],
-                if (_fileMap["permissionsGranted.foodAndDrugs"] != null) ...[
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        'Foods & Drugs',
-                        style: TextStyle(
-                          fontFamily: 'Poppins-Bold',
-                          fontSize: 14,
-                          color: Color(0xff21205b),
-                        ),
-                        textAlign: TextAlign.left,
-                        // overflow: TextOverflow.ellipsis,
-                      ),
-                      _buildPDFListItem(
-                          _fileMap["permissionsGranted.foodAndDrugs"]!),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                ],
-                if (_fileMap["permissionsGranted.excise"] != null) ...[
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        'Excise',
-                        style: TextStyle(
-                          fontFamily: 'Poppins-Bold',
-                          fontSize: 14,
-                          color: Color(0xff21205b),
-                        ),
-                        textAlign: TextAlign.left,
-                        // overflow: TextOverflow.ellipsis,
-                      ),
-                      _buildPDFListItem(_fileMap["permissionsGranted.excise"]!),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                ],
-                if (_fileMap["permissionsGranted.policeDepartment"] !=
-                    null) ...[
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        'Police Dept.',
-                        style: TextStyle(
-                          fontFamily: 'Poppins-Bold',
-                          fontSize: 14,
-                          color: Color(0xff21205b),
-                        ),
-                        textAlign: TextAlign.left,
-                        // overflow: TextOverflow.ellipsis,
-                      ),
-                      _buildPDFListItem(
-                          _fileMap["permissionsGranted.policeDepartment"]!),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                ],
-                if (_fileMap["permissionsGranted.crz"] != null) ...[
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        'CRZ',
-                        style: TextStyle(
-                          fontFamily: 'Poppins-Bold',
-                          fontSize: 14,
-                          color: Color(0xff21205b),
-                        ),
-                        textAlign: TextAlign.left,
-                        // overflow: TextOverflow.ellipsis,
-                      ),
-                      _buildPDFListItem(_fileMap["permissionsGranted.crz"]!),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                ],
-                if (_fileMap["permissionsGranted.tourism"] != null) ...[
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        'Tourism',
-                        style: TextStyle(
-                          fontFamily: 'Poppins-Bold',
-                          fontSize: 14,
-                          color: Color(0xff21205b),
-                        ),
-                        textAlign: TextAlign.left,
-                        // overflow: TextOverflow.ellipsis,
-                      ),
-                      _buildPDFListItem(
-                          _fileMap["permissionsGranted.tourism"]!),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                ],
-                if (_fileMap["permissionsGranted.fireAndBridge"] != null) ...[
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        'Fire Brigade',
-                        style: TextStyle(
-                          fontFamily: 'Poppins-Bold',
-                          fontSize: 14,
-                          color: Color(0xff21205b),
-                        ),
-                        textAlign: TextAlign.left,
-                        // overflow: TextOverflow.ellipsis,
-                      ),
-                      _buildPDFListItem(
-                          _fileMap["permissionsGranted.fireAndBridge"]!),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                ],
-                if (_fileMap["permissionsGranted.factoriesAndBoilers"] !=
-                    null) ...[
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        'Factories & Boilers',
-                        style: TextStyle(
-                          fontFamily: 'Poppins-Bold',
-                          fontSize: 14,
-                          color: Color(0xff21205b),
-                        ),
-                        textAlign: TextAlign.left,
-                        // overflow: TextOverflow.ellipsis,
-                      ),
-                      _buildPDFListItem(
-                          _fileMap["permissionsGranted.factoriesAndBoilers"]!),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                ],
-                if (_fileMap["permissionsGranted.healthServices"] != null) ...[
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        'Health Services',
-                        style: TextStyle(
-                          fontFamily: 'Poppins-Bold',
-                          fontSize: 14,
-                          color: Color(0xff21205b),
-                        ),
-                        textAlign: TextAlign.left,
-                        // overflow: TextOverflow.ellipsis,
-                      ),
-                      _buildPDFListItem(
-                          _fileMap["permissionsGranted.healthServices"]!),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                ],
-                if (_fileMap["permissionsGranted.others.file"] != null) ...[
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        'Others',
-                        style: TextStyle(
-                          fontFamily: 'Poppins-Bold',
-                          fontSize: 14,
-                          color: Color(0xff21205b),
-                        ),
-                        textAlign: TextAlign.left,
-                        // overflow: TextOverflow.ellipsis,
-                      ),
-                      _buildPDFListItem(
-                          _fileMap["permissionsGranted.others.file"]!),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                ],
+
               ],
             ),
           ),

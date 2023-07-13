@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:we_panchayat_dev/constants.dart';
 import 'package:we_panchayat_dev/screens/otp/otptimer.dart';
 import 'package:we_panchayat_dev/screens/homepage/homepage.dart';
 import 'package:we_panchayat_dev/services/api_service.dart';
@@ -22,7 +23,7 @@ class OtpState extends State<Otp> {
       height: double.infinity,
       decoration: const BoxDecoration(
         image: DecorationImage(
-          image: AssetImage('assets/images/bg.png'),
+          image: AssetImage('assets/images/auth_bg.png'),
           fit: BoxFit.cover,
         ),
       ),
@@ -82,6 +83,10 @@ class OtpState extends State<Otp> {
                             Text(
                               'Enter the OTP sent on your Mobile number',
                               textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontFamily: 'Poppins-Light',
+                                color: ColorConstants.formLabelTextColor,
+                              ),
                             ),
                             SizedBox(height: 16),
                             Padding(
@@ -123,8 +128,8 @@ class OtpState extends State<Otp> {
                                   child: Text(
                                     "Didn't receive OTP?",
                                     style: TextStyle(
-                                      color: Colors
-                                          .black54, // or any other color you want
+                                      color: ColorConstants.formLabelTextColor,
+                                      fontFamily: 'Poppins-Light'// or any other color you want
                                     ),
                                     textAlign: TextAlign.right,
                                   ),
@@ -141,8 +146,8 @@ class OtpState extends State<Otp> {
                                       child: Text(
                                         "Resend",
                                         style: TextStyle(
-                                          color: Colors
-                                              .blue, // or any other color you want
+                                          color: ColorConstants.colorHuntCode2,
+                                          fontFamily: 'Poppins-Medium'// or any other color you want
                                         ),
                                         textAlign: TextAlign.center,
                                       ),
@@ -192,12 +197,13 @@ class OtpState extends State<Otp> {
                         fontSize: 16,
                         fontFamily: 'Poppins-Bold',
                       )),
-                  style: ElevatedButton.styleFrom(
-                    primary: Color(0xFF5386E4),
-                    onPrimary: Colors.white,
-                    shape: StadiumBorder(),
-                    padding: EdgeInsets.only(top: 15.0, bottom: 15.0),
-                  ),
+                  // style: ElevatedButton.styleFrom(
+                  //   primary: Color(0xFF5386E4),
+                  //   onPrimary: Colors.white,
+                  //   shape: StadiumBorder(),
+                  //   padding: EdgeInsets.only(top: 15.0, bottom: 15.0),
+                  // ),
+                  style: AuthConstants.getSubmitButtonStyle(),
                 ),
               ),
             ),

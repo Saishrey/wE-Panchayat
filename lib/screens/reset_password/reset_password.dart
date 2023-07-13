@@ -10,6 +10,7 @@ import 'package:we_panchayat_dev/screens/auth/login.dart';
 
 import 'package:we_panchayat_dev/screens/otp/otp.dart';
 
+import '../../constants.dart';
 import '../../services/shared_service.dart';
 
 class ResetPassword extends StatefulWidget {
@@ -22,7 +23,8 @@ class ResetPassword extends StatefulWidget {
 class _ResetPasswordState extends State<ResetPassword> {
   bool isAPIcallProcess = false;
 
-  bool _obscureText = true;
+  bool _obscureTextNew = true;
+  bool _obscureTextConfirm = true;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -40,7 +42,7 @@ class _ResetPasswordState extends State<ResetPassword> {
       height: double.infinity,
       decoration: const BoxDecoration(
         image: DecorationImage(
-          image: AssetImage('assets/images/bg.png'),
+          image: AssetImage('assets/images/auth_bg.png'),
           fit: BoxFit.cover,
         ),
       ),
@@ -91,9 +93,13 @@ class _ResetPasswordState extends State<ResetPassword> {
                     SizedBox(height: 16),
                     Padding(
                       padding: const EdgeInsets.all(15.0),
-                      child: const Text(
+                      child: Text(
                         'Set a new password for your account so that you can login and access all features.',
                         textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontFamily: 'Poppins-Light',
+                          color: ColorConstants.formLabelTextColor,
+                        ),
                       ),
                     ),
                     Center(
@@ -124,45 +130,33 @@ class _ResetPasswordState extends State<ResetPassword> {
                                     _password = value;
                                     return null;
                                   },
-                                  style: TextStyle(
-                                    color: Colors.black54,
-                                    fontFamily: 'Poppins-Bold',
-                                  ),
-                                  obscureText: _obscureText,
+                                  style: AuthConstants.getTextStyle(),
+                                  obscureText: _obscureTextNew,
                                   decoration: InputDecoration(
-                                    filled: true,
-                                    fillColor: Color(0xffF6F6F6),
+                                    // filled: true,
+                                    // fillColor: Color(0xffF6F6F6),
                                     labelText: 'New Password',
+                                    labelStyle:
+                                        AuthConstants.getLabelAndHintStyle(),
                                     suffixIcon: GestureDetector(
                                       onTap: () {
                                         setState(() {
-                                          _obscureText = !_obscureText;
+                                          _obscureTextNew = !_obscureTextNew;
                                         });
                                       },
                                       child: Icon(
-                                        _obscureText
+                                        _obscureTextNew
                                             ? Icons.visibility
                                             : Icons.visibility_off,
                                       ),
                                     ),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                        color: Color(0xffBDBDBD),
-                                      ),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                        color: Color(0xffBDBDBD),
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                        color: Theme.of(context).primaryColor,
-                                      ),
-                                    ),
+                                    suffixIconColor:
+                                        ColorConstants.formLabelTextColor,
+                                    border: AuthConstants.getEnabledBorder(),
+                                    enabledBorder:
+                                        AuthConstants.getEnabledBorder(),
+                                    focusedBorder:
+                                        AuthConstants.getFocusedBorder(),
                                   ),
                                 ),
                                 SizedBox(height: 16),
@@ -182,75 +176,65 @@ class _ResetPasswordState extends State<ResetPassword> {
                                     }
                                     return null;
                                   },
-                                  style: TextStyle(
-                                    color: Colors.black54,
-                                    fontFamily: 'Poppins-Bold',
-                                  ),
-                                  obscureText: _obscureText,
+                                  style: AuthConstants.getTextStyle(),
+                                  obscureText: _obscureTextConfirm,
                                   decoration: InputDecoration(
-                                    filled: true,
-                                    fillColor: Color(0xffF6F6F6),
+                                    // filled: true,
+                                    // fillColor: Color(0xffF6F6F6),
                                     labelText: 'Confirm Password',
+                                    labelStyle:
+                                    AuthConstants.getLabelAndHintStyle(),
                                     suffixIcon: GestureDetector(
                                       onTap: () {
                                         setState(() {
-                                          _obscureText = !_obscureText;
+                                          _obscureTextConfirm = !_obscureTextConfirm;
                                         });
                                       },
                                       child: Icon(
-                                        _obscureText
+                                        _obscureTextConfirm
                                             ? Icons.visibility
                                             : Icons.visibility_off,
                                       ),
                                     ),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                        color: Color(0xffBDBDBD),
-                                      ),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                        color: Color(0xffBDBDBD),
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                        color: Theme.of(context).primaryColor,
-                                      ),
-                                    ),
+                                    suffixIconColor:
+                                        ColorConstants.formLabelTextColor,
+                                    border: AuthConstants.getEnabledBorder(),
+                                    enabledBorder:
+                                        AuthConstants.getEnabledBorder(),
+                                    focusedBorder:
+                                        AuthConstants.getFocusedBorder(),
                                   ),
                                 ),
                                 SizedBox(height: 16),
                                 ElevatedButton(
                                   onPressed: () {
                                     if (_formKey.currentState!.validate()) {
-
                                       Map<String, String> body = {
-                                        "password" : _password,
+                                        "password": _password,
                                       };
 
-                                      APIService.updateNewPassword(body, context)
+                                      APIService.updateNewPassword(
+                                              body, context)
                                           .then((response) {
-                                            if(response) {
-                                              SharedService.logout(context);
-                                              ScaffoldMessenger.of(context).showSnackBar(
-                                                  const SnackBar(
-                                                      content: Text('New password set successfully. Please Log in.')));
-                                              Navigator.pushAndRemoveUntil(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) => const Login()),
-                                                    (route) => false,
-                                              );
-                                            }
-                                            else {
-                                              ScaffoldMessenger.of(context).showSnackBar(
-                                                  const SnackBar(
-                                                      content: Text('Failed to reset password.')));
-                                            }
+                                        if (response) {
+                                          SharedService.logout(context);
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(const SnackBar(
+                                                  content: Text(
+                                                      'New password set successfully. Please Log in.')));
+                                          Navigator.pushAndRemoveUntil(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const Login()),
+                                            (route) => false,
+                                          );
+                                        } else {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(const SnackBar(
+                                                  content: Text(
+                                                      'Failed to reset password.')));
+                                        }
                                       });
                                     }
                                   },
@@ -259,13 +243,14 @@ class _ResetPasswordState extends State<ResetPassword> {
                                         fontSize: 16,
                                         fontFamily: 'Poppins-Bold',
                                       )),
-                                  style: ElevatedButton.styleFrom(
-                                    primary: Color(0xFF5386E4),
-                                    onPrimary: Colors.white,
-                                    shape: StadiumBorder(),
-                                    padding: EdgeInsets.only(
-                                        top: 15.0, bottom: 15.0),
-                                  ),
+                                  // style: ElevatedButton.styleFrom(
+                                  //   primary: Color(0xFF5386E4),
+                                  //   onPrimary: Colors.white,
+                                  //   shape: StadiumBorder(),
+                                  //   padding: EdgeInsets.only(
+                                  //       top: 15.0, bottom: 15.0),
+                                  // ),
+                                  style: AuthConstants.getSubmitButtonStyle(),
                                 ),
                               ],
                             ),

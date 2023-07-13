@@ -709,7 +709,7 @@ class _TradeLicenseState extends State<TradeLicense> {
                           style: TextStyle(
                             fontSize: 16,
                             fontFamily: 'Poppins-Bold',
-                            color: Colors.black54,
+                            color: ColorConstants.formLabelTextColor,
                           ),
                         ),
                         style: ButtonStyle(
@@ -2151,66 +2151,68 @@ class _TradeLicenseState extends State<TradeLicense> {
           var r = await OpenFile.open(filePath);
           print("MESSAGE: ${r.message}");
         },
-        child: Container(
-          padding: EdgeInsets.all(10.0),
-          decoration: BoxDecoration(
-            border: Border.all(
-                width: 2.0, color: ColorConstants.formLabelTextColor),
-            borderRadius: BorderRadius.circular(20.0),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Icon(
-                Icons.picture_as_pdf,
-                size: 48.0,
-                color: Color(0xffDD2025),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        pdfFile.path.split('/').last,
-                        style: TextStyle(
-                          fontFamily: 'Poppins-Medium',
-                          overflow: TextOverflow.ellipsis,
-                          color: ColorConstants.darkBlueThemeColor,
-                          fontSize: 14.0,
+        child: Ink(
+          child: Container(
+            padding: EdgeInsets.all(10.0),
+            decoration: BoxDecoration(
+              border: Border.all(
+                  width: 2.0, color: ColorConstants.formLabelTextColor),
+              borderRadius: BorderRadius.circular(20.0),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Icon(
+                  Icons.picture_as_pdf,
+                  size: 48.0,
+                  color: Color(0xffDD2025),
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          pdfFile.path.split('/').last,
+                          style: TextStyle(
+                            fontFamily: 'Poppins-Medium',
+                            overflow: TextOverflow.ellipsis,
+                            color: ColorConstants.darkBlueThemeColor,
+                            fontSize: 14.0,
+                          ),
                         ),
-                      ),
-                      Text(
-                        '${(pdfFile.lengthSync() / 1024).toStringAsFixed(2)} KB',
-                        style: const TextStyle(
-                          fontSize: 12.0,
-                          color: Colors.grey,
+                        Text(
+                          '${(pdfFile.lengthSync() / 1024).toStringAsFixed(2)} KB',
+                          style: const TextStyle(
+                            fontSize: 12.0,
+                            color: Colors.grey,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              IconButton(
-                icon: const Icon(
-                  Icons.delete,
-                  color: Color(0xFF5386E4),
+                IconButton(
+                  icon: const Icon(
+                    Icons.delete,
+                    color: Color(0xFF5386E4),
+                  ),
+                  // onPressed: () {},
+                  onPressed: () {
+                    setState(() {
+                      String key = getKeyFromValue(pdfFile);
+                      _fileMap.remove(key);
+
+                      int index = _fileNames.indexOf(key);
+                      _isChecked[index] = false;
+
+                      print(_fileMap);
+                    });
+                  },
                 ),
-                // onPressed: () {},
-                onPressed: () {
-                  setState(() {
-                    String key = getKeyFromValue(pdfFile);
-                    _fileMap.remove(key);
-
-                    int index = _fileNames.indexOf(key);
-                    _isChecked[index] = false;
-
-                    print(_fileMap);
-                  });
-                },
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

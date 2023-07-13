@@ -9,6 +9,31 @@ import '../models/login_response_model.dart';
 import '../screens/auth/login.dart';
 
 class SharedService {
+  static Future<void> setMPIN(String mpin) async {
+    final storage = FlutterSecureStorage();
+
+    await storage.write(key: "MPIN", value: mpin);
+  }
+
+  static Future<String?> getMPIN() async {
+    final storage = FlutterSecureStorage();
+
+    bool containsKey = await storage.containsKey(key: "MPIN");
+    if (containsKey) {
+      String? cacheMPIN = await storage.read(key: "MPIN");
+      return cacheMPIN;
+    }
+  }
+
+  static Future<void> deleteMPIN() async {
+    final storage = FlutterSecureStorage();
+
+    bool containsKey = await storage.containsKey(key: "MPIN");
+    if (containsKey) {
+      await storage.delete(key: "MPIN");
+    }
+  }
+
   static Future<bool> isLoggedIn() async {
     // var isKeyExist =
     //     await APICacheManager().isAPICacheKeyExist("login_details");

@@ -6,6 +6,8 @@ import 'package:we_panchayat_dev/screens/homepage/homepage.dart';
 import 'package:we_panchayat_dev/screens/reset_password/reset_password.dart';
 import 'package:we_panchayat_dev/services/api_service.dart';
 
+import '../../constants.dart';
+
 class SignUpOtp extends StatefulWidget {
 
   final String phone;
@@ -27,7 +29,7 @@ class SignUpOtpState extends State<SignUpOtp> {
       height: double.infinity,
       decoration: const BoxDecoration(
         image: DecorationImage(
-          image: AssetImage('assets/images/bg.png'),
+          image: AssetImage('assets/images/auth_bg.png'),
           fit: BoxFit.cover,
         ),
       ),
@@ -87,6 +89,10 @@ class SignUpOtpState extends State<SignUpOtp> {
                             Text(
                               'Enter the 6 digit code that you received.',
                               textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontFamily: 'Poppins-Light',
+                                color: ColorConstants.formLabelTextColor,
+                              ),
                             ),
                             SizedBox(height: 16),
                             Padding(
@@ -128,8 +134,8 @@ class SignUpOtpState extends State<SignUpOtp> {
                                   child: Text(
                                     "Didn't receive OTP?",
                                     style: TextStyle(
-                                      color: Colors
-                                          .black54, // or any other color you want
+                                        color: ColorConstants.formLabelTextColor,
+                                        fontFamily: 'Poppins-Light'// or any other color you want
                                     ),
                                     textAlign: TextAlign.right,
                                   ),
@@ -146,8 +152,8 @@ class SignUpOtpState extends State<SignUpOtp> {
                                       child: Text(
                                         "Resend",
                                         style: TextStyle(
-                                          color: Colors
-                                              .blue, // or any other color you want
+                                            color: ColorConstants.colorHuntCode2,
+                                            fontFamily: 'Poppins-Medium'// or any other color you want
                                         ),
                                         textAlign: TextAlign.center,
                                       ),
@@ -211,12 +217,13 @@ class SignUpOtpState extends State<SignUpOtp> {
                         fontSize: 16,
                         fontFamily: 'Poppins-Bold',
                       )),
-                  style: ElevatedButton.styleFrom(
-                    primary: Color(0xFF5386E4),
-                    onPrimary: Colors.white,
-                    shape: StadiumBorder(),
-                    padding: EdgeInsets.only(top: 15.0, bottom: 15.0),
-                  ),
+                  // style: ElevatedButton.styleFrom(
+                  //   primary: Color(0xFF5386E4),
+                  //   onPrimary: Colors.white,
+                  //   shape: StadiumBorder(),
+                  //   padding: EdgeInsets.only(top: 15.0, bottom: 15.0),
+                  // ),
+                  style: AuthConstants.getSubmitButtonStyle(),
                 ),
               ),
             ),

@@ -38,6 +38,8 @@ class _LoginState extends State<Login> {
 
   Map<String, int> _usernameRecord = {};
 
+  String _usernameLabelText = 'Email or Phone';
+
   TextEditingController _usernameController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
 
@@ -77,7 +79,7 @@ class _LoginState extends State<Login> {
       height: double.infinity,
       decoration: const BoxDecoration(
         image: DecorationImage(
-          image: AssetImage('assets/images/bg.png'),
+          image: AssetImage('assets/images/auth_bg.png'),
           fit: BoxFit.cover,
         ),
       ),
@@ -139,32 +141,35 @@ class _LoginState extends State<Login> {
 
                                     return null;
                                   },
-                                  style: TextStyle(
-                                    color: Colors.black54,
-                                    fontFamily: 'Poppins-Bold',
-                                  ),
+                                  onChanged: (value) {
+                                    if(_checkEmailOrPhone(value) == 1) {
+                                      setState(() {
+                                        _usernameLabelText = 'Email';
+                                      });
+                                    }
+                                    else if(_checkEmailOrPhone(value) == 2) {
+                                      setState(() {
+                                        _usernameLabelText = 'Phone';
+                                      });
+                                    }
+                                    else {
+                                      setState(() {
+                                        _usernameLabelText = 'Email or Phone';
+                                      });
+                                    }
+                                  },
+                                  style: AuthConstants.getTextStyle(),
                                   decoration: InputDecoration(
-                                    labelText: 'Email or Phone',
+                                    labelText: _usernameLabelText,
+                                    labelStyle:
+                                        AuthConstants.getLabelAndHintStyle(),
                                     filled: true,
-                                    fillColor: Color(0xffF6F6F6),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                        color: Color(0xffBDBDBD),
-                                      ),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                        color: Color(0xffBDBDBD),
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                        color: Theme.of(context).primaryColor,
-                                      ),
-                                    ),
+                                    fillColor: Colors.white,
+                                    border: AuthConstants.getEnabledBorder(),
+                                    enabledBorder:
+                                        AuthConstants.getEnabledBorder(),
+                                    focusedBorder:
+                                        AuthConstants.getFocusedBorder(),
                                   ),
                                 ),
                                 SizedBox(height: 16),
@@ -177,14 +182,11 @@ class _LoginState extends State<Login> {
                                     print("Password : $value");
                                     return null;
                                   },
-                                  style: TextStyle(
-                                    color: Colors.black54,
-                                    fontFamily: 'Poppins-Bold',
-                                  ),
+                                  style: AuthConstants.getTextStyle(),
                                   obscureText: _obscureText,
                                   decoration: InputDecoration(
                                     filled: true,
-                                    fillColor: Color(0xffF6F6F6),
+                                    fillColor: Colors.white,
                                     labelText: 'Password',
                                     suffixIcon: GestureDetector(
                                       onTap: () {
@@ -198,24 +200,17 @@ class _LoginState extends State<Login> {
                                             : Icons.visibility_off,
                                       ),
                                     ),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                        color: Color(0xffBDBDBD),
-                                      ),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                        color: Color(0xffBDBDBD),
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                        color: Theme.of(context).primaryColor,
-                                      ),
-                                    ),
+                                    suffixIconColor:
+                                        ColorConstants.formLabelTextColor,
+                                    labelStyle:
+                                        AuthConstants.getLabelAndHintStyle(),
+                                    // filled: true,
+                                    // fillColor: Color(0xffF6F6F6),
+                                    border: AuthConstants.getEnabledBorder(),
+                                    enabledBorder:
+                                        AuthConstants.getEnabledBorder(),
+                                    focusedBorder:
+                                        AuthConstants.getFocusedBorder(),
                                   ),
                                 ),
                                 SizedBox(height: 16),
@@ -232,13 +227,10 @@ class _LoginState extends State<Login> {
                                         }
                                       }
 
-                                      LoginRequestModel model =
-                                          LoginRequestModel(
-                                              username:
-                                                  _usernameController.text,
-                                              password:
-                                                  _passwordController.text,
-                                              isAdmin: false.toString());
+                                      LoginRequestModel model = LoginRequestModel(
+                                          username: _usernameController.text,
+                                          password: _passwordController.text,
+                                          isAdmin: false.toString());
 
                                       var response =
                                           await APIService.login(model);
@@ -269,33 +261,40 @@ class _LoginState extends State<Login> {
                                         ScaffoldMessenger.of(context)
                                             .showSnackBar(
                                           const SnackBar(
-                                            content:
-                                                Text('Invalid credentials.'),
+                                            content: Text('Invalid credentials.'),
                                           ),
                                         );
 
                                         // WARN USER
-                                        if (_usernameRecord[_usernameController
-                                            .text] == 1) {
+                                        if (_usernameRecord[
+                                                _usernameController.text] ==
+                                            1) {
                                           showWarningDialogBox();
                                         }
 
                                         // BLOCK USER
-                                        if (_usernameRecord[_usernameController
-                                            .text] == 0) {
+                                        if (_usernameRecord[
+                                                _usernameController.text] ==
+                                            0) {
                                           Map<String, String> body = {
-                                            'username':
-                                                _usernameController.text,
+                                            'username': _usernameController.text,
                                           };
 
                                           var response =
-                                              await APIService.blockAccount(
-                                                  body);
+                                              await APIService.blockAccount(body);
 
                                           if (response.statusCode == 200) {
                                             showAccountBlockedDialogBox();
                                           }
                                         }
+                                      }
+                                      else {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          const SnackBar(
+                                            content: Text('Invalid credentials.'),
+                                          ),
+                                        );
                                       }
                                     }
                                   },
@@ -304,13 +303,14 @@ class _LoginState extends State<Login> {
                                         fontSize: 16,
                                         fontFamily: 'Poppins-Bold',
                                       )),
-                                  style: ElevatedButton.styleFrom(
-                                    primary: Color(0xFF5386E4),
-                                    onPrimary: Colors.white,
-                                    shape: StadiumBorder(),
-                                    padding: EdgeInsets.only(
-                                        top: 15.0, bottom: 15.0),
-                                  ),
+                                  // style: ElevatedButton.styleFrom(
+                                  //   primary: Color(0xFF5386E4),
+                                  //   onPrimary: Colors.white,
+                                  //   shape: StadiumBorder(),
+                                  //   padding: EdgeInsets.only(
+                                  //       top: 15.0, bottom: 15.0),
+                                  // ),
+                                  style: AuthConstants.getSubmitButtonStyle(),
                                 ),
                               ],
                             ),
@@ -318,34 +318,35 @@ class _LoginState extends State<Login> {
                         ),
                       ),
                     ),
-                    Padding(
-                      padding: EdgeInsets.only(
-                          top: 20.0, bottom: 20.0, right: 10.0, left: 10.0),
-                      child: Divider(
-                        height: 1,
-                        thickness: 0.8,
-                        color: Colors.black54,
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(right: 10.0, left: 10.0),
-                      child: TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => UsernameInput()),
-                          );
-                        },
-                        child: Text(
-                          "Forgot your password?",
-                          style: TextStyle(
-                            color: Color(0xFF5386E4),
-                            fontWeight: FontWeight.w700,
-                            fontSize: 15,
-                            fontFamily: 'Poppins-Bold',
+                    // Padding(
+                    //   padding: EdgeInsets.only(
+                    //       top: 20.0, bottom: 20.0, right: 10.0, left: 10.0),
+                    //   child: Divider(
+                    //     height: 1,
+                    //     thickness: 0.8,
+                    //     color: Colors.black54,
+                    //   ),
+                    // ),
+                    Center(
+                      child: Padding(
+                        padding: EdgeInsets.only(top: 40.0, right: 10.0, left: 10.0, bottom: 40.0),
+                        child: TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => UsernameInput()),
+                            );
+                          },
+                          child: Text(
+                            "Forgot your password?",
+                            style: TextStyle(
+                              color: ColorConstants.colorHuntCode2,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 14,
+                              fontFamily: 'Poppins-Medium',
+                            ),
+                            textAlign: TextAlign.center,
                           ),
-                          textAlign: TextAlign.center,
                         ),
                       ),
                     ),
@@ -361,7 +362,7 @@ class _LoginState extends State<Login> {
                   Divider(
                     height: 1,
                     thickness: 0.8,
-                    color: Colors.black54,
+                    color: ColorConstants.formBorderColor,
                   ),
                   Padding(
                     padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
@@ -373,10 +374,10 @@ class _LoginState extends State<Login> {
                           child: Text(
                             "Don’t have an account? Sign up",
                             style: TextStyle(
-                              color: Color(0xFF5386E4),
+                              color: ColorConstants.colorHuntCode2,
                               fontWeight: FontWeight.w700,
-                              fontSize: 15,
-                              fontFamily: 'Poppins-Bold',
+                              fontSize: 14,
+                              fontFamily: 'Poppins-Medium',
                             ),
                             // Your bottom element goes here
                           ),
@@ -432,6 +433,19 @@ class _LoginState extends State<Login> {
           ],
         ),
       );
+
+
+  int _checkEmailOrPhone(String value) {
+    if(RegExp(r"^[789]\d{9}$").hasMatch(value)) {
+      return 2;
+    } else if (RegExp(
+        r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+        .hasMatch(value)) {
+      return 1;
+    }
+    return 0;
+  }
+
 
   showAccountBlockedDialogBox() => showCupertinoDialog<String>(
         context: context,

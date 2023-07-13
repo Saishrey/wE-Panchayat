@@ -11,8 +11,9 @@ import 'package:intl/intl.dart';
 import 'package:dob_input_field/dob_input_field.dart';
 import 'package:flutter/material.dart';
 
-class SignUp extends StatefulWidget {
+import '../../constants.dart';
 
+class SignUp extends StatefulWidget {
   final String phone;
 
   // const SignUp({Key? key}) : super(key: key);
@@ -26,7 +27,9 @@ class SignUp extends StatefulWidget {
 class _SignUpState extends State<SignUp> {
   bool isAPIcallProcess = false;
 
-  bool _obscureText = true;
+  bool _obscureTextPass = true;
+  bool _obscureTextConfirm = true;
+
   final _formKey = GlobalKey<FormState>();
 
   final Map<String, List<String>> _mappedTalukaAndVillages = {
@@ -362,12 +365,9 @@ class _SignUpState extends State<SignUp> {
   void populateVillageMenuItem(List<String>? villages) {
     for (String village in villages!) {
       villageMenuItems.add(DropdownMenuItem<String>(
-        child: Center(
-          child: Text(village,
-              style: TextStyle(
-                color: Colors.black54,
-                fontFamily: 'Poppins-Bold',
-              )),
+        child: Text(
+          village,
+          style: AuthConstants.getDropDownTextStyle(),
         ),
         value: village,
       ));
@@ -398,7 +398,7 @@ class _SignUpState extends State<SignUp> {
       height: double.infinity,
       decoration: const BoxDecoration(
         image: DecorationImage(
-          image: AssetImage('assets/images/bg.png'),
+          image: AssetImage('assets/images/auth_bg.png'),
           fit: BoxFit.cover,
         ),
       ),
@@ -466,36 +466,24 @@ class _SignUpState extends State<SignUp> {
                                   inputFormatters: [
                                     new LengthLimitingTextInputFormatter(10),
                                   ],
-                                  controller: TextEditingController(text: widget.phone),
+                                  controller:
+                                      TextEditingController(text: widget.phone),
                                   enabled: false,
-                                  style: TextStyle(
-                                    color: Colors.black54,
-                                    fontFamily: 'Poppins-Bold',
-                                  ),
+                                  style: AuthConstants.getTextStyle(),
                                   decoration: InputDecoration(
                                     labelText: 'Mobile No.',
+                                    labelStyle:
+                                        AuthConstants.getLabelAndHintStyle(),
                                     filled: true,
-                                    fillColor: Color(0xffF6F6F6),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                        color: Color(0xffBDBDBD),
-                                      ),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                        color: Color(0xffBDBDBD),
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                        color: Theme.of(context).primaryColor,
-                                      ),
-                                    ),
+                                    fillColor: Colors.white,
+                                    disabledBorder:
+                                        AuthConstants.getEnabledBorder(),
+                                    border: AuthConstants.getEnabledBorder(),
+                                    enabledBorder:
+                                        AuthConstants.getEnabledBorder(),
+                                    focusedBorder:
+                                        AuthConstants.getFocusedBorder(),
                                   ),
-
                                 ),
                                 SizedBox(height: 16),
                                 Row(
@@ -510,36 +498,19 @@ class _SignUpState extends State<SignUp> {
                                           print("First Name : $_firstName");
                                           return null;
                                         },
-                                        style: TextStyle(
-                                          color: Colors.black54, //Name
-                                          fontFamily: 'Poppins-Bold',
-                                        ),
+                                        style: AuthConstants.getTextStyle(),
                                         decoration: InputDecoration(
                                           labelText: 'First Name',
+                                          labelStyle: AuthConstants
+                                              .getLabelAndHintStyle(),
                                           filled: true,
-                                          fillColor: Color(0xffF6F6F6),
-                                          border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            borderSide: BorderSide(
-                                              color: Color(0xffBDBDBD),
-                                            ),
-                                          ),
-                                          enabledBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            borderSide: BorderSide(
-                                              color: Color(0xffBDBDBD),
-                                            ),
-                                          ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            borderSide: BorderSide(
-                                              color: Theme.of(context)
-                                                  .primaryColor,
-                                            ),
-                                          ),
+                                          fillColor: Colors.white,
+                                          border:
+                                              AuthConstants.getEnabledBorder(),
+                                          enabledBorder:
+                                              AuthConstants.getEnabledBorder(),
+                                          focusedBorder:
+                                              AuthConstants.getFocusedBorder(),
                                         ),
                                       ),
                                     ),
@@ -554,36 +525,19 @@ class _SignUpState extends State<SignUp> {
                                           print("Last Name : $_lastName");
                                           return null;
                                         },
-                                        style: TextStyle(
-                                          color: Colors.black54,
-                                          fontFamily: 'Poppins-Bold',
-                                        ),
+                                        style: AuthConstants.getTextStyle(),
                                         decoration: InputDecoration(
                                           labelText: 'Last Name',
+                                          labelStyle: AuthConstants
+                                              .getLabelAndHintStyle(),
                                           filled: true,
-                                          fillColor: Color(0xffF6F6F6),
-                                          border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            borderSide: BorderSide(
-                                              color: Color(0xffBDBDBD),
-                                            ),
-                                          ),
-                                          enabledBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            borderSide: BorderSide(
-                                              color: Color(0xffBDBDBD),
-                                            ),
-                                          ),
-                                          focusedBorder: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            borderSide: BorderSide(
-                                              color: Theme.of(context)
-                                                  .primaryColor,
-                                            ),
-                                          ),
+                                          fillColor: Colors.white,
+                                          border:
+                                              AuthConstants.getEnabledBorder(),
+                                          enabledBorder:
+                                              AuthConstants.getEnabledBorder(),
+                                          focusedBorder:
+                                              AuthConstants.getFocusedBorder(),
                                         ),
                                       ),
                                     ),
@@ -599,32 +553,18 @@ class _SignUpState extends State<SignUp> {
                                     print("Address : $_address");
                                     return null;
                                   },
-                                  style: TextStyle(
-                                    color: Colors.black54,
-                                    fontFamily: 'Poppins-Bold',
-                                  ),
+                                  style: AuthConstants.getTextStyle(),
                                   decoration: InputDecoration(
                                     labelText: 'Address',
+                                    labelStyle:
+                                        AuthConstants.getLabelAndHintStyle(),
                                     filled: true,
-                                    fillColor: Color(0xffF6F6F6),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                        color: Color(0xffBDBDBD),
-                                      ),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                        color: Color(0xffBDBDBD),
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                        color: Theme.of(context).primaryColor,
-                                      ),
-                                    ),
+                                    fillColor: Colors.white,
+                                    border: AuthConstants.getEnabledBorder(),
+                                    enabledBorder:
+                                        AuthConstants.getEnabledBorder(),
+                                    focusedBorder:
+                                        AuthConstants.getFocusedBorder(),
                                   ),
                                 ),
                                 SizedBox(height: 16),
@@ -644,32 +584,18 @@ class _SignUpState extends State<SignUp> {
                                   inputFormatters: [
                                     new LengthLimitingTextInputFormatter(6),
                                   ],
-                                  style: TextStyle(
-                                    color: Colors.black54,
-                                    fontFamily: 'Poppins-Bold',
-                                  ),
+                                  style: AuthConstants.getTextStyle(),
                                   decoration: InputDecoration(
                                     labelText: 'Pin Code',
+                                    labelStyle:
+                                        AuthConstants.getLabelAndHintStyle(),
                                     filled: true,
-                                    fillColor: Color(0xffF6F6F6),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                        color: Color(0xffBDBDBD),
-                                      ),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                        color: Color(0xffBDBDBD),
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                        color: Theme.of(context).primaryColor,
-                                      ),
-                                    ),
+                                    fillColor: Colors.white,
+                                    border: AuthConstants.getEnabledBorder(),
+                                    enabledBorder:
+                                        AuthConstants.getEnabledBorder(),
+                                    focusedBorder:
+                                        AuthConstants.getFocusedBorder(),
                                   ),
                                 ),
                                 SizedBox(height: 16),
@@ -679,19 +605,16 @@ class _SignUpState extends State<SignUp> {
                                       child: Container(
                                         padding: EdgeInsets.symmetric(
                                             horizontal: 10, vertical: 6),
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            border: Border.all(
-                                                color: Color(0xffBDBDBD),
-                                                width: 1)),
+                                        decoration: AuthConstants
+                                            .getDropDownBoxDecoration(),
                                         child: DropdownButtonFormField(
+                                          decoration: const InputDecoration(
+                                            border: InputBorder
+                                                .none, // Remove the bottom border
+                                          ),
                                           menuMaxHeight: 200,
                                           isExpanded: true,
-                                          icon: Icon(
-                                            Icons.arrow_drop_down_outlined,
-                                            color: Colors.black,
-                                          ),
+                                          icon: AuthConstants.getDropDownIcon(),
                                           value: _selectedTaluka,
                                           items: _mappedTalukaAndVillages.keys
                                               .map((String option) {
@@ -699,10 +622,8 @@ class _SignUpState extends State<SignUp> {
                                               value: option,
                                               child: Text(
                                                 option,
-                                                style: TextStyle(
-                                                  color: Colors.black54,
-                                                  fontFamily: 'Poppins-Bold',
-                                                ),
+                                                style: AuthConstants
+                                                    .getDropDownTextStyle(),
                                               ),
                                             );
                                           }).toList(),
@@ -710,10 +631,8 @@ class _SignUpState extends State<SignUp> {
                                               selected(_value),
                                           hint: Text(
                                             "Select Taluka",
-                                            style: TextStyle(
-                                              color: Colors.black54,
-                                              fontFamily: 'Poppins-Bold',
-                                            ),
+                                            style: AuthConstants
+                                                .getDropDownHintStyle(),
                                           ),
                                           validator: (value) {
                                             if (value == null) {
@@ -730,15 +649,15 @@ class _SignUpState extends State<SignUp> {
                                       child: Container(
                                         padding: EdgeInsets.symmetric(
                                             horizontal: 10, vertical: 6),
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            border: Border.all(
-                                                color: Color(0xffBDBDBD),
-                                                width: 1)),
+                                        decoration: AuthConstants
+                                            .getDropDownBoxDecoration(),
                                         child: DropdownButtonFormField(
                                           menuMaxHeight: 200,
                                           isExpanded: true,
+                                          decoration: const InputDecoration(
+                                            border: InputBorder
+                                                .none, // Remove the bottom border
+                                          ),
                                           icon: Icon(
                                             Icons.arrow_drop_down_outlined,
                                             color: Colors.black,
@@ -751,10 +670,8 @@ class _SignUpState extends State<SignUp> {
                                                   secondselected(_value),
                                           disabledHint: Text(
                                             "Select Village",
-                                            style: TextStyle(
-                                              color: Colors.black54,
-                                              fontFamily: 'Poppins-Bold',
-                                            ),
+                                            style: AuthConstants
+                                                .getDropDownHintStyle(),
                                           ),
                                           validator: (value) {
                                             if (value == null) {
@@ -772,19 +689,14 @@ class _SignUpState extends State<SignUp> {
                                 Container(
                                   padding: EdgeInsets.symmetric(
                                       horizontal: 10, vertical: 6),
-                                  decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      border: Border.all(
-                                          color: Color(0xffBDBDBD), width: 1)),
+                                  decoration:
+                                      AuthConstants.getDropDownBoxDecoration(),
                                   child: ListTile(
                                     title: Text(
                                       "Date Of Birth:    ${DateFormat('dd-MM-yyyy').format(_selectedDate)}",
-                                      style: TextStyle(
-                                        color: Colors.black54,
-                                        fontFamily: 'Poppins-Bold',
-                                      ),
+                                      style: AuthConstants.getTextStyle(),
                                     ),
-                                    trailing: Icon(Icons.calendar_month),
+                                    trailing: AuthConstants.getCalenderIcon(),
                                     onTap: _pickDate,
                                   ),
                                 ),
@@ -802,32 +714,18 @@ class _SignUpState extends State<SignUp> {
                                     print("Email : $_email");
                                     return null;
                                   },
-                                  style: TextStyle(
-                                    color: Colors.black54,
-                                    fontFamily: 'Poppins-Bold',
-                                  ),
+                                  style: AuthConstants.getTextStyle(),
                                   decoration: InputDecoration(
                                     labelText: 'Email',
+                                    labelStyle:
+                                    AuthConstants.getLabelAndHintStyle(),
                                     filled: true,
-                                    fillColor: Color(0xffF6F6F6),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                        color: Color(0xffBDBDBD),
-                                      ),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                        color: Color(0xffBDBDBD),
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                        color: Theme.of(context).primaryColor,
-                                      ),
-                                    ),
+                                    fillColor: Colors.white,
+                                    border: AuthConstants.getEnabledBorder(),
+                                    enabledBorder:
+                                    AuthConstants.getEnabledBorder(),
+                                    focusedBorder:
+                                    AuthConstants.getFocusedBorder(),
                                   ),
                                 ),
                                 SizedBox(height: 16),
@@ -846,45 +744,32 @@ class _SignUpState extends State<SignUp> {
                                     _password = value;
                                     return null;
                                   },
-                                  style: TextStyle(
-                                    color: Colors.black54,
-                                    fontFamily: 'Poppins-Bold',
-                                  ),
-                                  obscureText: _obscureText,
+                                  style: AuthConstants.getTextStyle(),
+                                  obscureText: _obscureTextPass,
                                   decoration: InputDecoration(
-                                    filled: true,
-                                    fillColor: Color(0xffF6F6F6),
                                     labelText: 'Password',
                                     suffixIcon: GestureDetector(
                                       onTap: () {
                                         setState(() {
-                                          _obscureText = !_obscureText;
+                                          _obscureTextPass = !_obscureTextPass;
                                         });
                                       },
                                       child: Icon(
-                                        _obscureText
+                                        _obscureTextPass
                                             ? Icons.visibility
                                             : Icons.visibility_off,
                                       ),
                                     ),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                        color: Color(0xffBDBDBD),
-                                      ),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                        color: Color(0xffBDBDBD),
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                        color: Theme.of(context).primaryColor,
-                                      ),
-                                    ),
+                                    suffixIconColor: ColorConstants.formLabelTextColor,
+                                    labelStyle:
+                                    AuthConstants.getLabelAndHintStyle(),
+                                    filled: true,
+                                    fillColor: Colors.white,
+                                    border: AuthConstants.getEnabledBorder(),
+                                    enabledBorder:
+                                    AuthConstants.getEnabledBorder(),
+                                    focusedBorder:
+                                    AuthConstants.getFocusedBorder(),
                                   ),
                                 ),
                                 SizedBox(height: 16),
@@ -904,45 +789,32 @@ class _SignUpState extends State<SignUp> {
                                     }
                                     return null;
                                   },
-                                  style: TextStyle(
-                                    color: Colors.black54,
-                                    fontFamily: 'Poppins-Bold',
-                                  ),
-                                  obscureText: _obscureText,
+                                  style: AuthConstants.getTextStyle(),
+                                  obscureText: _obscureTextConfirm,
                                   decoration: InputDecoration(
-                                    filled: true,
-                                    fillColor: Color(0xffF6F6F6),
                                     labelText: 'Confirm Password',
                                     suffixIcon: GestureDetector(
                                       onTap: () {
                                         setState(() {
-                                          _obscureText = !_obscureText;
+                                          _obscureTextConfirm = !_obscureTextConfirm;
                                         });
                                       },
                                       child: Icon(
-                                        _obscureText
+                                        _obscureTextConfirm
                                             ? Icons.visibility
                                             : Icons.visibility_off,
                                       ),
                                     ),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                        color: Color(0xffBDBDBD),
-                                      ),
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                        color: Color(0xffBDBDBD),
-                                      ),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                      borderSide: BorderSide(
-                                        color: Theme.of(context).primaryColor,
-                                      ),
-                                    ),
+                                    suffixIconColor: ColorConstants.formLabelTextColor,
+                                    labelStyle:
+                                    AuthConstants.getLabelAndHintStyle(),
+                                    filled: true,
+                                    fillColor: Colors.white,
+                                    border: AuthConstants.getEnabledBorder(),
+                                    enabledBorder:
+                                    AuthConstants.getEnabledBorder(),
+                                    focusedBorder:
+                                    AuthConstants.getFocusedBorder(),
                                   ),
                                 ),
                                 SizedBox(height: 16),
@@ -972,9 +844,8 @@ class _SignUpState extends State<SignUp> {
                     if (_formKey.currentState!.validate()) {
                       // String _dob = "${_selectedDate.day}-${_selectedDate.month}-${_selectedDate.year}";
 
-                      String dob = DateFormat('dd-MM-yyyy')
-                          .format(_selectedDate);
-
+                      String dob =
+                          DateFormat('dd-MM-yyyy').format(_selectedDate);
 
                       print("DOB actual : ${_selectedDate}");
                       print("DOB : $dob");
@@ -985,8 +856,7 @@ class _SignUpState extends State<SignUp> {
                         isAPIcallProcess = true;
                       });
 
-                      RegisterRequestModel model =
-                      RegisterRequestModel(
+                      RegisterRequestModel model = RegisterRequestModel(
                         email: _email,
                         password: _password,
                         fullname: '$_firstName $_lastName',
@@ -998,15 +868,12 @@ class _SignUpState extends State<SignUp> {
                         dateofbirth: dob,
                       );
 
-
-                      APIService.register(model)
-                          .then((response) {
+                      APIService.register(model).then((response) {
                         setState(() {
                           isAPIcallProcess = false;
                         });
                         if (response) {
-                          ScaffoldMessenger.of(context)
-                              .showSnackBar(const SnackBar(
+                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                               content: Text(
                                   'Registered successfully. Welcome to wE-Panchayat.')));
 
@@ -1014,18 +881,15 @@ class _SignUpState extends State<SignUp> {
                             context,
                             MaterialPageRoute(
                                 builder: (context) => const Home()),
-                                (route) => false,
+                            (route) => false,
                           );
                         } else {
-                          ScaffoldMessenger.of(context)
-                              .showSnackBar(const SnackBar(
-                              content: Text(
-                                  'Failed to Register.')));
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text('Failed to Register.')));
                         }
                         print("Navigate to Home Page.");
                       });
-
-
                     }
                   },
                   child: Text("Sign up",
@@ -1033,12 +897,13 @@ class _SignUpState extends State<SignUp> {
                         fontSize: 16,
                         fontFamily: 'Poppins-Bold',
                       )),
-                  style: ElevatedButton.styleFrom(
-                    primary: Color(0xFF5386E4),
-                    onPrimary: Colors.white,
-                    shape: StadiumBorder(),
-                    padding: EdgeInsets.only(top: 15.0, bottom: 15.0),
-                  ),
+                  // style: ElevatedButton.styleFrom(
+                  //   primary: Color(0xFF5386E4),
+                  //   onPrimary: Colors.white,
+                  //   shape: StadiumBorder(),
+                  //   padding: EdgeInsets.only(top: 15.0, bottom: 15.0),
+                  // ),
+                  style: AuthConstants.getSubmitButtonStyle(),
                 ),
               ),
             ),

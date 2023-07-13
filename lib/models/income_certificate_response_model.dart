@@ -65,7 +65,7 @@ class Data {
   String? _purpose;
   String? _status;
   String? _remark;
-  String? _canUpdate;
+  bool? _canUpdate;
   Documents? _documents;
 
   Data(
@@ -93,7 +93,7 @@ class Data {
         required String purpose,
         required String status,
         required String remark,
-        required String canUpdate,
+        required bool canUpdate,
         required Documents documents}) {
     this._applicationId = applicationId;
     this._mongoId = mongoId;
@@ -173,8 +173,8 @@ class Data {
   set status(String? status) => _status = status;
   String? get remark => _remark;
   set remark(String? remark) => _remark = remark;
-  String? get canUpdate => _canUpdate;
-  set canUpdate(String? canUpdate) => _canUpdate = canUpdate;
+  bool? get canUpdate => _canUpdate;
+  set canUpdate(bool? canUpdate) => _canUpdate = canUpdate;
   Documents? get documents => _documents;
   set documents(Documents? documents) => _documents = documents;
 

@@ -69,10 +69,15 @@ dependencies:
   internet_connection_checker: ^0.0.1+4
   connectivity_plus: ^2.3.5
 
-  local_auth: ^2.1.5
   local_auth_ios: ^1.1.0
 
   shared_preferences: ^2.0.8
+
+  animations: ^2.0.7
+
+  passcode_screen: ^2.0.1
+  flutter_screen_lock: ^9.0.1
+  local_auth: ^2.1.6
 
 
 dev_dependencies:
@@ -127,6 +132,11 @@ flutter:
     - assets/images/house_tax.png
     - assets/images/income.png
     - assets/images/trade_license.png
+    - assets/images/auth_background_image.png
+    - assets/images/background_image.png
+    - assets/images/cloud_large.png
+    - assets/images/cloud_small.png
+    - assets/images/auth_bg.png
     - assets/carousel_images/carousel_img_0.jpeg
     - assets/carousel_images/carousel_img_1.jpg
     - assets/carousel_images/carousel_img_2.jpg

@@ -41,7 +41,6 @@ class ApplicationsState extends State<Applications> {
 
   @override
   Widget build(BuildContext context) {
-
     return Column(
       children: <Widget>[
         Container(
@@ -114,20 +113,22 @@ class ApplicationsState extends State<Applications> {
               child: CircularProgressIndicator(),
             ),
           ),
-        ] else if (_applicationsResponseModel?.statusCode != 200) ...[
-          Expanded(
-            child: const Center(
-              child: Text(
-                "No applications.",
-                style: const TextStyle(
-                  fontFamily: 'Poppins-Medium',
-                  fontSize: 12,
-                  color: Colors.black54,
-                ),
-              ),
-            ),
-          ),
-        ] else if (_selectedApplicationType == "Grievances") ...[
+        ]
+        // else if (_applicationsResponseModel?.statusCode != 200) ...[
+        //   Expanded(
+        //     child: const Center(
+        //       child: Text(
+        //         "No applications.",
+        //         style: const TextStyle(
+        //           fontFamily: 'Poppins-Medium',
+        //           fontSize: 12,
+        //           color: Colors.black54,
+        //         ),
+        //       ),
+        //     ),
+        //   ),
+        // ]
+        else if (_selectedApplicationType == "Grievances") ...[
           Expanded(
             child: Container(
               padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
@@ -165,6 +166,10 @@ class ApplicationsState extends State<Applications> {
   List<ApplicationsListItem>? get _filteredApplications {
     print(_selectedApplicationType);
     if (_selectedApplicationType == 'All') {
+      if (_applications?.isEmpty ?? true) {
+        // If there are no items that match the selected filter, return an empty list
+        return [];
+      }
       _applications?.sort(
           (a, b) => DateTime.parse(b.date!).compareTo(DateTime.parse(a.date!)));
       return _applications;
@@ -201,8 +206,6 @@ class ApplicationsState extends State<Applications> {
     GrievanceRetrieveAllResponseModel grievanceRetrieveAllResponseModel =
         await GrievanceAPIService.retrieveAllGrievances();
 
-
-
     setState(() {
       _applicationsResponseModel = responseModel;
       _applications = _applicationsResponseModel?.data?.reversed.toList();
@@ -211,6 +214,5 @@ class ApplicationsState extends State<Applications> {
       _grievancesResponseModel = grievanceRetrieveAllResponseModel;
       _grievances = _grievancesResponseModel?.data?.reversed.toList();
     });
-
   }
 }

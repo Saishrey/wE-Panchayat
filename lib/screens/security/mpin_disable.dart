@@ -23,6 +23,7 @@ class DisableMPINScreenState extends State<DisableMPINScreen> {
 
   bool _isMPINMatched = true;
 
+  bool _showSuccess = false;
 
   Future<void> setAppLockStateFalse() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -120,9 +121,14 @@ class DisableMPINScreenState extends State<DisableMPINScreen> {
                             onCompleted: (value) async {
                               // Handle the completed OTP code
                               bool isMPINEnabled = await getMPINState();
-                              if(isMPINEnabled) {
+                              if (isMPINEnabled) {
                                 String? mpin = await SharedService.getMPIN();
-                                if(_disableMPINController.text == mpin) {
+                                if (_disableMPINController.text == mpin) {
+                                  setState(() {
+                                    _showSuccess = true;
+                                  });
+                                  await Future.delayed(
+                                      Duration(milliseconds: 500));
                                   await SharedService.deleteMPIN();
                                   setAppLockStateFalse();
                                   setMPINStateFalse();
@@ -132,8 +138,7 @@ class DisableMPINScreenState extends State<DisableMPINScreen> {
                                     MaterialPageRoute(
                                         builder: (context) => SecurityPage()),
                                   );
-                                }
-                                else {
+                                } else {
                                   setState(() {
                                     _isMPINMatched = false;
                                   });
@@ -146,7 +151,7 @@ class DisableMPINScreenState extends State<DisableMPINScreen> {
                         ),
                         Visibility(
                           child: Text(
-                            "MPIN does not match",
+                            "Incorrect MPIN",
                             style: TextStyle(
                               fontFamily: 'Poppins-Light',
                               color: Colors.red,
@@ -154,6 +159,36 @@ class DisableMPINScreenState extends State<DisableMPINScreen> {
                             ),
                           ),
                           visible: !_isMPINMatched,
+                        ),
+                        Visibility(
+                          child: Column(
+                            children: [
+                              Icon(
+                                Icons.verified_outlined,
+                                color: ColorConstants.submitGreenColor,
+                                size: 60,
+                              ),
+                              const SizedBox(
+                                height: 16,
+                              ),
+                              Text(
+                                "MPIN verified ",
+                                style: TextStyle(
+                                  fontFamily: 'Poppins-Light',
+                                  color: ColorConstants.submitGreenColor,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 16,
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
+                                child: LinearProgressIndicator(),
+                              ),
+                            ],
+                          ),
+                          visible: _showSuccess,
                         ),
                       ],
                     ),
@@ -170,9 +205,13 @@ class DisableMPINScreenState extends State<DisableMPINScreen> {
               child: ElevatedButton(
                 onPressed: () async {
                   bool isMPINEnabled = await getMPINState();
-                  if(isMPINEnabled) {
+                  if (isMPINEnabled) {
                     String? mpin = await SharedService.getMPIN();
-                    if(_disableMPINController.text == mpin) {
+                    if (_disableMPINController.text == mpin) {
+                      setState(() {
+                        _showSuccess = true;
+                      });
+                      await Future.delayed(Duration(milliseconds: 500));
                       await SharedService.deleteMPIN();
                       setAppLockStateFalse();
                       setMPINStateFalse();
@@ -180,11 +219,9 @@ class DisableMPINScreenState extends State<DisableMPINScreen> {
                       Navigator.of(context).pop();
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                            builder: (context) => SecurityPage()),
+                        MaterialPageRoute(builder: (context) => SecurityPage()),
                       );
-                    }
-                    else {
+                    } else {
                       setState(() {
                         _isMPINMatched = false;
                       });

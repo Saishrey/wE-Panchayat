@@ -26,6 +26,8 @@ class ConfirmMPINScreenState extends State<ConfirmMPINScreen> {
 
   bool _isMPINMatched = true;
 
+  bool _showSuccess = false;
+
 
   Future<void> setAppLockState() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -118,6 +120,10 @@ class ConfirmMPINScreenState extends State<ConfirmMPINScreen> {
                             onCompleted: (value) async {
                               // Handle the completed OTP code
                               if(widget.mpin == _confirmMPINController.text) {
+                                setState(() {
+                                  _showSuccess = true;
+                                });
+                                await Future.delayed(Duration(milliseconds: 500));
                                 setAppLockState();
                                 setMPINState();
                                 await SharedService.setMPIN(_confirmMPINController.text);
@@ -141,15 +147,41 @@ class ConfirmMPINScreenState extends State<ConfirmMPINScreen> {
                           ),
                         ),
                         Visibility(
-                          child: Text(
-                            "MPIN does not match",
-                            style: TextStyle(
-                              fontFamily: 'Poppins-Light',
-                              color: Colors.red,
-                              fontSize: 14,
-                            ),
+                          child: Column(
+                            children: [
+                              Text(
+                                "MPIN does not match",
+                                style: TextStyle(
+                                  fontFamily: 'Poppins-Light',
+                                  color: Colors.red,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
                           ),
                           visible: !_isMPINMatched,
+                        ),
+                        Visibility(
+                          child: Column(
+                            children: [
+                              Text(
+                                "MPIN set successfully",
+                                style: TextStyle(
+                                  fontFamily: 'Poppins-Light',
+                                  color: ColorConstants.submitGreenColor,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 16,
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
+                                child: LinearProgressIndicator(),
+                              ),
+                            ],
+                          ),
+                          visible: _showSuccess,
                         ),
                       ],
                     ),
@@ -165,7 +197,11 @@ class ConfirmMPINScreenState extends State<ConfirmMPINScreen> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () async {
-                  if (_confirmMPINController.text.length == 4 && widget.mpin == _confirmMPINController.text) {
+                  if (widget.mpin == _confirmMPINController.text) {
+                    setState(() {
+                      _showSuccess = true;
+                    });
+                    await Future.delayed(Duration(milliseconds: 500));
                     setAppLockState();
                     setMPINState();
                     await SharedService.setMPIN(_confirmMPINController.text);

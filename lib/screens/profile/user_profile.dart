@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../constants.dart';
 import '../../models/login_response_model.dart';
 import '../../services/shared_service.dart';
+import '../background_painter.dart';
 
 class UserProfile extends StatefulWidget {
   UserProfile({Key? key}) : super(key: key);
@@ -26,7 +27,7 @@ class _UserProfileState extends State<UserProfile> {
   @override
   void initState() {
     super.initState();
-    // initialiseNamePhoneAddress();
+    initialiseNamePhoneAddress();
   }
 
   Future<void> initialiseNamePhoneAddress() async {
@@ -70,11 +71,11 @@ class _UserProfileState extends State<UserProfile> {
           slivers: <Widget>[
             SliverPersistentHeader(
               pinned: true,
-              delegate: _HeaderDelegate(
+              delegate: HeaderDelegate(
                 minHeight: 200, // Set the minimum height of the header
                 maxHeight: 280, // Set the maximum height of the header
                 child: CustomPaint(
-                  painter: RPSCustomPainter(),
+                  painter: BackgroundPainter(),
                   child: Container(),
                 ),
               ),
@@ -110,11 +111,11 @@ class _UserProfileState extends State<UserProfile> {
         slivers: <Widget>[
           SliverPersistentHeader(
             pinned: true,
-            delegate: _HeaderDelegate(
+            delegate: HeaderDelegate(
               minHeight: 200, // Set the minimum height of the header
               maxHeight: 280, // Set the maximum height of the header
               child: CustomPaint(
-                painter: RPSCustomPainter(),
+                painter: BackgroundPainter(),
                 child: Container(
                   child: Center(
                     child: Stack(
@@ -291,85 +292,5 @@ Widget _buildSection(String title, String text, bool isEditable) {
   );
 }
 
-class _HeaderDelegate extends SliverPersistentHeaderDelegate {
-  final double minHeight;
-  final double maxHeight;
-  final Widget child;
 
-  _HeaderDelegate({
-    required this.minHeight,
-    required this.maxHeight,
-    required this.child,
-  });
 
-  @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return SizedBox(
-      height: maxHeight - shrinkOffset,
-      // Adjust the height based on shrinkOffset
-      child: child,
-    );
-  }
-
-  @override
-  double get maxExtent => maxHeight;
-
-  @override
-  double get minExtent => minHeight; // Adjust the minExtent value
-
-  @override
-  bool shouldRebuild(_HeaderDelegate oldDelegate) {
-    return maxHeight != oldDelegate.maxHeight ||
-        minHeight != oldDelegate.minHeight ||
-        child != oldDelegate.child;
-  }
-}
-
-class RPSCustomPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    Path path_0 = Path();
-    path_0.moveTo(size.width * 0.8090733, size.height * 0.8766571);
-    path_0.cubicTo(
-        size.width * 1.033314,
-        size.height * 1.141068,
-        size.width * 1.350427,
-        size.height * 0.9056357,
-        size.width * 1.406764,
-        size.height * 0.8140643);
-    path_0.lineTo(size.width * 0.7443560, size.height * -0.8892857);
-    path_0.lineTo(size.width * -0.4841309, size.height * 0.01421550);
-    path_0.cubicTo(
-        size.width * -0.4844817,
-        size.height * 0.04637964,
-        size.width * -0.4619843,
-        size.height * 0.1505268,
-        size.width * -0.3691806,
-        size.height * 0.3098032);
-    path_0.cubicTo(
-        size.width * -0.2531764,
-        size.height * 0.5089000,
-        size.width * -0.01274309,
-        size.height * 0.7278786,
-        size.width * 0.1732804,
-        size.height * 0.6560464);
-    path_0.cubicTo(
-        size.width * 0.6064817,
-        size.height * 0.4887714,
-        size.width * 0.5137644,
-        size.height * 0.5284429,
-        size.width * 0.8090733,
-        size.height * 0.8766571);
-    path_0.close();
-
-    Paint paint_0_fill = Paint()..style = PaintingStyle.fill;
-    paint_0_fill.color = ColorConstants.backgroundClipperColor.withOpacity(1);
-    canvas.drawPath(path_0, paint_0_fill);
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) {
-    return true;
-  }
-}

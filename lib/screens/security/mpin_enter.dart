@@ -23,6 +23,7 @@ class EnterMPINScreenState extends State<EnterMPINScreen> {
 
   bool _isMPINMatched = true;
 
+  bool _showSuccess = false;
 
   Future<bool> getMPINState() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -111,6 +112,10 @@ class EnterMPINScreenState extends State<EnterMPINScreen> {
                               // Handle the completed OTP code
                                 String? mpin = await SharedService.getMPIN();
                                 if(_enterMPINController.text == mpin) {
+                                  setState(() {
+                                    _showSuccess = true;
+                                  });
+                                  await Future.delayed(Duration(milliseconds: 500));
                                   Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
@@ -129,7 +134,7 @@ class EnterMPINScreenState extends State<EnterMPINScreen> {
                         ),
                         Visibility(
                           child: Text(
-                            "MPIN does not match",
+                            "Incorrect MPIN",
                             style: TextStyle(
                               fontFamily: 'Poppins-Light',
                               color: Colors.red,
@@ -137,6 +142,34 @@ class EnterMPINScreenState extends State<EnterMPINScreen> {
                             ),
                           ),
                           visible: !_isMPINMatched,
+                        ),
+                        Visibility(
+                          child: Column(
+                            children: [
+                              Icon(
+                                Icons.verified_outlined,
+                                color: ColorConstants.submitGreenColor,
+                                size: 60,
+                              ),
+                              const SizedBox(height: 16,),
+                              Text(
+                                "MPIN verified ",
+                                style: TextStyle(
+                                  fontFamily: 'Poppins-Light',
+                                  color: ColorConstants.submitGreenColor,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              const SizedBox(
+                                height: 16,
+                              ),
+                              Container(
+                                padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 24),
+                                child: LinearProgressIndicator(),
+                              ),
+                            ],
+                          ),
+                          visible: _showSuccess,
                         ),
                       ],
                     ),
@@ -154,6 +187,10 @@ class EnterMPINScreenState extends State<EnterMPINScreen> {
                 onPressed: () async {
                   String? mpin = await SharedService.getMPIN();
                   if(_enterMPINController.text == mpin) {
+                    setState(() {
+                      _showSuccess = true;
+                    });
+                    await Future.delayed(Duration(milliseconds: 500));
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(

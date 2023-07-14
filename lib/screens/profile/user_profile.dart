@@ -26,7 +26,7 @@ class _UserProfileState extends State<UserProfile> {
   @override
   void initState() {
     super.initState();
-    initialiseNamePhoneAddress();
+    // initialiseNamePhoneAddress();
   }
 
   Future<void> initialiseNamePhoneAddress() async {
@@ -50,6 +50,47 @@ class _UserProfileState extends State<UserProfile> {
 
   @override
   Widget build(BuildContext context) {
+    if(_fullname == null || _dob == null || _taluka == null || _village == null || _address == null || _pincode == null || _phone == null || _email == null) {
+      return Scaffold(
+        resizeToAvoidBottomInset: true,
+        // backgroundColor: Colors.white,
+        appBar: AppBar(
+          backgroundColor: ColorConstants.backgroundClipperColor,
+          foregroundColor: Color(0xff415EB6),
+          title: Text(
+            'My Profile',
+            style: TextStyle(
+              fontFamily: 'Poppins-Medium',
+              fontSize: 18,
+            ),
+          ),
+          elevation: 0,
+        ),
+        body: CustomScrollView(
+          slivers: <Widget>[
+            SliverPersistentHeader(
+              pinned: true,
+              delegate: _HeaderDelegate(
+                minHeight: 200, // Set the minimum height of the header
+                maxHeight: 280, // Set the maximum height of the header
+                child: CustomPaint(
+                  painter: RPSCustomPainter(),
+                  child: Container(),
+                ),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Center(
+                child: CircularProgressIndicator(
+                  color: ColorConstants.lightBlueThemeColor,
+                  strokeWidth: 6,
+                ),
+              )
+            ),
+          ],
+        ),
+      );
+    }
     return Scaffold(
       resizeToAvoidBottomInset: true,
       // backgroundColor: Colors.white,

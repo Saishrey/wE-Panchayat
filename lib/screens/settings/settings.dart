@@ -13,11 +13,12 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
-        systemOverlayStyle: SystemUiOverlayStyle(
-          statusBarColor: ColorConstants.backgroundClipperColor,
-        ),
+        // systemOverlayStyle: SystemUiOverlayStyle(
+        //   statusBarColor: ColorConstants.backgroundClipperColor,
+        // ),
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         foregroundColor: ColorConstants.darkBlueThemeColor,
         elevation: 0,

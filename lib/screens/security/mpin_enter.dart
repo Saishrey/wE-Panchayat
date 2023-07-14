@@ -1,24 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:we_panchayat_dev/constants.dart';
 import 'package:we_panchayat_dev/screens/otp/otptimer.dart';
 import 'package:we_panchayat_dev/screens/homepage/homepage.dart';
+import 'package:we_panchayat_dev/screens/security/security.dart';
 import 'package:we_panchayat_dev/services/api_service.dart';
 
+import '../../services/shared_service.dart';
 import 'mpin_confirm.dart';
 
-class CreateMPINScreen extends StatefulWidget {
-  const CreateMPINScreen({super.key});
+class EnterMPINScreen extends StatefulWidget {
+  const EnterMPINScreen({super.key});
 
   @override
-  CreateMPINScreenState createState() => new CreateMPINScreenState();
+  EnterMPINScreenState createState() => new EnterMPINScreenState();
 }
 
-class CreateMPINScreenState extends State<CreateMPINScreen> {
-  TextEditingController _createMPINController = TextEditingController();
+class EnterMPINScreenState extends State<EnterMPINScreen> {
+  TextEditingController _enterMPINController = TextEditingController();
 
-  bool _isMPINEntered = true;
+  bool _isMPINMatched = true;
+
+
+  Future<bool> getMPINState() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool isEnabled = prefs.getBool('mpinEnabled') ?? false;
+    return isEnabled;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +61,7 @@ class CreateMPINScreenState extends State<CreateMPINScreen> {
                   Container(
                     padding: EdgeInsets.symmetric(vertical: 16),
                     child: Text(
-                      'Create MPIN',
+                      'Use MPIN lock',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 32,
@@ -66,7 +76,7 @@ class CreateMPINScreenState extends State<CreateMPINScreen> {
                     child: Column(
                       children: [
                         Text(
-                          'This MPIN will be requested every time the wE-Panchayat app is opened',
+                          'Use a 4-digit MPIN to protect your wE-Panchayat app',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontFamily: 'Poppins-Light',
@@ -78,11 +88,11 @@ class CreateMPINScreenState extends State<CreateMPINScreen> {
                           padding: const EdgeInsets.only(
                               left: 45.0, right: 45.0, top: 30.0, bottom: 30.0),
                           child: PinCodeTextField(
-                            controller: _createMPINController,
+                            controller: _enterMPINController,
                             autoFocus: true,
                             length: 4,
                             // The length of the OTP code
-                            // obscureText: true,
+                            obscureText: true,
                             // Whether to obscure1 the entered text
                             animationType: AnimationType.scale,
                             keyboardType: TextInputType.number,
@@ -97,14 +107,21 @@ class CreateMPINScreenState extends State<CreateMPINScreen> {
                               inactiveColor: Colors.grey,
                               activeFillColor: Colors.white,
                             ),
-                            onCompleted: (value) {
+                            onCompleted: (value) async {
                               // Handle the completed OTP code
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => ConfirmMPINScreen(
-                                        mpin: _createMPINController.text)),
-                              );
+                                String? mpin = await SharedService.getMPIN();
+                                if(_enterMPINController.text == mpin) {
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => Home()),
+                                  );
+                                }
+                                else {
+                                  setState(() {
+                                    _isMPINMatched = false;
+                                  });
+                                }
                             },
                             appContext: context,
                             onChanged: (String value) {},
@@ -112,14 +129,14 @@ class CreateMPINScreenState extends State<CreateMPINScreen> {
                         ),
                         Visibility(
                           child: Text(
-                            "Enter MPIN",
+                            "MPIN does not match",
                             style: TextStyle(
                               fontFamily: 'Poppins-Light',
                               color: Colors.red,
                               fontSize: 14,
                             ),
                           ),
-                          visible: !_isMPINEntered,
+                          visible: !_isMPINMatched,
                         ),
                       ],
                     ),
@@ -134,17 +151,18 @@ class CreateMPINScreenState extends State<CreateMPINScreen> {
               padding: EdgeInsets.all(20.0),
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {
-                  if (_createMPINController.text.length == 4) {
-                    Navigator.push(
+                onPressed: () async {
+                  String? mpin = await SharedService.getMPIN();
+                  if(_enterMPINController.text == mpin) {
+                    Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => ConfirmMPINScreen(
-                              mpin: _createMPINController.text)),
+                          builder: (context) => Home()),
                     );
-                  } else {
+                  }
+                  else {
                     setState(() {
-                      _isMPINEntered = false;
+                      _isMPINMatched = false;
                     });
                   }
                 },
@@ -153,12 +171,6 @@ class CreateMPINScreenState extends State<CreateMPINScreen> {
                       fontSize: 16,
                       fontFamily: 'Poppins-Bold',
                     )),
-                // style: ElevatedButton.styleFrom(
-                //   primary: Color(0xFF5386E4),
-                //   onPrimary: Colors.white,
-                //   shape: StadiumBorder(),
-                //   padding: EdgeInsets.only(top: 15.0, bottom: 15.0),
-                // ),
                 style: AuthConstants.getSubmitButtonStyle(),
               ),
             ),
@@ -168,7 +180,4 @@ class CreateMPINScreenState extends State<CreateMPINScreen> {
     );
   }
 
-  Future refresh() async {
-    setState(() {});
-  }
 }

@@ -1,24 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:we_panchayat_dev/constants.dart';
 import 'package:we_panchayat_dev/screens/otp/otptimer.dart';
 import 'package:we_panchayat_dev/screens/homepage/homepage.dart';
+import 'package:we_panchayat_dev/screens/security/security.dart';
 import 'package:we_panchayat_dev/services/api_service.dart';
 
+import '../../services/shared_service.dart';
 import 'mpin_confirm.dart';
 
-class CreateMPINScreen extends StatefulWidget {
-  const CreateMPINScreen({super.key});
+class DisableMPINScreen extends StatefulWidget {
+  const DisableMPINScreen({super.key});
 
   @override
-  CreateMPINScreenState createState() => new CreateMPINScreenState();
+  DisableMPINScreenState createState() => new DisableMPINScreenState();
 }
 
-class CreateMPINScreenState extends State<CreateMPINScreen> {
-  TextEditingController _createMPINController = TextEditingController();
+class DisableMPINScreenState extends State<DisableMPINScreen> {
+  TextEditingController _disableMPINController = TextEditingController();
 
-  bool _isMPINEntered = true;
+  bool _isMPINMatched = true;
+
+
+  Future<void> setAppLockStateFalse() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('appLockEnabled', false);
+  }
+
+  Future<bool> getMPINState() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool isEnabled = prefs.getBool('mpinEnabled') ?? false;
+    return isEnabled;
+  }
+
+  Future<void> setMPINStateFalse() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('mpinEnabled', false);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +71,7 @@ class CreateMPINScreenState extends State<CreateMPINScreen> {
                   Container(
                     padding: EdgeInsets.symmetric(vertical: 16),
                     child: Text(
-                      'Create MPIN',
+                      'Disable app lock',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 32,
@@ -66,7 +86,7 @@ class CreateMPINScreenState extends State<CreateMPINScreen> {
                     child: Column(
                       children: [
                         Text(
-                          'This MPIN will be requested every time the wE-Panchayat app is opened',
+                          'Enter your MPIN to disable app lock',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontFamily: 'Poppins-Light',
@@ -78,11 +98,11 @@ class CreateMPINScreenState extends State<CreateMPINScreen> {
                           padding: const EdgeInsets.only(
                               left: 45.0, right: 45.0, top: 30.0, bottom: 30.0),
                           child: PinCodeTextField(
-                            controller: _createMPINController,
+                            controller: _disableMPINController,
                             autoFocus: true,
                             length: 4,
                             // The length of the OTP code
-                            // obscureText: true,
+                            obscureText: true,
                             // Whether to obscure1 the entered text
                             animationType: AnimationType.scale,
                             keyboardType: TextInputType.number,
@@ -97,14 +117,28 @@ class CreateMPINScreenState extends State<CreateMPINScreen> {
                               inactiveColor: Colors.grey,
                               activeFillColor: Colors.white,
                             ),
-                            onCompleted: (value) {
+                            onCompleted: (value) async {
                               // Handle the completed OTP code
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => ConfirmMPINScreen(
-                                        mpin: _createMPINController.text)),
-                              );
+                              bool isMPINEnabled = await getMPINState();
+                              if(isMPINEnabled) {
+                                String? mpin = await SharedService.getMPIN();
+                                if(_disableMPINController.text == mpin) {
+                                  await SharedService.deleteMPIN();
+                                  setAppLockStateFalse();
+                                  setMPINStateFalse();
+                                  Navigator.of(context).pop();
+                                  Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => SecurityPage()),
+                                  );
+                                }
+                                else {
+                                  setState(() {
+                                    _isMPINMatched = false;
+                                  });
+                                }
+                              }
                             },
                             appContext: context,
                             onChanged: (String value) {},
@@ -112,14 +146,14 @@ class CreateMPINScreenState extends State<CreateMPINScreen> {
                         ),
                         Visibility(
                           child: Text(
-                            "Enter MPIN",
+                            "MPIN does not match",
                             style: TextStyle(
                               fontFamily: 'Poppins-Light',
                               color: Colors.red,
                               fontSize: 14,
                             ),
                           ),
-                          visible: !_isMPINEntered,
+                          visible: !_isMPINMatched,
                         ),
                       ],
                     ),
@@ -134,18 +168,27 @@ class CreateMPINScreenState extends State<CreateMPINScreen> {
               padding: EdgeInsets.all(20.0),
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {
-                  if (_createMPINController.text.length == 4) {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => ConfirmMPINScreen(
-                              mpin: _createMPINController.text)),
-                    );
-                  } else {
-                    setState(() {
-                      _isMPINEntered = false;
-                    });
+                onPressed: () async {
+                  bool isMPINEnabled = await getMPINState();
+                  if(isMPINEnabled) {
+                    String? mpin = await SharedService.getMPIN();
+                    if(_disableMPINController.text == mpin) {
+                      await SharedService.deleteMPIN();
+                      setAppLockStateFalse();
+                      setMPINStateFalse();
+                      Navigator.of(context).pop();
+                      Navigator.of(context).pop();
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => SecurityPage()),
+                      );
+                    }
+                    else {
+                      setState(() {
+                        _isMPINMatched = false;
+                      });
+                    }
                   }
                 },
                 child: Text("Continue",

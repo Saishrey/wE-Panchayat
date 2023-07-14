@@ -44,9 +44,9 @@ class ConfirmMPINScreenState extends State<ConfirmMPINScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
-        systemOverlayStyle: SystemUiOverlayStyle(
-          statusBarColor: ColorConstants.backgroundClipperColor,
-        ),
+        // systemOverlayStyle: SystemUiOverlayStyle(
+        //   statusBarColor: ColorConstants.backgroundClipperColor,
+        // ),
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         foregroundColor: ColorConstants.darkBlueThemeColor,
         elevation: 0,
@@ -164,14 +164,18 @@ class ConfirmMPINScreenState extends State<ConfirmMPINScreen> {
               padding: EdgeInsets.all(20.0),
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (_confirmMPINController.text.length == 4 && widget.mpin == _confirmMPINController.text) {
-                    // Navigator.push(
-                    //   context,
-                    //   MaterialPageRoute(
-                    //       builder: (context) => ConfirmMPINScreen(
-                    //           mpin: _confirmMPINController.text)),
-                    // );
+                    setAppLockState();
+                    setMPINState();
+                    await SharedService.setMPIN(_confirmMPINController.text);
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop();
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => SecurityPage()),
+                    );
                   } else {
                     setState(() {
                       _isMPINMatched = false;

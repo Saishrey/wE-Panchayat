@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:we_panchayat_dev/screens/security/mpin_create.dart';
+import 'package:we_panchayat_dev/screens/security/mpin_disable.dart';
 
 import '../../constants.dart';
 
@@ -54,11 +55,16 @@ class _SecurityPageState extends State<SecurityPage> {
   }
 
   void toggleAppLock(bool value) {
-    setAppLockState(value).then((_) {
-      setState(() {
-        _isAppLockEnabled = value;
-      });
-    });
+    // setAppLockState(value).then((_) {
+    //   setState(() {
+    //     _isAppLockEnabled = value;
+    //   });
+    // });
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => DisableMPINScreen()),
+    );
   }
 
   void toggleMPIN(bool value) {
@@ -79,51 +85,17 @@ class _SecurityPageState extends State<SecurityPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        systemOverlayStyle: SystemUiOverlayStyle(
-          statusBarColor: ColorConstants.backgroundClipperColor,
-        ),
+        // systemOverlayStyle: SystemUiOverlayStyle(
+        //   statusBarColor: ColorConstants.backgroundClipperColor,
+        // ),
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         foregroundColor: ColorConstants.darkBlueThemeColor,
-        // title: Text(
-        //   'Settings',
-        //   style: TextStyle(
-        //     fontFamily: 'Poppins-Medium',
-        //     fontSize: 18,
-        //   ),
-        // ),
+
         elevation: 0,
       ),
       body: ListView(
         children: [
-          // Container(
-          //   padding: const EdgeInsets.all(8.0),
-          //   child: Row(
-          //     children: [
-          //       Padding(
-          //         padding: const EdgeInsets.all(16.0),
-          //         child: Center(
-          //
-          //           child: Icon(Icons.fingerprint, size: 40, color: Colors.black54,),
-          //         ),
-          //       ),
-          //       Expanded(
-          //         child: SwitchListTile(
-          //           title: Text(
-          //             'Biometric Authentication',
-          //             style: TextStyle(
-          //               fontFamily: 'Poppins-Medium',
-          //               fontSize: 14,
-          //               color: ColorConstants.darkBlueThemeColor,
-          //             ),
-          //           ),
-          //           value: isAppLockEnabled,
-          //           onChanged: toggleAppLock,
-          //           activeColor: ColorConstants.lightBlueThemeColor,
-          //         ),
-          //       ),
-          //     ],
-          //   ),
-          // ),
+
           Container(
             padding:
                 const EdgeInsets.only(top: 16, left: 24, right: 24, bottom: 8),

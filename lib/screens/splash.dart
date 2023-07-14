@@ -8,6 +8,7 @@ import 'package:local_auth/local_auth.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:we_panchayat_dev/screens/auth/login.dart';
+import 'package:we_panchayat_dev/screens/security/mpin_enter.dart';
 import '../constants.dart';
 import '../services/api_service.dart';
 import '../services/shared_service.dart';
@@ -96,8 +97,17 @@ class _SplashState extends State<Splash> {
 
         if(isAppLockEnabled) {
           if(isMPINEnabled) {
-            String? mpin = await SharedService.getMPIN();
-            showPinDialogue(context, mpin!);
+            // String? mpin = await SharedService.getMPIN();
+            // showPinDialogue(context, mpin!);
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                // builder: (context) => const MyHomePage(
+                //       title: 'wE-Panchayat',
+                //     )
+                builder: (context) => EnterMPINScreen(),
+              ),
+            );
           }
         }
         else {

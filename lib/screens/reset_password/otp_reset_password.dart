@@ -15,7 +15,7 @@ class OtpResetPassword extends StatefulWidget {
 }
 
 class OtpResetPasswordState extends State<OtpResetPassword> {
-  String? _otpResetPasswordText;
+  TextEditingController _otpController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -99,6 +99,7 @@ class OtpResetPasswordState extends State<OtpResetPassword> {
                                   bottom: 30.0),
                               child: PinCodeTextField(
                                 autoFocus: true,
+                                controller: _otpController,
                                 length: 6,
                                 // The length of the OTP code
                                 obscureText: true,
@@ -112,11 +113,31 @@ class OtpResetPasswordState extends State<OtpResetPassword> {
                                   fieldHeight: 50,
                                   fieldWidth: 40,
                                   activeFillColor: Colors.white,
+                                  inactiveColor: Colors.black54,
+                                  selectedColor: ColorConstants.lightBlueThemeColor,
                                 ),
                                 onCompleted: (value) {
                                   // Handle the completed OTP code
-                                  _otpResetPasswordText = value;
-                                  print('Entered OTP : $_otpResetPasswordText');
+                                  if (_otpController.text.isNotEmpty && _otpController.text.length == 6) {
+                                    Map body = {"otp": _otpController.text};
+
+                                    APIService.verifyOtpResetPassword(body).then((response) {
+                                      if (response) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                            const SnackBar(
+                                                content: Text('OTP Verified. Enter new password.')));
+                                        Navigator.pushAndRemoveUntil(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => const ResetPassword()),
+                                              (route) => false,
+                                        );
+                                      } else {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                            const SnackBar(content: Text('Incorrect OTP.')));
+                                      }
+                                    });
+                                  }
                                 },
                                 appContext: context,
                                 onChanged: (String value) {},
@@ -173,8 +194,8 @@ class OtpResetPasswordState extends State<OtpResetPassword> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    if (_otpResetPasswordText != null && _otpResetPasswordText?.length == 6) {
-                      Map body = {"otp": _otpResetPasswordText};
+                    if (_otpController.text.isNotEmpty && _otpController.text.length == 6) {
+                      Map body = {"otp": _otpController.text};
 
                       APIService.verifyOtpResetPassword(body).then((response) {
                         if (response) {
@@ -193,32 +214,12 @@ class OtpResetPasswordState extends State<OtpResetPassword> {
                         }
                       });
                     }
-                    // if (_otpResetPasswordText != null && _otpResetPasswordText?.length == 6) {
-                    //   if(_otpResetPasswordText == "111111") {
-                    //           ScaffoldMessenger.of(context).showSnackBar(
-                    //               const SnackBar(
-                    //                   content: Text('OTP Verified. Enter new password.')));
-                    //           Navigator.pushAndRemoveUntil(
-                    //             context,
-                    //             MaterialPageRoute(
-                    //                 builder: (context) => const ResetPassword()),
-                    //                 (route) => false,
-                    //           );
-                    //   }
-                    // }
-
                   },
                   child: Text("Verify",
                       style: TextStyle(
                         fontSize: 16,
                         fontFamily: 'Poppins-Bold',
                       )),
-                  // style: ElevatedButton.styleFrom(
-                  //   primary: Color(0xFF5386E4),
-                  //   onPrimary: Colors.white,
-                  //   shape: StadiumBorder(),
-                  //   padding: EdgeInsets.only(top: 15.0, bottom: 15.0),
-                  // ),
                   style: AuthConstants.getSubmitButtonStyle(),
                 ),
               ),

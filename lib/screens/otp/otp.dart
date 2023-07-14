@@ -13,7 +13,8 @@ class Otp extends StatefulWidget {
 }
 
 class OtpState extends State<Otp> {
-  String? _otpText;
+
+  TextEditingController _otpController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -97,6 +98,7 @@ class OtpState extends State<Otp> {
                                   bottom: 30.0),
                               child: PinCodeTextField(
                                 autoFocus: true,
+                                controller: _otpController,
                                 length: 6,
                                 // The length of the OTP code
                                 obscureText: true,
@@ -110,11 +112,31 @@ class OtpState extends State<Otp> {
                                   fieldHeight: 50,
                                   fieldWidth: 40,
                                   activeFillColor: Colors.white,
+                                  inactiveColor: Colors.black54,
+                                  selectedColor: ColorConstants.lightBlueThemeColor,
                                 ),
                                 onCompleted: (value) {
                                   // Handle the completed OTP code
-                                  _otpText = value;
-                                  print('Entered OTP : $_otpText');
+                                  if (_otpController.text.isNotEmpty && _otpController.text.length == 6) {
+                                    Map body = {"otp": _otpController.text};
+
+                                    APIService.verifyOtp(body).then((response) {
+                                      if (response) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                            const SnackBar(
+                                                content: Text('Logged in successfully.')));
+                                        Navigator.pushAndRemoveUntil(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => const Home()),
+                                              (route) => false,
+                                        );
+                                      } else {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                            const SnackBar(content: Text('Incorrect OTP.')));
+                                      }
+                                    });
+                                  }
                                 },
                                 appContext: context,
                                 onChanged: (String value) {},
@@ -171,8 +193,8 @@ class OtpState extends State<Otp> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    if (_otpText != null && _otpText?.length == 6) {
-                      Map body = {"otp": _otpText};
+                    if (_otpController.text.isNotEmpty && _otpController.text.length == 6) {
+                      Map body = {"otp": _otpController.text};
 
                       APIService.verifyOtp(body).then((response) {
                         if (response) {

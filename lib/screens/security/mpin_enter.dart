@@ -114,6 +114,7 @@ class EnterMPINScreenState extends State<EnterMPINScreen> {
                                 if(_enterMPINController.text == mpin) {
                                   setState(() {
                                     _showSuccess = true;
+                                    _isMPINMatched = true;
                                   });
                                   await Future.delayed(Duration(milliseconds: 500));
                                   Navigator.pushReplacement(
@@ -189,6 +190,7 @@ class EnterMPINScreenState extends State<EnterMPINScreen> {
                   if(_enterMPINController.text == mpin) {
                     setState(() {
                       _showSuccess = true;
+                      _isMPINMatched = true;
                     });
                     await Future.delayed(Duration(milliseconds: 500));
                     Navigator.pushReplacement(

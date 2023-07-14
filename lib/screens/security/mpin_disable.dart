@@ -126,6 +126,7 @@ class DisableMPINScreenState extends State<DisableMPINScreen> {
                                 if (_disableMPINController.text == mpin) {
                                   setState(() {
                                     _showSuccess = true;
+                                    _isMPINMatched = true;
                                   });
                                   await Future.delayed(
                                       Duration(milliseconds: 500));
@@ -210,6 +211,7 @@ class DisableMPINScreenState extends State<DisableMPINScreen> {
                     if (_disableMPINController.text == mpin) {
                       setState(() {
                         _showSuccess = true;
+                        _isMPINMatched = true;
                       });
                       await Future.delayed(Duration(milliseconds: 500));
                       await SharedService.deleteMPIN();

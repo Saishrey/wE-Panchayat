@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:we_panchayat_dev/constants.dart';
+import 'package:we_panchayat_dev/screens/about/about.dart';
 import 'package:we_panchayat_dev/screens/profile/user_profile.dart';
 import 'package:we_panchayat_dev/screens/settings/settings.dart';
 
@@ -28,7 +30,9 @@ class NavBar extends StatelessWidget {
               ),
             ),
             decoration: BoxDecoration(
-              color: Color(0xffDDF0FF),
+              color: ColorConstants.backgroundClipperColor,
+              borderRadius:
+                  BorderRadius.only(bottomRight: Radius.circular(130)),
               // image: DecorationImage(
               //   fit: BoxFit.fill,
               //   image: NetworkImage(
@@ -36,65 +40,183 @@ class NavBar extends StatelessWidget {
               // ),
             ),
           ),
-          ListTile(
-            leading: Icon(Icons.info),
-            title: Text('My Profile', style: TextStyle(
-              fontFamily: 'Poppins-Medium',
-            ),),
-            onTap: () {
-              print("Tapped on My profile");
-              Navigator.of(context).pop();
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => UserProfile()),
-              );
-            },
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            child: InkWell(
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => UserProfile()),
+                );
+              },
+              child: Ink(
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8.0),
+                      decoration: BoxDecoration(
+                        color: ColorConstants.formBorderColor,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Icon(
+                        Icons.person,
+                        size: 20,
+                        color: Color(0xff2B2730),
+                      ),
+                    ),
+                    const SizedBox(width: 32,),
+                    Expanded(
+                      child: Text(
+                        'My Profile',
+                        style: TextStyle(
+                          color: Colors.grey.shade800,
+                          fontFamily: 'Poppins-Medium',
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
-          // ListTile(
-          //   leading: Icon(Icons.description),
-          //   title: Text('Applications'),
-          //   onTap: () => null,
-          // ),
-          // ListTile(
-          //   leading: Icon(Icons.warning),
-          //   title: Text('Grievances'),
-          //   onTap: () => null,
-          // ),
-          Divider(),
-          ListTile(
-            leading: Icon(Icons.settings),
-            title: Text('Settings', style: TextStyle(
-              fontFamily: 'Poppins-Medium',
-            ),),
-            onTap: () {
-              print("Tapped on Settings");
-              Navigator.of(context).pop();
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => SettingsPage()),
-              );
-            },
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Container(
+              height: 1,
+              color: ColorConstants.formBorderColor,
+            ),
           ),
-          // ListTile(
-          //   leading: Icon(Icons.notifications),
-          //   title: Text('Notifications'),
-          //   onTap: () => null,
-          // ),
-          Divider(),
-          ListTile(
-            title: Text('Logout', style: TextStyle(
-              fontFamily: 'Poppins-Medium',
-            ),),
-            leading: Icon(Icons.logout),
-            onTap: () async {
-              bool isLoggedOut = await APIService.logout(context);
-              if(isLoggedOut) {
-                ScaffoldMessenger.of(context)
-                    .showSnackBar(const SnackBar(content: Text('Logged out.')));
-              }
-            },
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            child: InkWell(
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SettingsPage()),
+                );
+              },
+              child: Ink(
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8.0),
+                      decoration: BoxDecoration(
+                        color: ColorConstants.formBorderColor,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Icon(
+                        Icons.settings,
+                        size: 20,
+                        color: Color(0xff2B2730),
+                      ),
+                    ),
+                    const SizedBox(width: 32,),
+                    Expanded(
+                      child: Text(
+                        'Settings',
+                        style: TextStyle(
+                          color: Colors.grey.shade800,
+                          fontFamily: 'Poppins-Medium',
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Container(
+              height: 1,
+              color: ColorConstants.formBorderColor,
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            child: InkWell(
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AboutPage()),
+                );
+              },
+              child: Ink(
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8.0),
+                      decoration: BoxDecoration(
+                        color: ColorConstants.formBorderColor,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Icon(
+                        Icons.info_outline,
+                        size: 20,
+                        color: Color(0xff2B2730),
+                      ),
+                    ),
+                    const SizedBox(width: 32,),
+                    Expanded(
+                      child: Text(
+                        'About',
+                        style: TextStyle(
+                          color: Colors.grey.shade800,
+                          fontFamily: 'Poppins-Medium',
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            child: InkWell(
+              onTap: () async {
+                bool isLoggedOut = await APIService.logout(context);
+                if (isLoggedOut) {
+                  ScaffoldMessenger.of(context)
+                      .showSnackBar(const SnackBar(content: Text('Logged out.')));
+                }
+              },
+              child: Ink(
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8.0),
+                      decoration: BoxDecoration(
+                        color: ColorConstants.formBorderColor,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: const Icon(
+                        Icons.logout,
+                        size: 20,
+                        color: Color(0xff2B2730),
+                      ),
+                    ),
+                    const SizedBox(width: 32,),
+                    Expanded(
+                      child: Text(
+                        'Logout',
+                        style: TextStyle(
+                          color: Colors.grey.shade800,
+                          fontFamily: 'Poppins-Medium',
+                          fontSize: 14,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
         ],
       ),

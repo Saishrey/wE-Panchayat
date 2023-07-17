@@ -57,7 +57,7 @@ class _UserProfileState extends State<UserProfile> {
         // backgroundColor: Colors.white,
         appBar: AppBar(
           backgroundColor: ColorConstants.backgroundClipperColor,
-          foregroundColor: Color(0xff415EB6),
+          foregroundColor: ColorConstants.darkBlueThemeColor,
           title: Text(
             'My Profile',
             style: TextStyle(
@@ -94,10 +94,9 @@ class _UserProfileState extends State<UserProfile> {
     }
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      // backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: ColorConstants.backgroundClipperColor,
-        foregroundColor: Color(0xff415EB6),
+        foregroundColor: ColorConstants.darkBlueThemeColor,
         title: Text(
           'My Profile',
           style: TextStyle(
@@ -166,11 +165,11 @@ class _UserProfileState extends State<UserProfile> {
                       borderRadius: BorderRadius.circular(10.0),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.grey.withOpacity(0.75),
-                          spreadRadius: 0.5,
-                          blurRadius: 0.75,
-                          offset: Offset(
-                              0, 2.5), // changes the position of the shadow
+                          color: Colors.grey.withOpacity(0.6),
+                          spreadRadius: 1,
+                          blurRadius: 3,
+                          offset: const Offset(
+                              0, 2), // changes the position of the shadow
                         ),
                       ],
                     ),
@@ -180,32 +179,60 @@ class _UserProfileState extends State<UserProfile> {
                           height: 8.0,
                         ),
                         _buildSection('Phone', _phone!, true),
-                        const Divider(
-                          thickness: 1,
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16),
+                          child: Divider(
+                            thickness: 1,
+                            color: Colors.black12,
+                          ),
                         ),
                         _buildSection('Email', _email!, true),
-                        const Divider(
-                          thickness: 1,
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16),
+                          child: Divider(
+                            thickness: 1,
+                            color: Colors.black12,
+                          ),
                         ),
                         _buildSection('DOB', _dob!, false),
-                        const Divider(
-                          thickness: 1,
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16),
+                          child: Divider(
+                            thickness: 1,
+                            color: Colors.black12,
+                          ),
                         ),
                         _buildSection('Gender', _gender!, false),
-                        const Divider(
-                          thickness: 1,
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16),
+                          child: Divider(
+                            thickness: 1,
+                            color: Colors.black12,
+                          ),
                         ),
                         _buildSection('Taluka', _taluka!, false),
-                        const Divider(
-                          thickness: 1,
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16),
+                          child: Divider(
+                            thickness: 1,
+                            color: Colors.black12,
+                          ),
                         ),
                         _buildSection('Village', _village!, false),
-                        const Divider(
-                          thickness: 1,
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16),
+                          child: Divider(
+                            thickness: 1,
+                            color: Colors.black12,
+                          ),
                         ),
                         _buildSection('Address', _address!, false),
-                        const Divider(
-                          thickness: 1,
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16),
+                          child: Divider(
+                            thickness: 1,
+                            color: Colors.black12,
+                          ),
                         ),
                         _buildSection('Pincode', _pincode!, false),
                         const SizedBox(
@@ -240,7 +267,7 @@ Widget _buildSection(String title, String text, bool isEditable) {
                 title,
                 style: const TextStyle(
                   fontFamily: 'Poppins-Bold',
-                  fontSize: 16,
+                  fontSize: 14,
                   color: Colors.black,
                 ),
               ),
@@ -253,7 +280,7 @@ Widget _buildSection(String title, String text, bool isEditable) {
               text,
               style: const TextStyle(
                 fontFamily: 'Poppins-Light',
-                fontSize: 16,
+                fontSize: 14,
                 color: Colors.black,
               ),
               textAlign: TextAlign.left,

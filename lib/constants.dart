@@ -100,6 +100,7 @@ class ColorConstants {
   static final Color grievanceYellowColor = Color(0xFFFFD95A);
   static final Color grievanceRedColor = Color(0xFFE06469);
   static final Color backgroundClipperColor = Color(0xffDDF0FF);
+  static final Color lightBlackColor =  Color(0xff2B2730);
 
   // Sky Blue Color Palette
   static final Color colorHuntCode1 = Color(0xFFAEE1FC);

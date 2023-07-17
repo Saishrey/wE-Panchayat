@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:another_stepper/another_stepper.dart';
@@ -17,7 +18,8 @@ class TradeLicenseReviewForm extends StatefulWidget {
   const TradeLicenseReviewForm({super.key, required this.license});
 
   @override
-  _TradeLicenseReviewFormState createState() => _TradeLicenseReviewFormState();
+  _TradeLicenseReviewFormState createState() =>
+      _TradeLicenseReviewFormState();
 }
 
 class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
@@ -262,17 +264,17 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xffDAF5FF),
-        foregroundColor: Color(0xff415EB6),
-        title: const Text(
-          'Trade License & Signboard',
+        backgroundColor: ColorConstants.backgroundClipperColor,
+        foregroundColor: ColorConstants.darkBlueThemeColor,
+        title: Text(
+          'Trade License & Signboard - Review',
           style: TextStyle(
               fontFamily: 'Poppins-Medium',
-              color: Color(0xff415EB6),
+              color: ColorConstants.darkBlueThemeColor,
               fontSize: 18),
         ),
         elevation: 0,
-        actions:  <Widget>[
+        actions: <Widget>[
           Visibility(
             visible: _isEdit,
             child: IconButton(
@@ -292,17 +294,17 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
           ),
         ],
         actionsIconTheme: IconThemeData(
-          color: _darkBlueButton,
+          color: ColorConstants.darkBlueThemeColor,
           size: 28,
         ),
       ),
-      backgroundColor: Color(0xffDAF5FF),
+      backgroundColor: ColorConstants.backgroundClipperColor,
       body: Column(
         children: [
           Container(
             padding: const EdgeInsets.only(top: 16.0, bottom: 8.0),
-            decoration: const BoxDecoration(
-              color: Colors.white,
+            decoration: BoxDecoration(
+              color: Theme.of(context).scaffoldBackgroundColor,
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(30.0),
                 topRight: Radius.circular(30.0),
@@ -358,121 +360,484 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
                 ] else ...[
                   Container(
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Theme.of(context).scaffoldBackgroundColor,
                     ),
-                    child: Theme(
-                      data: Theme.of(context).copyWith(
-                        colorScheme: const ColorScheme.light(
-                          primary: Color(0xff6CC51D),
-                        ),
-                      ),
-                      child: Stepper(
-                        currentStep: _currentStep,
-                        type: StepperType.horizontal,
-                        onStepContinue: () {
-                          setState(() {
-                            if (_currentStep < 2) {
-                              _currentStep++;
-                            }
-                          });
-                        },
-                        onStepTapped: (step) {
-                          setState(() {
-                            _currentStep = step;
-                          });
-                        },
-                        onStepCancel: () {
-                          setState(() {
-                            if (_currentStep > 0) {
-                              _currentStep--;
-                            }
-                          });
-                        },
-                        steps: getDetailsSteps(),
-                        controlsBuilder: (BuildContext context,
-                            ControlsDetails controlsDetails) {
-                          return Container(
-                            padding: EdgeInsets.only(top: 20.0, bottom: 20.0),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(20.0),
-                                topRight: Radius.circular(20.0),
-                              ),
-                            ),
+                    child: ListView(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 16, horizontal: 24),
+                          child: Container(
                             width: double.infinity,
-                            child: Row(
-                              children: [
-                                if (_currentStep > 0) ...[
-                                  Expanded(
-                                    child: ElevatedButton(
-                                      onPressed: controlsDetails.onStepCancel,
-                                      child: Text(
-                                        'Back',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontFamily: 'Poppins-Bold',
-                                          color: ColorConstants.formLabelTextColor,
-                                        ),
-                                      ),
-                                      style: ButtonStyle(
-                                        backgroundColor:
-                                            MaterialStateProperty.all<Color>(
-                                                Colors.white),
-                                        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                                          RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(20.0),
-                                            side: BorderSide(
-                                              color: ColorConstants.formLabelTextColor,
-                                            ),
-                                          ),
-                                        ),
-                                        padding: MaterialStateProperty.all<
-                                            EdgeInsets>(
-                                          EdgeInsets.only(
-                                              top: 15.0, bottom: 15.0),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                                if (0 < _currentStep && _currentStep < 2) ...[
-                                  const SizedBox(width: 10.0),
-                                ],
-                                if (_currentStep < 2) ...[
-                                  Expanded(
-                                    child: ElevatedButton(
-                                      onPressed: controlsDetails.onStepContinue,
-                                      child: Text(
-                                        'Next',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontFamily: 'Poppins-Bold',
-                                        ),
-                                      ),
-                                      style: ButtonStyle(
-                                        backgroundColor:
-                                            MaterialStateProperty.all<Color>(
-                                                ColorConstants.darkBlueThemeColor),
-                                        shape:
-                                        MaterialStateProperty.all<RoundedRectangleBorder>(
-                                          RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(20.0),
-                                          ),
-                                        ),
-                                        padding: MaterialStateProperty.all<
-                                            EdgeInsets>(
-                                          EdgeInsets.only(
-                                              top: 15.0, bottom: 15.0),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ]
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10.0),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.6),
+                                  spreadRadius: 1,
+                                  blurRadius: 3,
+                                  offset: const Offset(0,
+                                      2), // changes the position of the shadow
+                                ),
                               ],
                             ),
-                          );
-                        },
-                      ),
+                            child: Column(
+                              children: [
+                                const SizedBox(
+                                  height: 16,
+                                ),
+                                Text(
+                                  "Applicant Details",
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins-Bold',
+                                    fontSize: 16,
+                                    color: ColorConstants.lightBlackColor,
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 16,
+                                ),
+                                _buildSection('Taluka', _formData["taluka"]!),
+                                const Padding(
+                                  padding:
+                                  EdgeInsets.symmetric(horizontal: 16),
+                                  child: Divider(
+                                    thickness: 1,
+                                    color: Colors.black12,
+                                  ),
+                                ),
+                                _buildSection(
+                                    'Panchayat', _formData["panchayat"]!),
+                                const Padding(
+                                  padding:
+                                  EdgeInsets.symmetric(horizontal: 16),
+                                  child: Divider(
+                                    thickness: 1,
+                                    color: Colors.black12,
+                                  ),
+                                ),
+                                _buildSection("Applicant's Name",
+                                    _formData["applicants_name"]!),
+                                const Padding(
+                                  padding:
+                                  EdgeInsets.symmetric(horizontal: 16),
+                                  child: Divider(
+                                    thickness: 1,
+                                    color: Colors.black12,
+                                  ),
+                                ),
+                                _buildSection('Mobile No.', _formData["phone"]!),
+                                const Padding(
+                                  padding:
+                                  EdgeInsets.symmetric(horizontal: 16),
+                                  child: Divider(
+                                    thickness: 1,
+                                    color: Colors.black12,
+                                  ),
+                                ),
+                                _buildSection(
+                                    'Ward No.', _formData["ward_no"]!),
+                                const Padding(
+                                  padding:
+                                  EdgeInsets.symmetric(horizontal: 16),
+                                  child: Divider(
+                                    thickness: 1,
+                                    color: Colors.black12,
+                                  ),
+                                ),
+                                _buildSection('Shop No.',
+                                    _formData["shop_no"]!),
+                                const SizedBox(
+                                  height: 16,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 16, horizontal: 24),
+                          child: Container(
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10.0),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.6),
+                                  spreadRadius: 1,
+                                  blurRadius: 3,
+                                  offset: const Offset(0,
+                                      2), // changes the position of the shadow
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              children: [
+                                const SizedBox(
+                                  height: 16,
+                                ),
+                                Text(
+                                  "Trade Details",
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins-Bold',
+                                    fontSize: 16,
+                                    color: ColorConstants.lightBlackColor,
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 16,
+                                ),
+                                _buildSection(
+                                    'Name of Owner', _formData["owner_name"]!),
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 16),
+                                  child: Divider(
+                                    thickness: 1,
+                                    color: Colors.black12,
+                                  ),
+                                ),
+                                _buildSection(
+                                    'Name of Trade', _formData["trade_name"]!),
+                                // const Divider(
+                                //   thickness: 1,
+                                // ),
+                                // _buildSection('Title', _formData["title"]!),
+                                // const Divider(
+                                //   thickness: 1,
+                                // ),
+                                // _buildSection("Applicant's Name",
+                                //     _formData["applicants_name"]!),
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 16),
+                                  child: Divider(
+                                    thickness: 1,
+                                    color: Colors.black12,
+                                  ),
+                                ),
+                                _buildSection("Trade Address",
+                                    _formData["trade_address"]!),
+                                // const Divider(
+                                //   thickness: 1,
+                                // ),
+                                // _buildSection(
+                                //     'Mobile No.', _formData["phone"]!),
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 16),
+                                  child: Divider(
+                                    thickness: 1,
+                                    color: Colors.black12,
+                                  ),
+                                ),
+                                _buildSection("Applicant's Relation",
+                                    _formData["applicants_relation"]!),
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 16),
+                                  child: Divider(
+                                    thickness: 1,
+                                    color: Colors.black12,
+                                  ),
+                                ),
+                                _buildSection(
+                                    'Type of Trade', _formData["trade_type"]!),
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 16),
+                                  child: Divider(
+                                    thickness: 1,
+                                    color: Colors.black12,
+                                  ),
+                                ),
+                                _buildSection('Nature of Business',
+                                    _formData["business_nature"]!),
+                                // const Divider(
+                                //   thickness: 1,
+                                // ),
+                                // _buildSection('Date Of Birth',
+                                //     formatDate(_formData["date_of_birth"]!)),
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 16),
+                                  child: Divider(
+                                    thickness: 1,
+                                    color: Colors.black12,
+                                  ),
+                                ),
+                                _buildSection('Waste Management-facility',
+                                    _formData["waste_management_facility"]!),
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 16),
+                                  child: Divider(
+                                    thickness: 1,
+                                    color: Colors.black12,
+                                  ),
+                                ),
+                                _buildSection("Applicant's Relation",
+                                    _formData["applicants_relation"]!),
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 16),
+                                  child: Divider(
+                                    thickness: 1,
+                                    color: Colors.black12,
+                                  ),
+                                ),
+                                _buildSection(
+                                    "Lease Pay", _formData["lease_pay"]!),
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 16),
+                                  child: Divider(
+                                    thickness: 1,
+                                    color: Colors.black12,
+                                  ),
+                                ),
+                                _buildSection('Trade Area (sq.Mts)',
+                                    _formData["trade_area"]!),
+                                const Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 16),
+                                  child: Divider(
+                                    thickness: 1,
+                                    color: Colors.black12,
+                                  ),
+                                ),
+                                _buildSection('No. of Employees',
+                                    _formData["no_of_employee"]!),
+                                const SizedBox(
+                                  height: 16,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        if (_formData["signboard_details"] == "true") ...[
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 16, horizontal: 24),
+                            child: Container(
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(10.0),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.6),
+                                    spreadRadius: 1,
+                                    blurRadius: 3,
+                                    offset: const Offset(0,
+                                        2), // changes the position of the shadow
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                children: [
+                                  const SizedBox(
+                                    height: 16,
+                                  ),
+                                  Text(
+                                    "Signboard Details",
+                                    style: TextStyle(
+                                      fontFamily: 'Poppins-Bold',
+                                      fontSize: 16,
+                                      color: ColorConstants.lightBlackColor,
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 16,
+                                  ),
+                                  _buildSection(
+                                      'Signboard Location', _formData["signboard_location"]!),
+                                  const Padding(
+                                    padding: EdgeInsets.symmetric(horizontal: 16),
+                                    child: Divider(
+                                      thickness: 1,
+                                      color: Colors.black12,
+                                    ),
+                                  ),
+                                  _buildSection(
+                                      'Signboard Type', _formData["signboard_type"]!),
+                                  const Padding(
+                                    padding: EdgeInsets.symmetric(horizontal: 16),
+                                    child: Divider(
+                                      thickness: 1,
+                                      color: Colors.black12,
+                                    ),
+                                  ),
+                                  _buildSection("Content on Board",
+                                      _formData["signboard_content"]!),
+                                  const Padding(
+                                    padding: EdgeInsets.symmetric(horizontal: 16),
+                                    child: Divider(
+                                      thickness: 1,
+                                      color: Colors.black12,
+                                    ),
+                                  ),
+                                  _buildSection("Area(sq.Ft)",
+                                      _formData["signboard_area"]!),
+                                                                    const SizedBox(
+                                    height: 16,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 16, horizontal: 24),
+                          child: Container(
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10.0),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.6),
+                                  spreadRadius: 1,
+                                  blurRadius: 3,
+                                  offset: const Offset(0,
+                                      2), // changes the position of the shadow
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              children: [
+                                const SizedBox(
+                                  height: 16,
+                                ),
+                                Text(
+                                  "Documents",
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins-Bold',
+                                    fontSize: 16,
+                                    color: ColorConstants.lightBlackColor,
+                                  ),
+                                ),
+                                if (_fileMap["identityProof"] != null) ...[
+                                  _buildPDFListItem('Identity Proof',
+                                      _fileMap["identityProof"]!),
+                                  const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 16),
+                                    child: Divider(
+                                      thickness: 1,
+                                      color: Colors.black12,
+                                    ),
+                                  ),
+                                ],
+                                if (_fileMap["houseTax"] != null) ...[
+                                  _buildPDFListItem('Housetax Receipt',
+                                      _fileMap["houseTax"]!),
+                                  const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 16),
+                                    child: Divider(
+                                      thickness: 1,
+                                      color: Colors.black12,
+                                    ),
+                                  ),
+                                ],
+                                if (_fileMap["ownershipDocument"] != null) ...[
+                                  _buildPDFListItem(
+                                      'No Objection Certificate/ Lease agreement/ Ownership document',
+                                      _fileMap["ownershipDocument"]!),
+                                  const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 16),
+                                    child: Divider(
+                                      thickness: 1,
+                                      color: Colors.black12,
+                                    ),
+                                  ),
+                                ],
+                                const SizedBox(
+                                  height: 40,
+                                ),
+                                if (_fileMap.length > 3) ...[
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 24),
+                                    child: Text(
+                                      "Permissions granted by the Authorities as per requirement",
+                                      style: TextStyle(
+                                        fontFamily: 'Poppins-Bold',
+                                        fontSize: 12,
+                                        color: ColorConstants.lightBlackColor,
+                                      ),
+                                    ),
+                                  ),
+                                  if (_fileMap[
+                                          "permissionsGranted.foodAndDrugs"] !=
+                                      null) ...[
+                                    _buildPDFListItem(
+                                      'Foods & Drugs',
+                                      _fileMap[
+                                          "permissionsGranted.foodAndDrugs"]!,
+                                    ),
+                                  ],
+                                  if (_fileMap["permissionsGranted.excise"] !=
+                                      null) ...[
+                                    _buildPDFListItem('Excise',
+                                        _fileMap["permissionsGranted.excise"]!),
+                                  ],
+                                  if (_fileMap[
+                                          "permissionsGranted.policeDepartment"] !=
+                                      null) ...[
+                                    _buildPDFListItem(
+                                        'Police Dept.',
+                                        _fileMap[
+                                            "permissionsGranted.policeDepartment"]!),
+                                  ],
+                                  if (_fileMap["permissionsGranted.crz"] !=
+                                      null) ...[
+                                    _buildPDFListItem('CRZ',
+                                        _fileMap["permissionsGranted.crz"]!),
+                                  ],
+                                  if (_fileMap["permissionsGranted.tourism"] !=
+                                      null) ...[
+                                    _buildPDFListItem(
+                                        'Tourism',
+                                        _fileMap[
+                                            "permissionsGranted.tourism"]!),
+                                  ],
+                                  if (_fileMap[
+                                          "permissionsGranted.fireAndBridge"] !=
+                                      null) ...[
+                                    _buildPDFListItem(
+                                        'Fire Brigade',
+                                        _fileMap[
+                                            "permissionsGranted.fireAndBridge"]!),
+                                  ],
+                                  if (_fileMap[
+                                          "permissionsGranted.factoriesAndBoilers"] !=
+                                      null) ...[
+                                    _buildPDFListItem(
+                                        'Factories & Boilers',
+                                        _fileMap[
+                                            "permissionsGranted.factoriesAndBoilers"]!),
+                                  ],
+                                  if (_fileMap[
+                                          "permissionsGranted.healthServices"] !=
+                                      null) ...[
+                                    _buildPDFListItem(
+                                        'Health Services',
+                                        _fileMap[
+                                            "permissionsGranted.healthServices"]!),
+                                  ],
+                                  if (_fileMap[
+                                          "permissionsGranted.others.file"] !=
+                                      null) ...[
+                                    _buildPDFListItem(
+                                        'Others',
+                                        _fileMap[
+                                            "permissionsGranted.others.file"]!),
+                                  ],
+                                ],
+                              ],
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -599,69 +964,96 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
     );
   }
 
-  Widget _buildPDFListItem(File pdfFile) {
+  Widget _buildSection(String title, String text) {
     return Padding(
-      padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-      child: Material(
-        child: InkWell(
-          onTap: () async {
-            print("OPEN FILE");
-            // do not change this code
-            String filePath = pdfFile.path;
-            var r = await OpenFile.open(filePath);
-            print("MESSAGE: ${r.message}");
-          },
-          child: Ink(
-            child: Container(
-              padding: EdgeInsets.all(10.0),
-              decoration: BoxDecoration(
-                border: Border.all(
-                    width: 2.0, color: ColorConstants.formLabelTextColor),
-                borderRadius: BorderRadius.circular(20.0),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Icon(
-                    Icons.picture_as_pdf,
-                    size: 48.0,
-                    color: Color(0xffDD2025),
+      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 16.0),
+      child: Row(
+        children: [
+          Expanded(
+              flex: 2,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontFamily: 'Poppins-Bold',
+                    fontSize: 14,
+                    color: Colors.black,
                   ),
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            pdfFile.path.split('/').last,
-                            style: TextStyle(
-                              fontFamily: 'Poppins-Medium',
-                              overflow: TextOverflow.ellipsis,
-                              color: ColorConstants.darkBlueThemeColor,
-                              fontSize: 14.0,
-                            ),
-                          ),
-                          Text(
-                            '${(pdfFile.lengthSync() / 1024).toStringAsFixed(2)} KB',
-                            style: const TextStyle(
-                              fontSize: 12.0,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  const Icon(
-                    Icons.cloud_done,
-                    color: Color(0xFF5386E4),
-                  ),
-                ],
+                ),
+              )),
+          Expanded(
+            flex: 3,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                text,
+                style: const TextStyle(
+                  fontFamily: 'Poppins-Light',
+                  fontSize: 14,
+                  color: Colors.black,
+                ),
+                textAlign: TextAlign.left,
               ),
             ),
           ),
-        ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPDFListItem(String title, File file) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 16.0),
+      child: Row(
+        children: [
+          Expanded(
+              flex: 3,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontFamily: 'Poppins-Bold',
+                    fontSize: 14,
+                    color: Colors.black,
+                  ),
+                ),
+              )),
+          Expanded(
+            flex: 1,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Material(
+                  borderRadius: BorderRadius.circular(25.0),
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(25.0),
+                    onTap: () async {
+                      // Add your desired logic or function here
+                      // This function will be called when the icon button is pressed
+                      String filePath = file.path;
+                      var r = await OpenFile.open(filePath);
+                      print("MESSAGE: ${r.message}");
+                    },
+                    child: Ink(
+                      padding: EdgeInsets.all(8.0),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(25.0),
+                      ),
+                      child: Icon(
+                        Icons.open_in_new_rounded,
+                        color: ColorConstants.formLabelTextColor,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -860,805 +1252,5 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
                     : Colors.white),
           ),
         ),
-      ];
-
-  //This will be your screens
-  List<Step> getDetailsSteps() => [
-        Step(
-            title: const Text(
-              'Applicant',
-              style: TextStyle(
-                fontFamily: 'Poppins-Medium',
-                color: Colors.black54,
-              ),
-            ),
-            state: _currentStep > 0 ? StepState.complete : StepState.indexed,
-            isActive: _currentStep >= 0,
-            content: Column(
-              children: [
-                Text(
-                  'Applicant Details',
-                  style: TextStyle(
-                    fontFamily: 'Poppins-Bold',
-                    color: ColorConstants.darkBlueThemeColor,
-                    fontSize: 20,
-                  ),
-                ),
-                SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextFormField(
-                        enabled: false,
-                        controller:
-                            TextEditingController(text: _formData["taluka"]),
-                        style: FormConstants.getTextStyle(),
-                        decoration: InputDecoration(
-                          labelText: "Taluka",
-                          labelStyle: FormConstants.getLabelAndHintStyle(),
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: FormConstants.getEnabledBorder(),
-                          enabledBorder: FormConstants.getEnabledBorder(),
-                          focusedBorder: FormConstants.getFocusedBorder(),
-                          disabledBorder: FormConstants.getEnabledBorder(),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 10.0),
-                    Expanded(
-                      child: TextFormField(
-                        enabled: false,
-                        controller:
-                            TextEditingController(text: _formData["panchayat"]),
-                        style: FormConstants.getTextStyle(),
-                        decoration: InputDecoration(
-                          labelText: "Panchayat",
-                          labelStyle: FormConstants.getLabelAndHintStyle(),
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: FormConstants.getEnabledBorder(),
-                          enabledBorder: FormConstants.getEnabledBorder(),
-                          focusedBorder: FormConstants.getFocusedBorder(),
-                          disabledBorder: FormConstants.getEnabledBorder(),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 16),
-                TextFormField(
-                  enabled: false,
-                  controller:
-                      TextEditingController(text: _formData["applicants_name"]),
-                  style: FormConstants.getTextStyle(),
-                  decoration: InputDecoration(
-                    labelText: "Applicant's Name",
-                    labelStyle: FormConstants.getLabelAndHintStyle(),
-                    filled: true,
-                    fillColor: Colors.white,
-                    border: FormConstants.getEnabledBorder(),
-                    enabledBorder: FormConstants.getEnabledBorder(),
-                    focusedBorder: FormConstants.getFocusedBorder(),
-                    disabledBorder: FormConstants.getEnabledBorder(),
-                  ),
-                ),
-                SizedBox(height: 16),
-                // getFormField("Applicant's Address"),
-                TextFormField(
-                  enabled: false,
-                  controller: TextEditingController(
-                      text: _formData["applicants_address"]),
-                  style: FormConstants.getTextStyle(),
-                  decoration: InputDecoration(
-                    labelText: "Applicant's Address",
-                    labelStyle: FormConstants.getLabelAndHintStyle(),
-                    filled: true,
-                    fillColor: Colors.white,
-                    border: FormConstants.getEnabledBorder(),
-                    enabledBorder: FormConstants.getEnabledBorder(),
-                    focusedBorder: FormConstants.getFocusedBorder(),
-                    disabledBorder: FormConstants.getEnabledBorder(),
-                  ),
-                ),
-                SizedBox(height: 16),
-                // getFormField("Mobile No."),
-                TextFormField(
-                  enabled: false,
-                  controller: TextEditingController(text: _formData["phone"]),
-                  style: FormConstants.getTextStyle(),
-                  decoration: InputDecoration(
-                    labelText: 'Mobile No.',
-                    labelStyle: FormConstants.getLabelAndHintStyle(),
-                    filled: true,
-                    fillColor: Colors.white,
-                    border: FormConstants.getEnabledBorder(),
-                    enabledBorder: FormConstants.getEnabledBorder(),
-                    focusedBorder: FormConstants.getFocusedBorder(),
-                    disabledBorder: FormConstants.getEnabledBorder(),
-                  ),
-                ),
-                SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      child: TextFormField(
-                        enabled: false,
-                        controller:
-                            TextEditingController(text: _formData["ward_no"]),
-                        keyboardType: TextInputType.number,
-                        style: FormConstants.getTextStyle(),
-                        decoration: InputDecoration(
-                          labelText: 'Ward No.',
-                          labelStyle: FormConstants.getLabelAndHintStyle(),
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: FormConstants.getEnabledBorder(),
-                          enabledBorder: FormConstants.getEnabledBorder(),
-                          focusedBorder: FormConstants.getFocusedBorder(),
-                          disabledBorder: FormConstants.getEnabledBorder(),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 10.0),
-                    Expanded(
-                      child: TextFormField(
-                        enabled: false,
-                        controller:
-                            TextEditingController(text: _formData["shop_no"]),
-                        keyboardType: TextInputType.number,
-                        style: FormConstants.getTextStyle(),
-                        decoration: InputDecoration(
-                          labelText: 'Shop No.',
-                          labelStyle: FormConstants.getLabelAndHintStyle(),
-                          filled: true,
-                          fillColor: Colors.white,
-                          border: FormConstants.getEnabledBorder(),
-                          enabledBorder: FormConstants.getEnabledBorder(),
-                          focusedBorder: FormConstants.getFocusedBorder(),
-                          disabledBorder: FormConstants.getEnabledBorder(),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            )),
-        Step(
-          title: const Text(
-            'Trade',
-            style: TextStyle(
-              fontFamily: 'Poppins-Medium',
-              color: Colors.black54,
-            ),
-          ),
-          state: _currentStep > 1 ? StepState.complete : StepState.indexed,
-          isActive: _currentStep >= 1,
-          content: Column(
-            children: [
-              Text('Trade Details',
-                  style: TextStyle(
-                      fontFamily: 'Poppins-Bold',
-                      color: ColorConstants.darkBlueThemeColor,
-                      fontSize: 20)),
-              SizedBox(height: 16),
-              TextFormField(
-                enabled: false,
-                controller:
-                    TextEditingController(text: _formData["owner_name"]),
-                style: FormConstants.getTextStyle(),
-                decoration: InputDecoration(
-                  labelText: 'Name of Owner',
-                  labelStyle: FormConstants.getLabelAndHintStyle(),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: FormConstants.getEnabledBorder(),
-                  enabledBorder: FormConstants.getEnabledBorder(),
-                  focusedBorder: FormConstants.getFocusedBorder(),
-                  disabledBorder: FormConstants.getEnabledBorder(),
-                ),
-              ),
-              SizedBox(height: 16),
-              TextFormField(
-                enabled: false,
-                controller:
-                    TextEditingController(text: _formData["trade_name"]),
-                style: FormConstants.getTextStyle(),
-                decoration: InputDecoration(
-                  labelText: 'Name of Trade',
-                  labelStyle: FormConstants.getLabelAndHintStyle(),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: FormConstants.getEnabledBorder(),
-                  enabledBorder: FormConstants.getEnabledBorder(),
-                  focusedBorder: FormConstants.getFocusedBorder(),
-                  disabledBorder: FormConstants.getEnabledBorder(),
-                ),
-              ),
-              SizedBox(height: 16),
-              TextFormField(
-                enabled: false,
-                controller:
-                    TextEditingController(text: _formData["trade_address"]),
-                style: FormConstants.getTextStyle(),
-                decoration: InputDecoration(
-                  labelText: 'Trade Address',
-                  labelStyle: FormConstants.getLabelAndHintStyle(),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: FormConstants.getEnabledBorder(),
-                  enabledBorder: FormConstants.getEnabledBorder(),
-                  focusedBorder: FormConstants.getFocusedBorder(),
-                  disabledBorder: FormConstants.getEnabledBorder(),
-                ),
-              ),
-              SizedBox(height: 16),
-              TextFormField(
-                enabled: false,
-                controller: TextEditingController(
-                    text: _formData["applicants_relation"]),
-                style: FormConstants.getTextStyle(),
-                decoration: InputDecoration(
-                  labelText: "Applicant's Relation",
-                  labelStyle: FormConstants.getLabelAndHintStyle(),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: FormConstants.getEnabledBorder(),
-                  enabledBorder: FormConstants.getEnabledBorder(),
-                  focusedBorder: FormConstants.getFocusedBorder(),
-                  disabledBorder: FormConstants.getEnabledBorder(),
-                ),
-              ),
-              SizedBox(height: 16),
-              TextFormField(
-                enabled: false,
-                controller:
-                    TextEditingController(text: _formData["trade_type"]),
-                style: FormConstants.getTextStyle(),
-                decoration: InputDecoration(
-                  labelText: "Type of Trade",
-                  labelStyle: FormConstants.getLabelAndHintStyle(),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: FormConstants.getEnabledBorder(),
-                  enabledBorder: FormConstants.getEnabledBorder(),
-                  focusedBorder: FormConstants.getFocusedBorder(),
-                  disabledBorder: FormConstants.getEnabledBorder(),
-                ),
-              ),
-              SizedBox(height: 16),
-              TextFormField(
-                enabled: false,
-                controller:
-                    TextEditingController(text: _formData["business_nature"]),
-                style: FormConstants.getTextStyle(),
-                decoration: InputDecoration(
-                  labelText: 'Nature of Business',
-                  labelStyle: FormConstants.getLabelAndHintStyle(),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: FormConstants.getEnabledBorder(),
-                  enabledBorder: FormConstants.getEnabledBorder(),
-                  focusedBorder: FormConstants.getFocusedBorder(),
-                  disabledBorder: FormConstants.getEnabledBorder(),
-                ),
-              ),
-              SizedBox(height: 16),
-              TextFormField(
-                enabled: false,
-                controller: TextEditingController(
-                    text: _formData["waste_management_facility"]),
-                style: FormConstants.getTextStyle(),
-                decoration: InputDecoration(
-                  labelText: 'Waste Management-facility',
-                  labelStyle: FormConstants.getLabelAndHintStyle(),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: FormConstants.getEnabledBorder(),
-                  enabledBorder: FormConstants.getEnabledBorder(),
-                  focusedBorder: FormConstants.getFocusedBorder(),
-                  disabledBorder: FormConstants.getEnabledBorder(),
-                ),
-              ),
-              SizedBox(height: 16),
-              TextFormField(
-                enabled: false,
-                controller: TextEditingController(text: _formData["lease_pay"]),
-                keyboardType: TextInputType.number,
-                style: FormConstants.getTextStyle(),
-                decoration: InputDecoration(
-                  labelText: 'Lease Pay',
-                  labelStyle: FormConstants.getLabelAndHintStyle(),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: FormConstants.getEnabledBorder(),
-                  enabledBorder: FormConstants.getEnabledBorder(),
-                  focusedBorder: FormConstants.getFocusedBorder(),
-                  disabledBorder: FormConstants.getEnabledBorder(),
-                ),
-              ),
-              SizedBox(height: 16),
-              TextFormField(
-                enabled: false,
-                keyboardType: TextInputType.number,
-                controller:
-                    TextEditingController(text: _formData['trade_area']),
-                style: FormConstants.getTextStyle(),
-                decoration: InputDecoration(
-                  labelText: 'Trade Area (sq.Mts)',
-                  labelStyle: FormConstants.getLabelAndHintStyle(),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: FormConstants.getEnabledBorder(),
-                  enabledBorder: FormConstants.getEnabledBorder(),
-                  focusedBorder: FormConstants.getFocusedBorder(),
-                  disabledBorder: FormConstants.getEnabledBorder(),
-                ),
-              ),
-              SizedBox(height: 16),
-              TextFormField(
-                enabled: false,
-                keyboardType: TextInputType.number,
-                controller:
-                    TextEditingController(text: _formData["no_of_employee"]),
-                style: FormConstants.getTextStyle(),
-                decoration: InputDecoration(
-                  labelText: 'No. of Employees',
-                  labelStyle: FormConstants.getLabelAndHintStyle(),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: FormConstants.getEnabledBorder(),
-                  enabledBorder: FormConstants.getEnabledBorder(),
-                  focusedBorder: FormConstants.getFocusedBorder(),
-                  disabledBorder: FormConstants.getEnabledBorder(),
-                ),
-              ),
-              SizedBox(height: 32),
-              if (_formData["signboard_details"] == "true") ...[
-                Text('Signboard Details',
-                    style: TextStyle(
-                        fontFamily: 'Poppins-Bold',
-                        color: ColorConstants.darkBlueThemeColor,
-                        fontSize: 20)),
-                SizedBox(height: 16),
-                TextFormField(
-                  enabled: false,
-                  controller: TextEditingController(
-                      text: _formData["signboard_location"]),
-                  style: FormConstants.getTextStyle(),
-                  decoration: InputDecoration(
-                    labelText: 'Signboard Location',
-                    labelStyle: FormConstants.getLabelAndHintStyle(),
-                    filled: true,
-                    fillColor: Colors.white,
-                    border: FormConstants.getEnabledBorder(),
-                    enabledBorder: FormConstants.getEnabledBorder(),
-                    focusedBorder: FormConstants.getFocusedBorder(),
-                    disabledBorder: FormConstants.getEnabledBorder(),
-                  ),
-                ),
-                SizedBox(height: 16),
-                TextFormField(
-                  enabled: false,
-                  controller:
-                      TextEditingController(text: _formData["signboard_type"]),
-                  style: FormConstants.getTextStyle(),
-                  decoration: InputDecoration(
-                    labelText: 'Signboard Type',
-                    labelStyle: FormConstants.getLabelAndHintStyle(),
-                    filled: true,
-                    fillColor: Colors.white,
-                    border: FormConstants.getEnabledBorder(),
-                    enabledBorder: FormConstants.getEnabledBorder(),
-                    focusedBorder: FormConstants.getFocusedBorder(),
-                    disabledBorder: FormConstants.getEnabledBorder(),
-                  ),
-                ),
-                SizedBox(height: 16),
-                TextFormField(
-                  enabled: false,
-                  controller: TextEditingController(
-                      text: _formData["signboard_content"]),
-                  style: FormConstants.getTextStyle(),
-                  decoration: InputDecoration(
-                    labelText: 'Content on Board',
-                    labelStyle: FormConstants.getLabelAndHintStyle(),
-                    filled: true,
-                    fillColor: Colors.white,
-                    border: FormConstants.getEnabledBorder(),
-                    enabledBorder: FormConstants.getEnabledBorder(),
-                    focusedBorder: FormConstants.getFocusedBorder(),
-                    disabledBorder: FormConstants.getEnabledBorder(),
-                  ),
-                ),
-                SizedBox(
-                  height: 16,
-                ),
-                TextFormField(
-                  enabled: false,
-                  keyboardType: TextInputType.number,
-                  controller:
-                      TextEditingController(text: _formData["signboard_area"]),
-                  style: FormConstants.getTextStyle(),
-                  decoration: InputDecoration(
-                    labelText: 'Area(sq.Ft)',
-                    labelStyle: FormConstants.getLabelAndHintStyle(),
-                    filled: true,
-                    fillColor: Colors.white,
-                    border: FormConstants.getEnabledBorder(),
-                    enabledBorder: FormConstants.getEnabledBorder(),
-                    focusedBorder: FormConstants.getFocusedBorder(),
-                    disabledBorder: FormConstants.getEnabledBorder(),
-                  ),
-                ),
-              ],
-            ],
-          ),
-        ),
-        Step(
-          state: _currentStep > 2 ? StepState.complete : StepState.indexed,
-          isActive: _currentStep >= 2,
-          title: const Text(
-            'Documents',
-            style: TextStyle(
-              fontFamily: 'Poppins-Medium',
-              color: Colors.black54,
-            ),
-          ),
-          content: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Uploaded Documents',
-                  style: TextStyle(
-                    fontFamily: 'Poppins-Bold',
-                    color: ColorConstants.darkBlueThemeColor,
-                    fontSize: 20,
-                  ),
-                ),
-                const SizedBox(
-                  height: 16,
-                ),
-                Container(
-                  alignment: Alignment.centerLeft,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                        color: ColorConstants.formBorderColor, width: 2),
-                  ),
-                  padding: EdgeInsets.all(16.0),
-                  child: Column(
-                    children: [
-                      if (_fileMap["identityProof"] != null) ...[
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Row(
-                              children:  [
-                                Expanded(
-                                  child: Text(
-                                    'Identity Proof',
-                                    style: TextStyle(
-                                      fontFamily: 'Poppins-Medium',
-                                      fontSize: 14,
-                                      color: ColorConstants.formLabelTextColor,
-                                    ),
-                                    textAlign: TextAlign.left,
-                                  ),
-                                ),
-                                Text(
-                                  'Required',
-                                  style: TextStyle(
-                                    fontFamily: 'Poppins-Bold',
-                                    fontSize: 10,
-                                    color: Colors.red,
-                                  ),
-                                  textAlign: TextAlign.left,
-                                ),
-                              ],
-                            ),
-                            _buildPDFListItem(_fileMap["identityProof"]!),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 16,
-                        ),
-                      ],
-                      if (_fileMap["houseTax"] != null) ...[
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Row(
-                              children:  [
-                                Expanded(
-                                  child: Text(
-                                    'Housetax Receipt',
-                                    style: TextStyle(
-                                      fontFamily: 'Poppins-Medium',
-                                      fontSize: 14,
-                                      color: ColorConstants.formLabelTextColor,
-                                    ),
-                                    textAlign: TextAlign.left,
-                                  ),
-                                ),
-                                Text(
-                                  'Required',
-                                  style: TextStyle(
-                                    fontFamily: 'Poppins-Bold',
-                                    fontSize: 10,
-                                    color: Colors.red,
-                                  ),
-                                  textAlign: TextAlign.left,
-                                ),
-                              ],
-                            ),
-                            _buildPDFListItem(_fileMap["houseTax"]!),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 16,
-                        ),
-                      ],
-                      if (_fileMap["ownershipDocument"] != null) ...[
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Row(
-                              children:  [
-                                Expanded(
-                                  child: Text(
-                                    'No Objection Certificate/ Lease argreement/ Ownership document',
-                                    style: TextStyle(
-                                      fontFamily: 'Poppins-Medium',
-                                      fontSize: 14,
-                                      color: ColorConstants.formLabelTextColor,
-                                    ),
-                                    textAlign: TextAlign.left,
-                                    // overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                                Text(
-                                  'Required',
-                                  style: TextStyle(
-                                    fontFamily: 'Poppins-Bold',
-                                    fontSize: 10,
-                                    color: Colors.red,
-                                  ),
-                                  textAlign: TextAlign.left,
-                                ),
-                              ],
-                            ),
-                            _buildPDFListItem(_fileMap["ownershipDocument"]!),
-                          ],
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-                const SizedBox(
-                  height: 40,
-                ),
-                if (_fileMap.length > 3) ...[
-                  Container(
-                    alignment: Alignment.centerLeft,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                          color: ColorConstants.formBorderColor, width: 2),
-                    ),
-                    padding: EdgeInsets.all(16.0),
-                    child: Column(
-                      children: [
-                        Text(
-                          'Permissions granted by the Authorities as per requirement',
-                          style: TextStyle(
-                            fontFamily: 'Poppins-Bold',
-                            color: ColorConstants.darkBlueThemeColor,
-                            fontSize: 14,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        if (_fileMap["permissionsGranted.foodAndDrugs"] != null) ...[
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Text(
-                                'Foods & Drugs',
-                                style: TextStyle(
-                                  fontFamily: 'Poppins-Medium',
-                                  fontSize: 14,
-                                  color: ColorConstants.formLabelTextColor,
-                                ),
-                                textAlign: TextAlign.left,
-                                // overflow: TextOverflow.ellipsis,
-                              ),
-                              _buildPDFListItem(
-                                  _fileMap["permissionsGranted.foodAndDrugs"]!),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                        ],
-                        if (_fileMap["permissionsGranted.excise"] != null) ...[
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Text(
-                                'Excise',
-                                style: TextStyle(
-                                  fontFamily: 'Poppins-Medium',
-                                  fontSize: 14,
-                                  color: ColorConstants.formLabelTextColor,
-                                ),
-                                textAlign: TextAlign.left,
-                                // overflow: TextOverflow.ellipsis,
-                              ),
-                              _buildPDFListItem(_fileMap["permissionsGranted.excise"]!),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                        ],
-                        if (_fileMap["permissionsGranted.policeDepartment"] !=
-                            null) ...[
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Text(
-                                'Police Dept.',
-                                style: TextStyle(
-                                  fontFamily: 'Poppins-Medium',
-                                  fontSize: 14,
-                                  color: ColorConstants.formLabelTextColor,
-                                ),
-                                textAlign: TextAlign.left,
-                                // overflow: TextOverflow.ellipsis,
-                              ),
-                              _buildPDFListItem(
-                                  _fileMap["permissionsGranted.policeDepartment"]!),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                        ],
-                        if (_fileMap["permissionsGranted.crz"] != null) ...[
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Text(
-                                'CRZ',
-                                style: TextStyle(
-                                  fontFamily: 'Poppins-Medium',
-                                  fontSize: 14,
-                                  color: ColorConstants.formLabelTextColor,
-                                ),
-                                textAlign: TextAlign.left,
-                                // overflow: TextOverflow.ellipsis,
-                              ),
-                              _buildPDFListItem(_fileMap["permissionsGranted.crz"]!),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                        ],
-                        if (_fileMap["permissionsGranted.tourism"] != null) ...[
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Text(
-                                'Tourism',
-                                style: TextStyle(
-                                  fontFamily: 'Poppins-Medium',
-                                  fontSize: 14,
-                                  color: ColorConstants.formLabelTextColor,
-                                ),
-                                textAlign: TextAlign.left,
-                                // overflow: TextOverflow.ellipsis,
-                              ),
-                              _buildPDFListItem(
-                                  _fileMap["permissionsGranted.tourism"]!),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                        ],
-                        if (_fileMap["permissionsGranted.fireAndBridge"] != null) ...[
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Text(
-                                'Fire Brigade',
-                                style: TextStyle(
-                                  fontFamily: 'Poppins-Medium',
-                                  fontSize: 14,
-                                  color: ColorConstants.formLabelTextColor,
-                                ),
-                                textAlign: TextAlign.left,
-                                // overflow: TextOverflow.ellipsis,
-                              ),
-                              _buildPDFListItem(
-                                  _fileMap["permissionsGranted.fireAndBridge"]!),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                        ],
-                        if (_fileMap["permissionsGranted.factoriesAndBoilers"] !=
-                            null) ...[
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Text(
-                                'Factories & Boilers',
-                                style: TextStyle(
-                                  fontFamily: 'Poppins-Medium',
-                                  fontSize: 14,
-                                  color: ColorConstants.formLabelTextColor,
-                                ),
-                                textAlign: TextAlign.left,
-                                // overflow: TextOverflow.ellipsis,
-                              ),
-                              _buildPDFListItem(
-                                  _fileMap["permissionsGranted.factoriesAndBoilers"]!),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                        ],
-                        if (_fileMap["permissionsGranted.healthServices"] != null) ...[
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Text(
-                                'Health Services',
-                                style: TextStyle(
-                                  fontFamily: 'Poppins-Medium',
-                                  fontSize: 14,
-                                  color: ColorConstants.formLabelTextColor,
-                                ),
-                                textAlign: TextAlign.left,
-                                // overflow: TextOverflow.ellipsis,
-                              ),
-                              _buildPDFListItem(
-                                  _fileMap["permissionsGranted.healthServices"]!),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                        ],
-                        if (_fileMap["permissionsGranted.others.file"] != null) ...[
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Text(
-                                'Others',
-                                style: TextStyle(
-                                  fontFamily: 'Poppins-Medium',
-                                  fontSize: 14,
-                                  color: ColorConstants.formLabelTextColor,
-                                ),
-                                textAlign: TextAlign.left,
-                                // overflow: TextOverflow.ellipsis,
-                              ),
-                              _buildPDFListItem(
-                                  _fileMap["permissionsGranted.others.file"]!),
-                            ],
-                          ),
-                          const SizedBox(height: 16),
-                        ],
-                      ],
-                    ),
-                  ),
-                ],
-
-              ],
-            ),
-          ),
-        )
       ];
 }

@@ -126,7 +126,8 @@ class _IncomeCertificateReviewFormState
         "to_produce_at":
             _incomeCertificateFormResponseModel.data.toProduceAt ?? 'null',
         "purpose": _incomeCertificateFormResponseModel.data.purpose ?? 'null',
-        "can_edit_from": _incomeCertificateFormResponseModel.data.canUpdate.toString(),
+        "can_edit_from":
+            _incomeCertificateFormResponseModel.data.canUpdate.toString(),
       };
 
       _applicationStatusActiveIndex = incomeCertificateApplicationStatus
@@ -270,13 +271,13 @@ class _IncomeCertificateReviewFormState
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xffFAD4D4),
-        foregroundColor: Color(0xffF45656),
-        title: const Text(
-          'Income Certificate',
+        backgroundColor: ColorConstants.backgroundClipperColor,
+        foregroundColor: ColorConstants.darkBlueThemeColor,
+        title: Text(
+          'Income Certificate - Review',
           style: TextStyle(
               fontFamily: 'Poppins-Medium',
-              color: Color(0xffF45656),
+              color: ColorConstants.darkBlueThemeColor,
               fontSize: 18),
         ),
         elevation: 0,
@@ -300,17 +301,18 @@ class _IncomeCertificateReviewFormState
           ),
         ],
         actionsIconTheme: IconThemeData(
-          color: Colors.red,
+          color: ColorConstants.darkBlueThemeColor,
           size: 28,
         ),
       ),
-      backgroundColor: Color(0xffFAD4D4),
+      backgroundColor: ColorConstants.backgroundClipperColor,
       body: Column(
         children: [
           Container(
             padding: const EdgeInsets.only(top: 16.0, bottom: 8.0),
-            decoration: const BoxDecoration(
-              color: Colors.white,
+            decoration: BoxDecoration(
+              // color: Colors.white,
+              color: Theme.of(context).scaffoldBackgroundColor,
               borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(30.0),
                 topRight: Radius.circular(30.0),
@@ -366,124 +368,406 @@ class _IncomeCertificateReviewFormState
                 ] else ...[
                   Container(
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Theme.of(context).scaffoldBackgroundColor,
                     ),
-                    child: Theme(
-                      data: Theme.of(context).copyWith(
-                        colorScheme: const ColorScheme.light(
-                          primary: Color(0xff6CC51D),
-                        ),
-                      ),
-                      child: Stepper(
-                        currentStep: _currentStep,
-                        type: StepperType.horizontal,
-                        onStepContinue: () {
-                          setState(() {
-                            if (_currentStep < 1) {
-                              _currentStep++;
-                            }
-                          });
-                        },
-                        onStepTapped: (step) {
-                          setState(() {
-                            _currentStep = step;
-                          });
-                        },
-                        onStepCancel: () {
-                          setState(() {
-                            if (_currentStep > 0) {
-                              _currentStep--;
-                            }
-                          });
-                        },
-                        steps: getDetailsSteps(),
-                        controlsBuilder: (BuildContext context,
-                            ControlsDetails controlsDetails) {
-                          return Container(
-                            padding: EdgeInsets.only(top: 20.0, bottom: 20.0),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(20.0),
-                                topRight: Radius.circular(20.0),
-                              ),
-                            ),
+                    child: ListView(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 16, horizontal: 24),
+                          child: Container(
                             width: double.infinity,
-                            child: Row(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10.0),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.6),
+                                  spreadRadius: 1,
+                                  blurRadius: 3,
+                                  offset: const Offset(0,
+                                      2), // changes the position of the shadow
+                                ),
+                              ],
+                            ),
+                            child: Column(
                               children: [
-                                if (_currentStep > 0) ...[
-                                  Expanded(
-                                    child: ElevatedButton(
-                                      onPressed: controlsDetails.onStepCancel,
-                                      child: Text(
-                                        'Back',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontFamily: 'Poppins-Bold',
-                                          color:
-                                              ColorConstants.formLabelTextColor,
+                                const SizedBox(
+                                  height: 16,
+                                ),
+                                Text(
+                                  "Applicant Details",
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins-Bold',
+                                    fontSize: 16,
+                                    color: ColorConstants.lightBlackColor,
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 16,
+                                ),
+                                Row(
+                                  children: [
+                                    const SizedBox(
+                                      width: 16,
+                                    ),
+                                    Expanded(
+                                      flex: 1,
+                                      child: Center(
+                                        child: Image.memory(
+                                          Uint8List.fromList(_fileMap["photo"]
+                                                  ?.readAsBytesSync()
+                                              as List<int>),
+                                          fit: BoxFit.cover,
                                         ),
                                       ),
-                                      style: ButtonStyle(
-                                        backgroundColor:
-                                            MaterialStateProperty.all<Color>(
-                                                Colors.white),
-                                        shape: MaterialStateProperty.all<
-                                            RoundedRectangleBorder>(
-                                          RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(20.0),
-                                            side: BorderSide(
-                                              color: ColorConstants
-                                                  .formLabelTextColor,
+                                    ),
+                                    const SizedBox(
+                                      width: 16,
+                                    ),
+                                    Expanded(
+                                      flex: 2,
+                                      child: SizedBox(
+                                        height: 180,
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            Text(
+                                              "${_formData["title"]} ${_formData["applicants_name"]}",
+                                              style: const TextStyle(
+                                                fontFamily: 'Poppins-Medium',
+                                                fontSize: 14,
+                                                color: Colors.black,
+                                              ),
                                             ),
-                                          ),
-                                        ),
-                                        padding: MaterialStateProperty.all<
-                                            EdgeInsets>(
-                                          EdgeInsets.only(
-                                              top: 15.0, bottom: 15.0),
+                                            Text(
+                                              "${formatDate(_formData["date_of_birth"]!)}",
+                                              style: const TextStyle(
+                                                fontFamily: 'Poppins-Medium',
+                                                fontSize: 14,
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                            Text(
+                                              "${_formData["phone"]}",
+                                              style: const TextStyle(
+                                                fontFamily: 'Poppins-Medium',
+                                                fontSize: 14,
+                                                color: Colors.black,
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
+                                    ),
+                                  ],
+                                ),
+                                const Padding(
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 16),
+                                  child: Divider(
+                                    thickness: 1,
+                                    color: Colors.black12,
+                                  ),
+                                ),
+                                _buildSection('Taluka', _formData["taluka"]!),
+                                const Padding(
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 16),
+                                  child: Divider(
+                                    thickness: 1,
+                                    color: Colors.black12,
+                                  ),
+                                ),
+                                _buildSection(
+                                    'Panchayat', _formData["panchayat"]!),
+                                // const Divider(
+                                //   thickness: 1,
+                                // ),
+                                // _buildSection('Title', _formData["title"]!),
+                                // const Divider(
+                                //   thickness: 1,
+                                // ),
+                                // _buildSection("Applicant's Name",
+                                //     _formData["applicants_name"]!),
+                                const Padding(
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 16),
+                                  child: Divider(
+                                    thickness: 1,
+                                    color: Colors.black12,
+                                  ),
+                                ),
+                                _buildSection("Parent's/ Husband's Name",
+                                    _formData["parents_name"]!),
+                                // const Divider(
+                                //   thickness: 1,
+                                // ),
+                                // _buildSection(
+                                //     'Mobile No.', _formData["phone"]!),
+                                const Padding(
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 16),
+                                  child: Divider(
+                                    thickness: 1,
+                                    color: Colors.black12,
+                                  ),
+                                ),
+                                _buildSection('Email', _formData["email"]!),
+                                const Padding(
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 16),
+                                  child: Divider(
+                                    thickness: 1,
+                                    color: Colors.black12,
+                                  ),
+                                ),
+                                _buildSection(
+                                    'Id Proof', _formData["id_proof"]!),
+                                const Padding(
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 16),
+                                  child: Divider(
+                                    thickness: 1,
+                                    color: Colors.black12,
+                                  ),
+                                ),
+                                _buildSection('Id Proof Number',
+                                    _formData["id_proof_no"]!),
+                                // const Divider(
+                                //   thickness: 1,
+                                // ),
+                                // _buildSection('Date Of Birth',
+                                //     formatDate(_formData["date_of_birth"]!)),
+                                const Padding(
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 16),
+                                  child: Divider(
+                                    thickness: 1,
+                                    color: Colors.black12,
+                                  ),
+                                ),
+                                _buildSection('Place Of Birth',
+                                    _formData["place_of_birth"]!),
+                                const Padding(
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 16),
+                                  child: Divider(
+                                    thickness: 1,
+                                    color: Colors.black12,
+                                  ),
+                                ),
+                                _buildSection("Applicant's Relation",
+                                    _formData["applicants_relation"]!),
+                                const Padding(
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 16),
+                                  child: Divider(
+                                    thickness: 1,
+                                    color: Colors.black12,
+                                  ),
+                                ),
+                                _buildSection("Applicant's Address",
+                                    _formData["applicants_address"]!),
+                                const Padding(
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 16),
+                                  child: Divider(
+                                    thickness: 1,
+                                    color: Colors.black12,
+                                  ),
+                                ),
+                                _buildSection(
+                                    'Occupation', _formData["occupation"]!),
+                                const Padding(
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 16),
+                                  child: Divider(
+                                    thickness: 1,
+                                    color: Colors.black12,
+                                  ),
+                                ),
+                                _buildSection('Annual Income',
+                                    _formData["annual_income"]!),
+                                const Padding(
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 16),
+                                  child: Divider(
+                                    thickness: 1,
+                                    color: Colors.black12,
+                                  ),
+                                ),
+                                _buildSection(
+                                    'From Year', _formData["from_year"]!),
+                                const Padding(
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 16),
+                                  child: Divider(
+                                    thickness: 1,
+                                    color: Colors.black12,
+                                  ),
+                                ),
+                                _buildSection(
+                                    'From Year', _formData["from_year"]!),
+                                const Padding(
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 16),
+                                  child: Divider(
+                                    thickness: 1,
+                                    color: Colors.black12,
+                                  ),
+                                ),
+                                _buildSection(
+                                    'To Year', _formData["to_year"]!),
+                                const Padding(
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 16),
+                                  child: Divider(
+                                    thickness: 1,
+                                    color: Colors.black12,
+                                  ),
+                                ),
+                                _buildSection('Marital Status',
+                                    _formData["marital_status"]!),
+                                const Padding(
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 16),
+                                  child: Divider(
+                                    thickness: 1,
+                                    color: Colors.black12,
+                                  ),
+                                ),
+                                _buildSection('To produce at',
+                                    _formData["to_produce_at"]!),
+                                const Padding(
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 16),
+                                  child: Divider(
+                                    thickness: 1,
+                                    color: Colors.black12,
+                                  ),
+                                ),
+                                _buildSection(
+                                    'Purpose', _formData["purpose"]!),
+                                const SizedBox(
+                                  height: 16,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 16, horizontal: 24),
+                          child: Container(
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10.0),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.6),
+                                  spreadRadius: 1,
+                                  blurRadius: 3,
+                                  offset: const Offset(0,
+                                      2), // changes the position of the shadow
+                                ),
+                              ],
+                            ),
+                            child: Column(
+                              children: [
+                                const SizedBox(
+                                  height: 16,
+                                ),
+                                Text(
+                                  "Documents",
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins-Bold',
+                                    fontSize: 16,
+                                    color: ColorConstants.lightBlackColor,
+                                  ),
+                                ),
+
+                                if (_fileMap["rationCard"] != null) ...[
+                                  _buildPDFListItem(
+                                      'Ration Card (Self Attested)',
+                                      _fileMap["rationCard"]!),
+                                  const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 16),
+                                    child: Divider(
+                                      thickness: 1,
+                                      color: Colors.black12,
                                     ),
                                   ),
                                 ],
-                                if (_currentStep < 1) ...[
-                                  Expanded(
-                                    child: ElevatedButton(
-                                      onPressed: controlsDetails.onStepContinue,
-                                      child: Text(
-                                        'Next',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontFamily: 'Poppins-Bold',
-                                        ),
-                                      ),
-                                      style: ButtonStyle(
-                                        backgroundColor:
-                                            MaterialStateProperty.all<Color>(
-                                                ColorConstants
-                                                    .darkBlueThemeColor),
-                                        shape: MaterialStateProperty.all<
-                                            RoundedRectangleBorder>(
-                                          RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(20.0),
-                                          ),
-                                        ),
-                                        padding: MaterialStateProperty.all<
-                                            EdgeInsets>(
-                                          EdgeInsets.only(
-                                              top: 15.0, bottom: 15.0),
-                                        ),
-                                      ),
+                                if (_fileMap["aadharCard"] != null) ...[
+                                  _buildPDFListItem(
+                                      'Aadhar Card (Self Attested)',
+                                      _fileMap["aadharCard"]!),
+                                  const Padding(
+                                    padding:
+                                    EdgeInsets.symmetric(horizontal: 16),
+                                    child: Divider(
+                                      thickness: 1,
+                                      color: Colors.black12,
                                     ),
                                   ),
-                                ]
+                                ],
+                                if (_fileMap["form16"] != null) ...[
+                                  _buildPDFListItem(
+                                      'Form 16', _fileMap["form16"]!),
+                                  const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 16),
+                                    child: Divider(
+                                      thickness: 1,
+                                      color: Colors.black12,
+                                    ),
+                                  ),
+                                ],
+                                if (_fileMap["bankPassbook"] != null) ...[
+                                  _buildPDFListItem(
+                                    'Bank PassBook(Pensioner)',
+                                    _fileMap["bankPassbook"]!,
+                                  ),
+                                  const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 16),
+                                    child: Divider(
+                                      thickness: 1,
+                                      color: Colors.black12,
+                                    ),
+                                  ),
+                                ],
+                                if (_fileMap["salaryCertificate"] !=
+                                    null) ...[
+                                  _buildPDFListItem('Salary Certificate',
+                                      _fileMap["salaryCertificate"]!),
+                                  const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 16),
+                                    child: Divider(
+                                      thickness: 1,
+                                      color: Colors.black12,
+                                    ),
+                                  ),
+                                ],
+                                if (_fileMap["selfDeclaration"] != null) ...[
+                                  _buildPDFListItem('Self Declaration',
+                                      _fileMap["selfDeclaration"]!),
+                                ],
                               ],
                             ),
-                          );
-                        },
-                      ),
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -610,78 +894,96 @@ class _IncomeCertificateReviewFormState
     );
   }
 
-  Widget _buildPDFListItem(File file, bool isImage) {
+  Widget _buildSection(String title, String text) {
     return Padding(
-      padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
-      child: Material(
-        child: InkWell(
-          onTap: () async {
-            print("OPEN FILE");
-            // do not change this code
-            String filePath = file.path;
-            var r = await OpenFile.open(filePath);
-            print("MESSAGE: ${r.message}");
-          },
-          child: Ink(
-            child: Container(
-              padding: EdgeInsets.all(10.0),
-              decoration: BoxDecoration(
-                border: Border.all(
-                    width: 2.0, color: ColorConstants.formLabelTextColor),
-                borderRadius: BorderRadius.circular(20.0),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  if (isImage) ...[
-                    const Icon(
-                      Icons.image,
-                      size: 48.0,
-                      color: Color(0xffDD2025),
-                    ),
-                  ] else ...[
-                    const Icon(
-                      Icons.picture_as_pdf,
-                      size: 48.0,
-                      color: Color(0xffDD2025),
-                    ),
-                  ],
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            file.path.split('/').last,
-                            style: TextStyle(
-                              fontFamily: 'Poppins-Medium',
-                              overflow: TextOverflow.ellipsis,
-                              color: ColorConstants.darkBlueThemeColor,
-                              fontSize: 14.0,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          Text(
-                            '${(file.lengthSync() / 1024).toStringAsFixed(2)} KB',
-                            style: const TextStyle(
-                              fontSize: 12.0,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 16.0),
+      child: Row(
+        children: [
+          Expanded(
+              flex: 2,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontFamily: 'Poppins-Bold',
+                    fontSize: 14,
+                    color: Colors.black,
                   ),
-                  const Icon(
-                    Icons.cloud_done,
-                    color: Color(0xFF5386E4),
-                  ),
-                ],
+                ),
+              )),
+          Expanded(
+            flex: 3,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                text,
+                style: const TextStyle(
+                  fontFamily: 'Poppins-Light',
+                  fontSize: 14,
+                  color: Colors.black,
+                ),
+                textAlign: TextAlign.left,
               ),
             ),
           ),
-        ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPDFListItem(String title, File file) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 16.0),
+      child: Row(
+        children: [
+          Expanded(
+              flex: 3,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontFamily: 'Poppins-Bold',
+                    fontSize: 14,
+                    color: Colors.black,
+                  ),
+                ),
+              )),
+          Expanded(
+            flex: 1,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Material(
+                  borderRadius: BorderRadius.circular(25.0),
+                  color: Colors.transparent,
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(25.0),
+                    onTap: () async {
+                      // Add your desired logic or function here
+                      // This function will be called when the icon button is pressed
+                      String filePath = file.path;
+                      var r = await OpenFile.open(filePath);
+                      print("MESSAGE: ${r.message}");
+                    },
+                    child: Ink(
+                      padding: EdgeInsets.all(8.0),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(25.0),
+                      ),
+                      child: Icon(
+                        Icons.open_in_new_rounded,
+                        color: ColorConstants.formLabelTextColor,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -808,655 +1110,5 @@ class _IncomeCertificateReviewFormState
                     : Colors.white),
           ),
         ),
-      ];
-
-  //This will be your screens
-  List<Step> getDetailsSteps() => [
-        Step(
-          title: const Text(
-            'Applicant',
-            style: TextStyle(
-              fontFamily: 'Poppins-Medium',
-              color: Colors.black54,
-            ),
-          ),
-          state: _currentStep > 0 ? StepState.complete : StepState.indexed,
-          isActive: _currentStep >= 0,
-          content: Column(
-            children: [
-               Text(
-                'Applicant Details',
-                style: TextStyle(
-                  fontFamily: 'Poppins-Bold',
-                  color: ColorConstants.darkBlueThemeColor,
-                  fontSize: 20,
-                ),
-              ),
-              const SizedBox(height: 16),
-              SizedBox(
-                width: 150.0,
-                height: 200.0,
-                child: Container(
-                  child: Image.memory(
-                    Uint8List.fromList(
-                        _fileMap["photo"]?.readAsBytesSync() as List<int>),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 32),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      enabled: false,
-                      controller:
-                          TextEditingController(text: _formData["taluka"]),
-                      style: FormConstants.getTextStyle(),
-                      decoration: InputDecoration(
-                        labelText: "Taluka",
-                        labelStyle: FormConstants.getLabelAndHintStyle(),
-                        filled: true,
-                        fillColor: Colors.white,
-                        border: FormConstants.getEnabledBorder(),
-                        enabledBorder: FormConstants.getEnabledBorder(),
-                        focusedBorder: FormConstants.getFocusedBorder(),
-                        disabledBorder: FormConstants.getEnabledBorder(),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: 10.0),
-                  Expanded(
-                    child: TextFormField(
-                      enabled: false,
-                      controller:
-                          TextEditingController(text: _formData["panchayat"]),
-                      style: FormConstants.getTextStyle(),
-                      decoration: InputDecoration(
-                        labelText: "Panchayat",
-                        labelStyle: FormConstants.getLabelAndHintStyle(),
-                        filled: true,
-                        fillColor: Colors.white,
-                        border: FormConstants.getEnabledBorder(),
-                        enabledBorder: FormConstants.getEnabledBorder(),
-                        focusedBorder: FormConstants.getFocusedBorder(),
-                        disabledBorder: FormConstants.getEnabledBorder(),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 16),
-              TextFormField(
-                enabled: false,
-                controller: TextEditingController(text: _formData["title"]),
-                style: FormConstants.getTextStyle(),
-                decoration: InputDecoration(
-                  labelText: "Title",
-                  labelStyle: FormConstants.getLabelAndHintStyle(),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: FormConstants.getEnabledBorder(),
-                  enabledBorder: FormConstants.getEnabledBorder(),
-                  focusedBorder: FormConstants.getFocusedBorder(),
-                  disabledBorder: FormConstants.getEnabledBorder(),
-                ),
-              ),
-              SizedBox(height: 16),
-              TextFormField(
-                enabled: false,
-                controller:
-                    TextEditingController(text: _formData["applicants_name"]),
-                style: FormConstants.getTextStyle(),
-                decoration: InputDecoration(
-                  labelText: "Applicant's Name",
-                  labelStyle: FormConstants.getLabelAndHintStyle(),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: FormConstants.getEnabledBorder(),
-                  enabledBorder: FormConstants.getEnabledBorder(),
-                  focusedBorder: FormConstants.getFocusedBorder(),
-                  disabledBorder: FormConstants.getEnabledBorder(),
-                ),
-              ),
-              SizedBox(height: 16),
-              TextFormField(
-                enabled: false,
-                controller:
-                    TextEditingController(text: _formData["parents_name"]),
-                style: FormConstants.getTextStyle(),
-                decoration: InputDecoration(
-                  labelText: "Parent's/ Husband's Name",
-                  labelStyle: FormConstants.getLabelAndHintStyle(),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: FormConstants.getEnabledBorder(),
-                  enabledBorder: FormConstants.getEnabledBorder(),
-                  focusedBorder: FormConstants.getFocusedBorder(),
-                  disabledBorder: FormConstants.getEnabledBorder(),
-                ),
-              ),
-              SizedBox(height: 16),
-              // getFormField("Mobile No."),
-              TextFormField(
-                enabled: false,
-                controller: TextEditingController(text: _formData["phone"]),
-                style: FormConstants.getTextStyle(),
-                decoration: InputDecoration(
-                  labelText: 'Mobile No.',
-                  labelStyle: FormConstants.getLabelAndHintStyle(),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: FormConstants.getEnabledBorder(),
-                  enabledBorder: FormConstants.getEnabledBorder(),
-                  focusedBorder: FormConstants.getFocusedBorder(),
-                  disabledBorder: FormConstants.getEnabledBorder(),
-                ),
-              ),
-              SizedBox(height: 16),
-              TextFormField(
-                enabled: false,
-                controller: TextEditingController(text: _formData["email"]),
-                style: FormConstants.getTextStyle(),
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  labelStyle: FormConstants.getLabelAndHintStyle(),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: FormConstants.getEnabledBorder(),
-                  enabledBorder: FormConstants.getEnabledBorder(),
-                  focusedBorder: FormConstants.getFocusedBorder(),
-                  disabledBorder: FormConstants.getEnabledBorder(),
-                ),
-              ),
-              SizedBox(height: 16),
-              TextFormField(
-                enabled: false,
-                controller: TextEditingController(text: _formData["id_proof"]),
-                style: FormConstants.getTextStyle(),
-                decoration: InputDecoration(
-                  labelText: 'Id Proof',
-                  labelStyle: FormConstants.getLabelAndHintStyle(),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: FormConstants.getEnabledBorder(),
-                  enabledBorder: FormConstants.getEnabledBorder(),
-                  focusedBorder: FormConstants.getFocusedBorder(),
-                  disabledBorder: FormConstants.getEnabledBorder(),
-                ),
-              ),
-              SizedBox(height: 16),
-              TextFormField(
-                enabled: false,
-                controller:
-                    TextEditingController(text: _formData["id_proof_no"]),
-                style: FormConstants.getTextStyle(),
-                decoration: InputDecoration(
-                  labelText: 'Id Proof Number',
-                  labelStyle: FormConstants.getLabelAndHintStyle(),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: FormConstants.getEnabledBorder(),
-                  enabledBorder: FormConstants.getEnabledBorder(),
-                  focusedBorder: FormConstants.getFocusedBorder(),
-                  disabledBorder: FormConstants.getEnabledBorder(),
-                ),
-              ),
-              SizedBox(height: 16),
-              TextFormField(
-                enabled: false,
-                controller: TextEditingController(
-                    text: formatDate(_formData["date_of_birth"]!)),
-                style: FormConstants.getTextStyle(),
-                decoration: InputDecoration(
-                  labelText: 'Date Of Birth',
-                  labelStyle: FormConstants.getLabelAndHintStyle(),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: FormConstants.getEnabledBorder(),
-                  enabledBorder: FormConstants.getEnabledBorder(),
-                  focusedBorder: FormConstants.getFocusedBorder(),
-                  disabledBorder: FormConstants.getEnabledBorder(),
-                ),
-              ),
-              SizedBox(height: 16),
-              TextFormField(
-                enabled: false,
-                controller:
-                    TextEditingController(text: _formData["place_of_birth"]),
-                style: FormConstants.getTextStyle(),
-                decoration: InputDecoration(
-                  labelText: 'Place Of Birth',
-                  labelStyle: FormConstants.getLabelAndHintStyle(),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: FormConstants.getEnabledBorder(),
-                  enabledBorder: FormConstants.getEnabledBorder(),
-                  focusedBorder: FormConstants.getFocusedBorder(),
-                  disabledBorder: FormConstants.getEnabledBorder(),
-                ),
-              ),
-              SizedBox(height: 16),
-              TextFormField(
-                enabled: false,
-                controller: TextEditingController(
-                    text: _formData["applicants_relation"]),
-                style: FormConstants.getTextStyle(),
-                decoration: InputDecoration(
-                  labelText: "Applicant's Relation",
-                  labelStyle: FormConstants.getLabelAndHintStyle(),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: FormConstants.getEnabledBorder(),
-                  enabledBorder: FormConstants.getEnabledBorder(),
-                  focusedBorder: FormConstants.getFocusedBorder(),
-                  disabledBorder: FormConstants.getEnabledBorder(),
-                ),
-              ),
-              SizedBox(height: 16),
-              TextFormField(
-                enabled: false,
-                controller: TextEditingController(
-                    text: _formData["applicants_address"]),
-                style: FormConstants.getTextStyle(),
-                decoration: InputDecoration(
-                  labelText: "Applicant's Address",
-                  labelStyle: FormConstants.getLabelAndHintStyle(),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: FormConstants.getEnabledBorder(),
-                  enabledBorder: FormConstants.getEnabledBorder(),
-                  focusedBorder: FormConstants.getFocusedBorder(),
-                  disabledBorder: FormConstants.getEnabledBorder(),
-                ),
-              ),
-              SizedBox(height: 16),
-              // getFormField("Mobile No."),
-              TextFormField(
-                enabled: false,
-                controller:
-                    TextEditingController(text: _formData["occupation"]),
-                style: FormConstants.getTextStyle(),
-                decoration: InputDecoration(
-                  labelText: 'Occupation',
-                  labelStyle: FormConstants.getLabelAndHintStyle(),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: FormConstants.getEnabledBorder(),
-                  enabledBorder: FormConstants.getEnabledBorder(),
-                  focusedBorder: FormConstants.getFocusedBorder(),
-                  disabledBorder: FormConstants.getEnabledBorder(),
-                ),
-              ),
-              SizedBox(height: 16),
-              // getFormField("Mobile No."),
-              TextFormField(
-                enabled: false,
-                controller:
-                    TextEditingController(text: _formData["annual_income"]),
-                style: FormConstants.getTextStyle(),
-                decoration: InputDecoration(
-                  labelText: 'Annual Income',
-                  labelStyle: FormConstants.getLabelAndHintStyle(),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: FormConstants.getEnabledBorder(),
-                  enabledBorder: FormConstants.getEnabledBorder(),
-                  focusedBorder: FormConstants.getFocusedBorder(),
-                  disabledBorder: FormConstants.getEnabledBorder(),
-                ),
-              ),
-              SizedBox(height: 16),
-              // getFormField("Mobile No."),
-              TextFormField(
-                enabled: false,
-                controller: TextEditingController(text: _formData["from_year"]),
-                style: FormConstants.getTextStyle(),
-                decoration: InputDecoration(
-                  labelText: 'From Year',
-                  labelStyle: FormConstants.getLabelAndHintStyle(),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: FormConstants.getEnabledBorder(),
-                  enabledBorder: FormConstants.getEnabledBorder(),
-                  focusedBorder: FormConstants.getFocusedBorder(),
-                  disabledBorder: FormConstants.getEnabledBorder(),
-                ),
-              ),
-              SizedBox(height: 16),
-              // getFormField("Mobile No."),
-              TextFormField(
-                enabled: false,
-                controller: TextEditingController(text: _formData["to_year"]),
-                style: FormConstants.getTextStyle(),
-                decoration: InputDecoration(
-                  labelText: 'To Year',
-                  labelStyle: FormConstants.getLabelAndHintStyle(),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: FormConstants.getEnabledBorder(),
-                  enabledBorder: FormConstants.getEnabledBorder(),
-                  focusedBorder: FormConstants.getFocusedBorder(),
-                  disabledBorder: FormConstants.getEnabledBorder(),
-                ),
-              ),
-              SizedBox(height: 16),
-              // getFormField("Mobile No."),
-              TextFormField(
-                enabled: false,
-                controller:
-                    TextEditingController(text: _formData["marital_status"]),
-                style: FormConstants.getTextStyle(),
-                decoration: InputDecoration(
-                  labelText: 'Marital Status',
-                  labelStyle: FormConstants.getLabelAndHintStyle(),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: FormConstants.getEnabledBorder(),
-                  enabledBorder: FormConstants.getEnabledBorder(),
-                  focusedBorder: FormConstants.getFocusedBorder(),
-                  disabledBorder: FormConstants.getEnabledBorder(),
-                ),
-              ),
-              SizedBox(height: 16),
-              // getFormField("Mobile No."),
-              TextFormField(
-                enabled: false,
-                controller:
-                    TextEditingController(text: _formData["to_produce_at"]),
-                style: FormConstants.getTextStyle(),
-                decoration: InputDecoration(
-                  labelText: 'Purpose',
-                  labelStyle: FormConstants.getLabelAndHintStyle(),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: FormConstants.getEnabledBorder(),
-                  enabledBorder: FormConstants.getEnabledBorder(),
-                  focusedBorder: FormConstants.getFocusedBorder(),
-                  disabledBorder: FormConstants.getEnabledBorder(),
-                ),
-              ),
-              SizedBox(height: 16),
-              // getFormField("Mobile No."),
-              TextFormField(
-                enabled: false,
-                controller: TextEditingController(text: _formData["purpose"]),
-                style: FormConstants.getTextStyle(),
-                decoration: InputDecoration(
-                  labelText: 'Purpose',
-                  labelStyle: FormConstants.getLabelAndHintStyle(),
-                  filled: true,
-                  fillColor: Colors.white,
-                  border: FormConstants.getEnabledBorder(),
-                  enabledBorder: FormConstants.getEnabledBorder(),
-                  focusedBorder: FormConstants.getFocusedBorder(),
-                  disabledBorder: FormConstants.getEnabledBorder(),
-                ),
-              ),
-            ],
-          ),
-        ),
-        Step(
-          state: _currentStep > 1 ? StepState.complete : StepState.indexed,
-          isActive: _currentStep >= 1,
-          title: const Text(
-            'Documents',
-            style: TextStyle(
-              fontFamily: 'Poppins-Medium',
-              color: Colors.black54,
-            ),
-          ),
-          content: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Uploaded Documents',
-                  style: TextStyle(
-                    fontFamily: 'Poppins-Bold',
-                    color: ColorConstants.darkBlueThemeColor,
-                    fontSize: 20,
-                  ),
-                ),
-                const SizedBox(
-                  height: 16,
-                ),
-                Container(
-                  alignment: Alignment.centerLeft,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                        color: ColorConstants.formBorderColor, width: 2),
-                  ),
-                  padding: EdgeInsets.all(16.0),
-                  child: Column(
-                    children: [
-                      if (_fileMap["rationCard"] != null) ...[
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    'Ration Card (Self Attested)',
-                                    style: TextStyle(
-                                      fontFamily: 'Poppins-Medium',
-                                      fontSize: 14,
-                                      color: ColorConstants.formLabelTextColor,
-                                    ),
-                                    textAlign: TextAlign.left,
-                                  ),
-                                ),
-                                Text(
-                                  'Required',
-                                  style: TextStyle(
-                                    fontFamily: 'Poppins-Bold',
-                                    fontSize: 10,
-                                    color: Colors.red,
-                                  ),
-                                  textAlign: TextAlign.left,
-                                ),
-                              ],
-                            ),
-                            _buildPDFListItem(_fileMap["rationCard"]!, false),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 16,
-                        ),
-                      ],
-                      if (_fileMap["aadharCard"] != null) ...[
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    'Aadhar Card (Self Attested)',
-                                    style: TextStyle(
-                                      fontFamily: 'Poppins-Medium',
-                                      fontSize: 14,
-                                      color: ColorConstants.formLabelTextColor,
-                                    ),
-                                    textAlign: TextAlign.left,
-                                  ),
-                                ),
-                                Text(
-                                  'Required',
-                                  style: TextStyle(
-                                    fontFamily: 'Poppins-Bold',
-                                    fontSize: 10,
-                                    color: Colors.red,
-                                  ),
-                                  textAlign: TextAlign.left,
-                                ),
-                              ],
-                            ),
-                            _buildPDFListItem(_fileMap["aadharCard"]!, false),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 16,
-                        ),
-                      ],
-                      if (_fileMap["form16"] != null) ...[
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    'Form 16',
-                                    style: TextStyle(
-                                      fontFamily: 'Poppins-Medium',
-                                      fontSize: 14,
-                                      color: ColorConstants.formLabelTextColor,
-                                    ),
-                                    textAlign: TextAlign.left,
-                                    // overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                                Text(
-                                  'Required',
-                                  style: TextStyle(
-                                    fontFamily: 'Poppins-Bold',
-                                    fontSize: 10,
-                                    color: Colors.red,
-                                  ),
-                                  textAlign: TextAlign.left,
-                                ),
-                              ],
-                            ),
-                            _buildPDFListItem(_fileMap["form16"]!, false),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 16,
-                        ),
-                      ],
-                      if (_fileMap["bankPassbook"] != null) ...[
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    'Bank PassBook(Pensioner)',
-                                    style: TextStyle(
-                                      fontFamily: 'Poppins-Medium',
-                                      fontSize: 14,
-                                      color: ColorConstants.formLabelTextColor,
-                                    ),
-                                    textAlign: TextAlign.left,
-                                    // overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                                Text(
-                                  'Required',
-                                  style: TextStyle(
-                                    fontFamily: 'Poppins-Bold',
-                                    fontSize: 10,
-                                    color: Colors.red,
-                                  ),
-                                  textAlign: TextAlign.left,
-                                ),
-                              ],
-                            ),
-                            _buildPDFListItem(_fileMap["bankPassbook"]!, false),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 16,
-                        ),
-                      ],
-                      if (_fileMap["salaryCertificate"] != null) ...[
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    'Salary Certificate',
-                                    style: TextStyle(
-                                      fontFamily: 'Poppins-Medium',
-                                      fontSize: 14,
-                                      color: ColorConstants.formLabelTextColor,
-                                    ),
-                                    textAlign: TextAlign.left,
-                                    // overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                                Text(
-                                  'Required',
-                                  style: TextStyle(
-                                    fontFamily: 'Poppins-Bold',
-                                    fontSize: 10,
-                                    color: Colors.red,
-                                  ),
-                                  textAlign: TextAlign.left,
-                                ),
-                              ],
-                            ),
-                            _buildPDFListItem(
-                                _fileMap["salaryCertificate"]!, false),
-                          ],
-                        ),
-                        const SizedBox(
-                          height: 16,
-                        ),
-                      ],
-                      if (_fileMap["selfDeclaration"] != null) ...[
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    'Self Declaration',
-                                    style: TextStyle(
-                                      fontFamily: 'Poppins-Medium',
-                                      fontSize: 14,
-                                      color: ColorConstants.formLabelTextColor,
-                                    ),
-                                    textAlign: TextAlign.left,
-                                    // overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                                Text(
-                                  'Required',
-                                  style: TextStyle(
-                                    fontFamily: 'Poppins-Bold',
-                                    fontSize: 10,
-                                    color: Colors.red,
-                                  ),
-                                  textAlign: TextAlign.left,
-                                ),
-                              ],
-                            ),
-                            _buildPDFListItem(
-                                _fileMap["selfDeclaration"]!, false),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                      ],
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        )
       ];
 }

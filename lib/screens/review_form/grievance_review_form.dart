@@ -122,10 +122,10 @@ class GrievanceReviewFormState extends State<GrievanceReviewForm> {
       onWillPop: _handleBackPressed,
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: ColorConstants.formBorderColor,
+          backgroundColor: ColorConstants.backgroundClipperColor,
           foregroundColor: ColorConstants.darkBlueThemeColor,
           title: Text(
-            'Grievance Form Data',
+            'Grievance - Review',
             style: TextStyle(
                 fontFamily: 'Poppins-Medium',
                 color: ColorConstants.darkBlueThemeColor,
@@ -135,223 +135,480 @@ class GrievanceReviewFormState extends State<GrievanceReviewForm> {
         ),
         body: ListView(
           children: [
-            Container(
-              padding: EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          "Status : ",
-                          style: TextStyle(
-                            fontFamily: 'Poppins-Medium',
-                            color: Color(0xff7b7f9e),
-                            fontSize: 14,
-                          ),
-                          textAlign: TextAlign.right,
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      if (_grievanceDataResponseModel?.data?.isResolved! ==
-                          true) ...[
-                        Expanded(
-                          child: Text(
-                            "Resolved",
-                            style: TextStyle(
-                              fontFamily: 'Poppins-Bold',
-                              color: ColorConstants.submitGreenColor,
-                              fontSize: 14,
-                            ),
-                            textAlign: TextAlign.left,
-                          ),
-                        ),
-                      ] else ...[
-                        Expanded(
-                          child: Text(
-                            "Pending...",
-                            style: TextStyle(
-                              fontFamily: 'Poppins-Bold',
-                              color: Colors.red,
-                              fontSize: 14,
-                            ),
-                            textAlign: TextAlign.left,
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: TextEditingController(
-                        text: widget.grievanceData.data?.title),
-                    style: FormConstants.getTextStyle(),
-                    enabled: false,
-                    decoration: InputDecoration(
-                      labelText: 'Title',
-                      labelStyle: FormConstants.getLabelAndHintStyle(),
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: FormConstants.getEnabledBorder(),
-                      enabledBorder: FormConstants.getEnabledBorder(),
-                      disabledBorder: FormConstants.getEnabledBorder(),
-                      focusedBorder: FormConstants.getFocusedBorder(),
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                  vertical: 16, horizontal: 24),
+              child: Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10.0),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.6),
+                      spreadRadius: 1,
+                      blurRadius: 3,
+                      offset: const Offset(0,
+                          2), // changes the position of the shadow
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: TextEditingController(
-                        text: widget.grievanceData.data?.type),
-                    style: FormConstants.getTextStyle(),
-                    enabled: false,
-                    decoration: InputDecoration(
-                      labelText: 'Type',
-                      labelStyle: FormConstants.getLabelAndHintStyle(),
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: FormConstants.getEnabledBorder(),
-                      enabledBorder: FormConstants.getEnabledBorder(),
-                      disabledBorder: FormConstants.getEnabledBorder(),
-                      focusedBorder: FormConstants.getFocusedBorder(),
+                  ],
+                ),
+                child: Column(
+                  children: [
+                    const SizedBox(
+                      height: 16,
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    keyboardType: TextInputType.multiline,
-                    minLines: 6,
-                    maxLines: 6,
-                    controller: TextEditingController(
-                        text: widget.grievanceData.data?.body),
-                    style: FormConstants.getTextStyle(),
-                    // enabled: false,
-                    decoration: InputDecoration(
-                      labelText: 'Body',
-                      labelStyle: FormConstants.getLabelAndHintStyle(),
-                      filled: true,
-                      fillColor: Colors.white,
-                      border: FormConstants.getEnabledBorder(),
-                      enabledBorder: FormConstants.getEnabledBorder(),
-                      disabledBorder: FormConstants.getEnabledBorder(),
-                      focusedBorder: FormConstants.getFocusedBorder(),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Container(
-                    alignment: Alignment.centerLeft,
-                    // padding: EdgeInsets.all(16.0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(
-                        color: ColorConstants.formBorderColor,
-                        width: 2,
+                    Text(
+                      "${widget.grievanceData.data?.title}",
+                      style: TextStyle(
+                        fontFamily: 'Poppins-Bold',
+                        fontSize: 16,
+                        color: ColorConstants.lightBlackColor,
                       ),
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 16),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 16),
-                          child: Text(
-                            'Images',
-                            style: TextStyle(
-                              fontFamily: 'Poppins-Medium',
-                              fontSize: 14,
-                              color: ColorConstants.formLabelTextColor,
+                    const SizedBox(
+                      height: 16,
+                    ),
+                    _buildSection('Type', widget.grievanceData.data?.type),
+                    const Padding(
+                      padding:
+                      EdgeInsets.symmetric(horizontal: 16),
+                      child: Divider(
+                        thickness: 1,
+                        color: Colors.black12,
+                      ),
+                    ),
+                    _buildSection(
+                        'Body', widget.grievanceData.data?.body!),
+                    const Padding(
+                      padding:
+                      EdgeInsets.symmetric(horizontal: 16),
+                      child: Divider(
+                        thickness: 1,
+                        color: Colors.black12,
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 16),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Text(
+                              "Images",
+                              style: const TextStyle(
+                                fontFamily: 'Poppins-Bold',
+                                fontSize: 14,
+                                color: Colors.black,
+                              ),
                             ),
-                            textAlign: TextAlign.left,
                           ),
-                        ),
-                        const SizedBox(height: 10),
-                        if (_fileMap.isEmpty) ...[
-                          Center(
-                            child: Column(
-                              children: [
-                                Icon(
-                                  Icons.image_outlined,
-                                  size: 40,
-                                  color: ColorConstants.formLabelTextColor,
-                                ),
-                                Text(
-                                  "No Images.",
-                                  style: TextStyle(
+                          const SizedBox(height: 10),
+                          if (_fileMap.isEmpty) ...[
+                            Center(
+                              child: Column(
+                                children: [
+                                  Icon(
+                                    Icons.image_outlined,
+                                    size: 40,
                                     color: ColorConstants.formLabelTextColor,
-                                    fontFamily: 'Poppins-Medium',
-                                    fontSize: 12,
+                                  ),
+                                  Text(
+                                    "No Images.",
+                                    style: TextStyle(
+                                      color: ColorConstants.formLabelTextColor,
+                                      fontFamily: 'Poppins-Medium',
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ] else ...[
+                            Column(
+                              children: [
+                                CarouselSlider(
+                                  options: CarouselOptions(
+                                    aspectRatio: 16 / 9,
+                                    enableInfiniteScroll: false,
+                                    enlargeCenterPage: false,
+                                    viewportFraction: 0.8,
+                                    onPageChanged: (index, reason) {
+                                      setState(() {
+                                        _currentImageIndex = index;
+                                      });
+                                    },
+                                  ),
+                                  items: _fileMap.values.toList().map((file) {
+                                    return Builder(
+                                      builder: (BuildContext context) {
+                                        return Container(
+                                          width: MediaQuery.of(context).size.width,
+                                          margin:
+                                          EdgeInsets.symmetric(horizontal: 5.0),
+                                          child:
+                                          Image.file(file, fit: BoxFit.cover),
+                                        );
+                                      },
+                                    );
+                                  }).toList(),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: _fileMap.keys.map((key) {
+                                      int? index = _fileMap.values
+                                          .toList()
+                                          .indexOf(_fileMap[key]!);
+                                      return Container(
+                                        width: 8.0,
+                                        height: 8.0,
+                                        margin:
+                                        EdgeInsets.symmetric(horizontal: 2.0),
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          color: _currentImageIndex == index
+                                              ? ColorConstants.darkBlueThemeColor
+                                              : Colors.grey,
+                                        ),
+                                      );
+                                    }).toList(),
                                   ),
                                 ),
                               ],
                             ),
-                          ),
-                        ] else ...[
-                          Column(
-                            children: [
-                              CarouselSlider(
-                                options: CarouselOptions(
-                                  aspectRatio: 16 / 9,
-                                  enableInfiniteScroll: false,
-                                  enlargeCenterPage: false,
-                                  viewportFraction: 0.8,
-                                  onPageChanged: (index, reason) {
-                                    setState(() {
-                                      _currentImageIndex = index;
-                                    });
-                                  },
-                                ),
-                                items: _fileMap.values.toList().map((file) {
-                                  return Builder(
-                                    builder: (BuildContext context) {
-                                      return Container(
-                                        width: MediaQuery.of(context).size.width,
-                                        margin:
-                                            EdgeInsets.symmetric(horizontal: 5.0),
-                                        child:
-                                            Image.file(file, fit: BoxFit.cover),
-                                      );
-                                    },
-                                  );
-                                }).toList(),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: _fileMap.keys.map((key) {
-                                    int? index = _fileMap.values
-                                        .toList()
-                                        .indexOf(_fileMap[key]!);
-                                    return Container(
-                                      width: 8.0,
-                                      height: 8.0,
-                                      margin:
-                                          EdgeInsets.symmetric(horizontal: 2.0),
-                                      decoration: BoxDecoration(
-                                        shape: BoxShape.circle,
-                                        color: _currentImageIndex == index
-                                            ? ColorConstants.darkBlueThemeColor
-                                            : Colors.grey,
-                                      ),
-                                    );
-                                  }).toList(),
-                                ),
-                              ),
-                            ],
-                          ),
+                          ],
                         ],
-                        const SizedBox(height: 16),
-                      ],
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                ],
+                    const Padding(
+                      padding:
+                      EdgeInsets.symmetric(horizontal: 16),
+                      child: Divider(
+                        thickness: 1,
+                        color: Colors.black12,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 16.0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            flex: 1,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                'Status',
+                                style: const TextStyle(
+                                  fontFamily: 'Poppins-Bold',
+                                  fontSize: 14,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),),
+                          if (_grievanceDataResponseModel?.data?.isResolved! ==
+                              true) ...[
+                            Expanded(
+                              flex: 3,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  "Resolved",
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins-Light',
+                                    fontSize: 14,
+                                    color: ColorConstants.submitGreenColor,
+                                  ),
+                                  textAlign: TextAlign.left,
+                                ),
+                              ),
+                            ),
+                          ] else ...[
+                            Expanded(
+                              flex: 2,
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Text(
+                                  "Pending...",
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins-Medium',
+                                    fontSize: 14,
+                                    color: Colors.red,
+                                  ),
+                                  textAlign: TextAlign.left,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 16,
+                    ),
+                  ],
+                ),
               ),
             ),
+
+            // Container(
+            //   padding: EdgeInsets.symmetric(horizontal: 20),
+            //   child: Column(
+            //     crossAxisAlignment: CrossAxisAlignment.center,
+            //     children: [
+            //       const SizedBox(height: 16),
+            //       Row(
+            //         children: [
+            //           Expanded(
+            //             child: Text(
+            //               "Status : ",
+            //               style: TextStyle(
+            //                 fontFamily: 'Poppins-Medium',
+            //                 color: Color(0xff7b7f9e),
+            //                 fontSize: 14,
+            //               ),
+            //               textAlign: TextAlign.right,
+            //             ),
+            //           ),
+            //           const SizedBox(
+            //             width: 10,
+            //           ),
+            //           if (_grievanceDataResponseModel?.data?.isResolved! ==
+            //               true) ...[
+            //             Expanded(
+            //               child: Text(
+            //                 "Resolved",
+            //                 style: TextStyle(
+            //                   fontFamily: 'Poppins-Bold',
+            //                   color: ColorConstants.submitGreenColor,
+            //                   fontSize: 14,
+            //                 ),
+            //                 textAlign: TextAlign.left,
+            //               ),
+            //             ),
+            //           ] else ...[
+            //             Expanded(
+            //               child: Text(
+            //                 "Pending...",
+            //                 style: TextStyle(
+            //                   fontFamily: 'Poppins-Bold',
+            //                   color: Colors.red,
+            //                   fontSize: 14,
+            //                 ),
+            //                 textAlign: TextAlign.left,
+            //               ),
+            //             ),
+            //           ],
+            //         ],
+            //       ),
+            //       const SizedBox(height: 16),
+            //       TextField(
+            //         controller: TextEditingController(
+            //             text: widget.grievanceData.data?.title),
+            //         style: FormConstants.getTextStyle(),
+            //         enabled: false,
+            //         decoration: InputDecoration(
+            //           labelText: 'Title',
+            //           labelStyle: FormConstants.getLabelAndHintStyle(),
+            //           filled: true,
+            //           fillColor: Colors.white,
+            //           border: FormConstants.getEnabledBorder(),
+            //           enabledBorder: FormConstants.getEnabledBorder(),
+            //           disabledBorder: FormConstants.getEnabledBorder(),
+            //           focusedBorder: FormConstants.getFocusedBorder(),
+            //         ),
+            //       ),
+            //       const SizedBox(height: 16),
+            //       TextField(
+            //         controller: TextEditingController(
+            //             text: widget.grievanceData.data?.type),
+            //         style: FormConstants.getTextStyle(),
+            //         enabled: false,
+            //         decoration: InputDecoration(
+            //           labelText: 'Type',
+            //           labelStyle: FormConstants.getLabelAndHintStyle(),
+            //           filled: true,
+            //           fillColor: Colors.white,
+            //           border: FormConstants.getEnabledBorder(),
+            //           enabledBorder: FormConstants.getEnabledBorder(),
+            //           disabledBorder: FormConstants.getEnabledBorder(),
+            //           focusedBorder: FormConstants.getFocusedBorder(),
+            //         ),
+            //       ),
+            //       const SizedBox(height: 16),
+            //       TextField(
+            //         keyboardType: TextInputType.multiline,
+            //         minLines: 6,
+            //         maxLines: 6,
+            //         controller: TextEditingController(
+            //             text: widget.grievanceData.data?.body),
+            //         style: FormConstants.getTextStyle(),
+            //         // enabled: false,
+            //         decoration: InputDecoration(
+            //           labelText: 'Body',
+            //           labelStyle: FormConstants.getLabelAndHintStyle(),
+            //           filled: true,
+            //           fillColor: Colors.white,
+            //           border: FormConstants.getEnabledBorder(),
+            //           enabledBorder: FormConstants.getEnabledBorder(),
+            //           disabledBorder: FormConstants.getEnabledBorder(),
+            //           focusedBorder: FormConstants.getFocusedBorder(),
+            //         ),
+            //       ),
+            //       const SizedBox(height: 16),
+            //       Container(
+            //         alignment: Alignment.centerLeft,
+            //         // padding: EdgeInsets.all(16.0),
+            //         decoration: BoxDecoration(
+            //           borderRadius: BorderRadius.circular(20),
+            //           border: Border.all(
+            //             color: ColorConstants.formBorderColor,
+            //             width: 2,
+            //           ),
+            //         ),
+            //         child: Column(
+            //           crossAxisAlignment: CrossAxisAlignment.start,
+            //           children: [
+            //             const SizedBox(height: 16),
+            //             Padding(
+            //               padding: const EdgeInsets.only(left: 16),
+            //               child: Text(
+            //                 'Images',
+            //                 style: TextStyle(
+            //                   fontFamily: 'Poppins-Medium',
+            //                   fontSize: 14,
+            //                   color: ColorConstants.formLabelTextColor,
+            //                 ),
+            //                 textAlign: TextAlign.left,
+            //               ),
+            //             ),
+            //             const SizedBox(height: 10),
+            //             if (_fileMap.isEmpty) ...[
+            //               Center(
+            //                 child: Column(
+            //                   children: [
+            //                     Icon(
+            //                       Icons.image_outlined,
+            //                       size: 40,
+            //                       color: ColorConstants.formLabelTextColor,
+            //                     ),
+            //                     Text(
+            //                       "No Images.",
+            //                       style: TextStyle(
+            //                         color: ColorConstants.formLabelTextColor,
+            //                         fontFamily: 'Poppins-Medium',
+            //                         fontSize: 12,
+            //                       ),
+            //                     ),
+            //                   ],
+            //                 ),
+            //               ),
+            //             ] else ...[
+            //               Column(
+            //                 children: [
+            //                   CarouselSlider(
+            //                     options: CarouselOptions(
+            //                       aspectRatio: 16 / 9,
+            //                       enableInfiniteScroll: false,
+            //                       enlargeCenterPage: false,
+            //                       viewportFraction: 0.8,
+            //                       onPageChanged: (index, reason) {
+            //                         setState(() {
+            //                           _currentImageIndex = index;
+            //                         });
+            //                       },
+            //                     ),
+            //                     items: _fileMap.values.toList().map((file) {
+            //                       return Builder(
+            //                         builder: (BuildContext context) {
+            //                           return Container(
+            //                             width: MediaQuery.of(context).size.width,
+            //                             margin:
+            //                                 EdgeInsets.symmetric(horizontal: 5.0),
+            //                             child:
+            //                                 Image.file(file, fit: BoxFit.cover),
+            //                           );
+            //                         },
+            //                       );
+            //                     }).toList(),
+            //                   ),
+            //                   Padding(
+            //                     padding: const EdgeInsets.all(8.0),
+            //                     child: Row(
+            //                       mainAxisAlignment: MainAxisAlignment.center,
+            //                       children: _fileMap.keys.map((key) {
+            //                         int? index = _fileMap.values
+            //                             .toList()
+            //                             .indexOf(_fileMap[key]!);
+            //                         return Container(
+            //                           width: 8.0,
+            //                           height: 8.0,
+            //                           margin:
+            //                               EdgeInsets.symmetric(horizontal: 2.0),
+            //                           decoration: BoxDecoration(
+            //                             shape: BoxShape.circle,
+            //                             color: _currentImageIndex == index
+            //                                 ? ColorConstants.darkBlueThemeColor
+            //                                 : Colors.grey,
+            //                           ),
+            //                         );
+            //                       }).toList(),
+            //                     ),
+            //                   ),
+            //                 ],
+            //               ),
+            //             ],
+            //             const SizedBox(height: 16),
+            //           ],
+            //         ),
+            //       ),
+            //       const SizedBox(height: 20),
+            //     ],
+            //   ),
+            // ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildSection(String title, String? text) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 16.0),
+      child: Row(
+        children: [
+          Expanded(
+              flex: 1,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  title,
+                  style: const TextStyle(
+                    fontFamily: 'Poppins-Bold',
+                    fontSize: 14,
+                    color: Colors.black,
+                  ),
+                ),
+              ),),
+          Expanded(
+            flex: 3,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                text!,
+                style: const TextStyle(
+                  fontFamily: 'Poppins-Light',
+                  fontSize: 14,
+                  color: Colors.black,
+                ),
+                textAlign: TextAlign.left,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

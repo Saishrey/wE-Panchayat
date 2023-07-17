@@ -5,6 +5,7 @@ import 'package:api_cache_manager/models/cache_db_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/login_response_model.dart';
 import '../screens/auth/login.dart';
 
@@ -117,11 +118,18 @@ class SharedService {
     await storage.write(key: "cookie_headers", value: jsonEncode(cookieHeaders));
   }
 
+  // Function to delete all shared preferences data
+  static Future<void> clearSharedPreferences() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+  }
+
   static Future<void> logout(BuildContext context) async {
     // await APICacheManager().deleteCache("login_details");
     // await APICacheManager().deleteCache("cookie_headers");
 
     final storage = FlutterSecureStorage();
+    await clearSharedPreferences();
     await storage.deleteAll();
 
 

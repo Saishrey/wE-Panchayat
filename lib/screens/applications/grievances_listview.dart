@@ -37,71 +37,82 @@ class GrievancesListView extends StatelessWidget {
 
     return ListView.separated(
       itemCount: entries.length,
+      // separatorBuilder: (BuildContext context, int index) {
+      //   return const SizedBox(height: 16); // set the height of the separator
+      // },
       separatorBuilder: (BuildContext context, int index) {
-        return const SizedBox(height: 16); // set the height of the separator
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: const Divider(
+            color: Colors.black12,
+            thickness: 1.0,
+          ),
+        );
       },
       itemBuilder: (BuildContext context, int index) {
-        return Ink(
-          // decoration: BoxDecoration(
-          //   color: Colors.white,
-          //   borderRadius: BorderRadius.circular(10),
-          //   boxShadow: [
-          //     BoxShadow(
-          //       color: Colors.grey.withOpacity(0.5),
-          //       spreadRadius: 2,
-          //       blurRadius: 5,
-          //       offset: const Offset(0, 3),
-          //     ),
-          //   ],
-          // ),
-          decoration: FormConstants.getDropDownBoxDecoration(),
-          child: InkWell(
-            child: ListTile(
-              leading: SizedBox(
-                width: 40,
-                height: 40,
-                child: Icon(
-                  Icons.feedback,
-                  color: ColorConstants.grievanceRedColor,
-                  size: 36,
+        return Material(
+          child: Ink(
+            // decoration: BoxDecoration(
+            //   color: Colors.white,
+            //   borderRadius: BorderRadius.circular(10),
+            //   boxShadow: [
+
+            //       color: Colors.grey.withOpacity(0.5),
+            //       spreadRadius: 2,
+            //       blurRadius: 5,
+            //       offset: const Offset(0, 3),
+            //     ),
+            //   ],
+            // ),
+            // decoration: FormConstants.getDropDownBoxDecoration(),
+            child: InkWell(
+              child: ListTile(
+                leading: SizedBox(
+                  width: 40,
+                  height: 40,
+                  child: Icon(
+                    Icons.feedback,
+                    color: ColorConstants.grievanceRedColor,
+                    size: 36,
+                  ),
                 ),
-              ),
-              title: Text(
-                "Title: ${entries[index].title!}",
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontFamily: 'Poppins-Medium',
-                  color: ColorConstants.darkBlueThemeColor,
+                title: Text(
+                  "Title: ${entries[index].title!}",
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontFamily: 'Poppins-Medium',
+                    color: ColorConstants.darkBlueThemeColor,
+                  ),
                 ),
-              ),
-              subtitle: Text(
-                "Type: ${entries[index].type!}",
-                style: TextStyle(
-                  fontSize: 10,
-                  fontFamily: 'Poppins-Medium',
-                  color: ColorConstants.formLabelTextColor,
+                subtitle: Text(
+                  "Type: ${entries[index].type!}",
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontFamily: 'Poppins-Medium',
+                    color: ColorConstants.formLabelTextColor,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
-                overflow: TextOverflow.ellipsis,
+                trailing: Icon(
+                  entries[index].isResolved! ? Icons.check_circle : Icons.info,
+                  color: entries[index].isResolved!
+                      ? ColorConstants.submitGreenColor
+                      : ColorConstants.grievanceYellowColor,
+                ),
+                // trailing: Text(
+                //   "${entries[index].isResolved!}",
+                //   style: TextStyle(
+                //     fontSize: 12,
+                //     fontFamily: 'Poppins-Medium',
+                //     color: ColorConstants.formLabelTextColor,
+                //   ),
+                //   textAlign: TextAlign.center,
+                // ),
+                onTap: () async {
+                  _navigateToGrievanceDetails(context, entries[index].gid!);
+                },
               ),
-              trailing: Icon(
-                entries[index].isResolved! ? Icons.check_circle : Icons.info,
-                color: entries[index].isResolved!
-                    ? ColorConstants.submitGreenColor
-                    : ColorConstants.grievanceYellowColor,
-              ),
-              // trailing: Text(
-              //   "${entries[index].isResolved!}",
-              //   style: TextStyle(
-              //     fontSize: 12,
-              //     fontFamily: 'Poppins-Medium',
-              //     color: ColorConstants.formLabelTextColor,
-              //   ),
-              //   textAlign: TextAlign.center,
-              // ),
-              onTap: () async {
-                _navigateToGrievanceDetails(context, entries[index].gid!);
-              },
             ),
           ),
         );

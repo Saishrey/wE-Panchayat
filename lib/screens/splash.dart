@@ -309,7 +309,10 @@ class _SplashState extends State<Splash> {
             ),
             Container(
               margin: EdgeInsets.fromLTRB(0, 50, 0, 0),
-              child: CircularProgressIndicator(),
+              child: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 120),
+                child: LinearProgressIndicator(minHeight: 8,),
+              ),
             ),
           ],
         ),

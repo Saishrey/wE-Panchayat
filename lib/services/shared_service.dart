@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:api_cache_manager/api_cache_manager.dart';
 import 'package:api_cache_manager/models/cache_db_model.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:we_panchayat_dev/models/profile_picture_retrieve.dart';
 import '../models/login_response_model.dart';
 import '../screens/auth/login.dart';
 
@@ -95,6 +97,66 @@ class SharedService {
 
   }
 
+  static Future<void> setProfilePicture(File? profilePic) async {
+
+    final storage = FlutterSecureStorage();
+    await storage.write(key: "profile_picture", value: profilePic?.path);
+
+  }
+
+  static Future<File?> getProfilePicture() async {
+        try {
+      // Get the secure storage instance
+      final secureStorage = FlutterSecureStorage();
+
+      // Retrieve the file path from secure storage
+      final filePath = await secureStorage.read(key: 'profile_picture');
+
+      if (filePath != null) {
+        return File(filePath);
+      } else {
+        print('File path not found in secure storage.');
+        return null;
+      }
+    } catch (e) {
+      print('Error while retrieving the file: $e');
+      return null;
+    }
+
+  }
+
+  static Future<void> deleteProfilePicture() async {
+    try {
+      // Get the secure storage instance
+      final secureStorage = FlutterSecureStorage();
+
+      // Retrieve the file path from secure storage
+      final filePath = await secureStorage.read(key: 'profile_picture');
+
+      if (filePath != null) {
+        await deleteFile(filePath);
+        await secureStorage.delete(key: "profile_picture");
+        print('File deleted successfully.');
+      } else {
+        print('File path not found in secure storage.');
+        return null;
+      }
+    } catch (e) {
+      print('Error deleting the file: $e');
+    }
+  }
+
+  static Future<void> deleteFile(String filePath) async {
+    try {
+      final file = File(filePath);
+      if (await file.exists()) {
+        await file.delete();
+      }
+    } catch (e) {
+      throw Exception('Error deleting file: $e');
+    }
+  }
+
   static Future<void> setLoginDetails(LoginResponseModel model) async {
     // APICacheDBModel cacheDBModel = APICacheDBModel(
     //     key: "login_details", syncData: jsonEncode(model.toJson()));
@@ -104,6 +166,20 @@ class SharedService {
 
 
     final storage = FlutterSecureStorage();
+    await storage.write(key: "login_details", value: jsonEncode(model.toJson()));
+
+  }
+
+  static Future<void> updateLoginDetails(LoginResponseModel model) async {
+    // APICacheDBModel cacheDBModel = APICacheDBModel(
+    //     key: "login_details", syncData: jsonEncode(model.toJson()));
+    //
+    //
+    // await APICacheManager().addCacheData(cacheDBModel);
+
+
+    final storage = FlutterSecureStorage();
+    await storage.delete(key: "login_details");
     await storage.write(key: "login_details", value: jsonEncode(model.toJson()));
 
   }

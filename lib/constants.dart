@@ -8,6 +8,13 @@ class FormConstants {
     );
   }
 
+  static TextStyle getDisabledTextStyle() {
+    return TextStyle(
+      color: ColorConstants.lightBlackColor,
+      fontFamily: 'Poppins-Medium',
+    );
+  }
+
   static TextStyle getLabelAndHintStyle() {
     return TextStyle(
       color: ColorConstants.formLabelTextColor,
@@ -32,6 +39,20 @@ class FormConstants {
         color: ColorConstants.darkBlueThemeColor,
         width: 1,
       ),
+    );
+  }
+
+  // Alternatives
+
+  static UnderlineInputBorder getEnabledBorderAlternative() {
+    return const UnderlineInputBorder(
+      borderSide: BorderSide(color: Colors.black54),
+    );
+  }
+
+  static UnderlineInputBorder getFocusedBorderAlternative() {
+    return const UnderlineInputBorder(
+      borderSide: BorderSide(color: Colors.blue, width: 2),
     );
   }
 
@@ -92,8 +113,15 @@ class FormConstants {
 }
 
 class ColorConstants {
+
   static final Color formLabelTextColor = Color(0xff7b7f9e);
   static final Color formBorderColor = Color(0xffDBDFEA);
+
+  // Alternatives
+  static final Color formLabelTextColorAlternative = Color(0xff5F5F5F);
+  static final Color formBorderColorAlternative = Color(0xff9C9C9C);
+
+
   static final Color darkBlueThemeColor = Color(0xff21205b);
   static final Color submitGreenColor = Color(0xff6CC51D);
   static final Color lightBlueThemeColor = Color(0xFF5386E4);
@@ -166,6 +194,8 @@ class AuthConstants {
     );
   }
 
+
+
   static OutlineInputBorder getFocusedBorder() {
     return OutlineInputBorder(
       borderRadius: BorderRadius.circular(20),
@@ -175,6 +205,7 @@ class AuthConstants {
       ),
     );
   }
+
 
 
   static ButtonStyle getSubmitButtonStyle() {

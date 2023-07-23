@@ -5,11 +5,15 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:image/image.dart' as img;
+import 'package:path_provider/path_provider.dart';
 import 'package:we_panchayat_dev/config.dart';
 import 'package:we_panchayat_dev/models/login_request_model.dart';
 import 'package:we_panchayat_dev/models/login_response_model.dart';
+import 'package:we_panchayat_dev/models/profile_picture_retrieve.dart';
 import 'package:we_panchayat_dev/models/register_request_model.dart';
 import 'package:we_panchayat_dev/models/register_response_model.dart';
+import 'package:we_panchayat_dev/services/profile_pic_api_service.dart';
 import 'package:we_panchayat_dev/services/shared_service.dart';
 
 class APIService {
@@ -20,6 +24,8 @@ class APIService {
   static var client = http.Client();
 
   static var loginResponse;
+
+  static var profilePicResponse;
 
   static Future<int> checkSession(BuildContext context) async {
     try {
@@ -75,7 +81,24 @@ class APIService {
 
       await SharedService.setCookie(_headers);
 
-      // getOtp();
+      var jsonResponse = jsonDecode(response.body);
+
+      String mongoId = jsonResponse['mongo_id'] ?? "NA";
+
+      // print("MONGO ID : $mongoId");
+      if(mongoId != "NA") {
+
+        Map<String, String> body = {
+          'mongoId' : mongoId,
+        };
+        var response = await ProfilePicAPIService.retrieveProfilePic(body);
+
+        if(response.statusCode == 200) {
+          profilePicResponse = response;
+        } else {
+          print("Error retrieving profile picture");
+        }
+      }
 
       return response;
     }
@@ -189,6 +212,17 @@ class APIService {
 
       await SharedService.setLoginDetails(loginResponseJson(loginResponse.body));
 
+      if(profilePicResponse != null) {
+
+        File? file = await getProfilePicAsFile(profilePictureRetrieveJson(profilePicResponse.body));
+
+        if(file != null) {
+          await SharedService.setProfilePicture(file);
+        }
+      }
+
+      loginResponse = null;
+      profilePicResponse = null;
       return true;
     }
 
@@ -254,7 +288,7 @@ class APIService {
     return false;
   }
 
-  static Future<bool> register(RegisterRequestModel model) async {
+  static Future<http.Response> register(RegisterRequestModel model) async {
     Map<String, String> requestHeaders = {
       "Content-Type": "application/json",
     };
@@ -270,18 +304,6 @@ class APIService {
 
     print(model.toJson());
 
-    // Map map = {
-    //   "email": "captain@gmail.com",
-    //   "password": "Asdfg@123",
-    //   "full_name": 'Captain America',
-    //   "address": "Brooklyn",
-    //   "pincode": "403602",
-    //   "phone": "8530129425",
-    //   "taluka": "Salcete",
-    //   "village": "Colva",
-    //   "date_of_birth": "16-07-2001",
-    // };
-
     var response = await client.post(url,
         body: jsonEncode(model.toJson()), headers: requestHeaders);
 
@@ -296,11 +318,11 @@ class APIService {
       await SharedService.setCookie(_headers);
 
 
-      return true;
+      return response;
     }
 
     print("Failed to Sign up.");
-    return false;
+    return response;
   }
 
   static Future<http.Response> blockAccount(Map<String, String> body) async {
@@ -404,5 +426,40 @@ class APIService {
     }
 
     return cookie;
+  }
+
+  static Future<File?> getProfilePicAsFile(ProfilePictureRetrieveModel? model) async {
+    Directory? tempDir = await getExternalStorageDirectory();
+
+    if(model != null) {
+      List<int>? binaryData;
+      binaryData = model.documents?.profilePic?.data;
+      return assignFile("PROFILE_PIC", tempDir?.path, binaryData);
+    }
+  }
+
+  static Future<File?> assignFile(String filename, String? path, List<int>? binaryData) async {
+    File? imgFile = await binaryToTempFile(filename, path, binaryData);
+    if (imgFile != null) {
+      return imgFile;
+    }
+  }
+
+  static Future<File?> binaryToTempFile(String filename, String? path,  List<int>? binaryData) async {
+    // final directory = await getTemporaryDirectory();
+    if (binaryData != null && path != null) {
+      final File file;
+      // Decode binary data to image
+      img.Image? image = img.decodeImage(binaryData);
+      // Encode image to JPEG format
+      List<int> jpeg = img.encodeJpg(image!);
+      file = File('$path/$filename.jpeg');
+      print('$filename.jpeg');
+
+      await file.writeAsBytes(jpeg);
+
+      return file;
+    }
+    return null;
   }
 }

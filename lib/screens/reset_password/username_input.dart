@@ -6,7 +6,7 @@ import 'package:we_panchayat_dev/models/login_request_model.dart';
 import 'package:we_panchayat_dev/screens/homepage/homepage.dart';
 import 'package:we_panchayat_dev/screens/reset_password/otp_reset_password.dart';
 import 'package:we_panchayat_dev/screens/reset_password/reset_password.dart';
-import 'package:we_panchayat_dev/services/api_service.dart';
+import 'package:we_panchayat_dev/services/auth_api_service.dart';
 
 import 'package:we_panchayat_dev/screens/auth/signup.dart';
 

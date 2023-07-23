@@ -89,7 +89,7 @@ class _SecurityPageState extends State<SecurityPage> {
         //   statusBarColor: ColorConstants.backgroundClipperColor,
         // ),
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        foregroundColor: ColorConstants.darkBlueThemeColor,
+        foregroundColor: ColorConstants.lightBlackColor,
 
         elevation: 0,
       ),
@@ -127,7 +127,7 @@ class _SecurityPageState extends State<SecurityPage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => CreateMPINScreen()),
+                        builder: (context) => const CreateMPINScreen(isSignUp: false)),
                   );
                   // toggleAppLock(true);
                 }

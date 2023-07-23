@@ -6,14 +6,15 @@ import 'package:we_panchayat_dev/constants.dart';
 import 'package:we_panchayat_dev/screens/otp/otptimer.dart';
 import 'package:we_panchayat_dev/screens/homepage/homepage.dart';
 import 'package:we_panchayat_dev/screens/security/security.dart';
-import 'package:we_panchayat_dev/services/api_service.dart';
+import 'package:we_panchayat_dev/services/auth_api_service.dart';
 import 'package:we_panchayat_dev/services/shared_service.dart';
 
 class ConfirmMPINScreen extends StatefulWidget {
   final String? mpin;
+  final bool isSignUp;
 
   const ConfirmMPINScreen(
-      {Key? key, required this.mpin})
+      {Key? key, required this.mpin, required this.isSignUp})
       : super(key: key);
 
   @override
@@ -50,7 +51,7 @@ class ConfirmMPINScreenState extends State<ConfirmMPINScreen> {
         //   statusBarColor: ColorConstants.backgroundClipperColor,
         // ),
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        foregroundColor: ColorConstants.darkBlueThemeColor,
+        foregroundColor: ColorConstants.lightBlackColor,
         elevation: 0,
       ),
       body: Column(
@@ -127,13 +128,24 @@ class ConfirmMPINScreenState extends State<ConfirmMPINScreen> {
                                 setAppLockState();
                                 setMPINState();
                                 await SharedService.setMPIN(_confirmMPINController.text);
-                                Navigator.of(context).pop();
-                                Navigator.of(context).pop();
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => SecurityPage()),
-                                );
+
+                                if(widget.isSignUp) {
+                                  Navigator.pushAndRemoveUntil(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => const Home()),
+                                        (route) => false,
+                                  );
+                                }
+                                else {
+                                  Navigator.of(context).pop();
+                                  Navigator.of(context).pop();
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => SecurityPage()),
+                                  );
+                                }
                               }
                               else {
                                 setState(() {

@@ -12,9 +12,10 @@ class LoginResponseModel {
   String? taluka;
   String? village;
   String? pincode;
-  // DateTime? dateofbirth;
   String? dateofbirth;
   String? phone;
+  String? gender;
+  String? mongoId;
   String? email;
   String? password;
   int? statusCode;
@@ -31,6 +32,8 @@ class LoginResponseModel {
     pincode = json['pincode'];
     dateofbirth = json['date_of_birth'];
     phone = json['phone'];
+    gender = json['gender'];
+    mongoId = json['mongo_id'];
     email = json['email'];
     password = json['password'];
     statusCode = json['statusCode'];
@@ -47,7 +50,9 @@ class LoginResponseModel {
     data['pincode'] = pincode;
     data['date_of_birth'] = dateofbirth;
     data['phone'] = phone;
+    data['gender'] = gender;
     data['email'] = email;
+    data['mongo_id'] = mongoId;
     data['password'] = password;
     data['statusCode'] = statusCode;
     data['message'] = message;

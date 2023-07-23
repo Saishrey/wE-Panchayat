@@ -5,7 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:we_panchayat_dev/models/login_request_model.dart';
 import 'package:we_panchayat_dev/models/login_response_model.dart';
 import '../../constants.dart';
-import '../../services/api_service.dart';
+import '../../services/auth_api_service.dart';
 import '../../services/shared_service.dart';
 import '../dashboard/griddashboard.dart';
 import '../dashboard/searchbar.dart';

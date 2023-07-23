@@ -1,9 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:we_panchayat_dev/models/register_request_model.dart';
 import 'package:we_panchayat_dev/screens/homepage/homepage.dart';
 import 'package:we_panchayat_dev/main.dart';
-import 'package:we_panchayat_dev/services/api_service.dart';
+import 'package:we_panchayat_dev/services/auth_api_service.dart';
 import 'package:we_panchayat_dev/screens/auth/login.dart';
 
 import 'package:intl/intl.dart';
@@ -12,13 +14,14 @@ import 'package:dob_input_field/dob_input_field.dart';
 import 'package:flutter/material.dart';
 
 import '../../constants.dart';
+import '../profile/profile_pic.dart';
 
 class SignUp extends StatefulWidget {
   final String phone;
 
   // const SignUp({Key? key}) : super(key: key);
 
-  SignUp({super.key, this.phone = ""});
+  SignUp({super.key, required this.phone});
 
   @override
   _SignUpState createState() => _SignUpState();
@@ -326,13 +329,20 @@ class _SignUpState extends State<SignUp> {
     '403803',
     '403806',
     '403808',
-    '404102'
+    '404102',
   ];
+
+  final Map<String, String> _genderMap = {
+    'Male': 'M',
+    'Female': 'F',
+    'Other': 'O',
+  };
 
   String? _firstName;
   String? _lastName;
   String? _address;
   String? _pincode;
+  String? _selectedGender;
   String? _selectedTaluka;
   String? _selectedVillage;
   DateTime _selectedDate = DateTime.now();
@@ -359,6 +369,14 @@ class _SignUpState extends State<SignUp> {
       debugPrint("Selected One village = $_selectedVillage");
 
       disabledVillageMenuItem = false;
+    });
+  }
+
+  void selectedGender(_value) {
+    setState(() {
+      _selectedGender = _value;
+
+      print("Gender : $_selectedGender");
     });
   }
 
@@ -544,61 +562,6 @@ class _SignUpState extends State<SignUp> {
                                   ],
                                 ),
                                 SizedBox(height: 16),
-                                TextFormField(
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return "Required";
-                                    }
-                                    _address = value;
-                                    print("Address : $_address");
-                                    return null;
-                                  },
-                                  style: AuthConstants.getTextStyle(),
-                                  decoration: InputDecoration(
-                                    labelText: 'Address',
-                                    labelStyle:
-                                        AuthConstants.getLabelAndHintStyle(),
-                                    filled: true,
-                                    fillColor: Colors.white,
-                                    border: AuthConstants.getEnabledBorder(),
-                                    enabledBorder:
-                                        AuthConstants.getEnabledBorder(),
-                                    focusedBorder:
-                                        AuthConstants.getFocusedBorder(),
-                                  ),
-                                ),
-                                SizedBox(height: 16),
-                                TextFormField(
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return "Required";
-                                    } else if (value.length < 6 ||
-                                        !_validPinCodes.contains(value)) {
-                                      return "Enter a valid Pin Code";
-                                    }
-                                    _pincode = value;
-                                    print("Pin Code : $_pincode");
-                                    return null;
-                                  },
-                                  keyboardType: TextInputType.number,
-                                  inputFormatters: [
-                                    new LengthLimitingTextInputFormatter(6),
-                                  ],
-                                  style: AuthConstants.getTextStyle(),
-                                  decoration: InputDecoration(
-                                    labelText: 'Pin Code',
-                                    labelStyle:
-                                        AuthConstants.getLabelAndHintStyle(),
-                                    filled: true,
-                                    fillColor: Colors.white,
-                                    border: AuthConstants.getEnabledBorder(),
-                                    enabledBorder:
-                                        AuthConstants.getEnabledBorder(),
-                                    focusedBorder:
-                                        AuthConstants.getFocusedBorder(),
-                                  ),
-                                ),
-                                SizedBox(height: 16),
                                 Row(
                                   children: [
                                     Expanded(
@@ -686,6 +649,113 @@ class _SignUpState extends State<SignUp> {
                                   ],
                                 ),
                                 SizedBox(height: 16),
+                                TextFormField(
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return "Required";
+                                    }
+                                    _address = value;
+                                    print("Address : $_address");
+                                    return null;
+                                  },
+                                  style: AuthConstants.getTextStyle(),
+                                  decoration: InputDecoration(
+                                    labelText: 'Address',
+                                    labelStyle:
+                                        AuthConstants.getLabelAndHintStyle(),
+                                    filled: true,
+                                    fillColor: Colors.white,
+                                    border: AuthConstants.getEnabledBorder(),
+                                    enabledBorder:
+                                        AuthConstants.getEnabledBorder(),
+                                    focusedBorder:
+                                        AuthConstants.getFocusedBorder(),
+                                  ),
+                                ),
+                                SizedBox(height: 16),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: TextFormField(
+                                        validator: (value) {
+                                          if (value!.isEmpty) {
+                                            return "Required";
+                                          } else if (value.length < 6 ||
+                                              !_validPinCodes.contains(value)) {
+                                            return "Enter a valid Pin Code";
+                                          }
+                                          _pincode = value;
+                                          print("Pin Code : $_pincode");
+                                          return null;
+                                        },
+                                        keyboardType: TextInputType.number,
+                                        inputFormatters: [
+                                          new LengthLimitingTextInputFormatter(
+                                              6),
+                                        ],
+                                        style: AuthConstants.getTextStyle(),
+                                        decoration: InputDecoration(
+                                          labelText: 'Pin Code',
+                                          labelStyle: AuthConstants
+                                              .getLabelAndHintStyle(),
+                                          filled: true,
+                                          fillColor: Colors.white,
+                                          border:
+                                              AuthConstants.getEnabledBorder(),
+                                          enabledBorder:
+                                              AuthConstants.getEnabledBorder(),
+                                          focusedBorder:
+                                              AuthConstants.getFocusedBorder(),
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(width: 10.0),
+                                    Expanded(
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 10, vertical: 6),
+                                        decoration: AuthConstants
+                                            .getDropDownBoxDecoration(),
+                                        child: DropdownButtonFormField(
+                                          decoration: const InputDecoration(
+                                            border: InputBorder
+                                                .none, // Remove the bottom border
+                                          ),
+                                          menuMaxHeight: 200,
+                                          isExpanded: true,
+                                          icon: AuthConstants.getDropDownIcon(),
+                                          value: _selectedGender,
+                                          items:
+                                              _genderMap.keys.map((String option) {
+                                            return DropdownMenuItem<String>(
+                                              value: option,
+                                              child: Text(
+                                                option,
+                                                style: AuthConstants
+                                                    .getDropDownTextStyle(),
+                                              ),
+                                            );
+                                          }).toList(),
+                                          onChanged: (_value) =>
+                                              selectedGender(_value),
+                                          hint: Text(
+                                            "Gender",
+                                            style: AuthConstants
+                                                .getDropDownHintStyle(),
+                                          ),
+                                          validator: (value) {
+                                            if (value == null) {
+                                              // Add validation to check if a value is selected
+                                              return 'Required';
+                                            }
+                                            return null;
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 16),
                                 Container(
                                   padding: EdgeInsets.symmetric(
                                       horizontal: 10, vertical: 6),
@@ -718,14 +788,14 @@ class _SignUpState extends State<SignUp> {
                                   decoration: InputDecoration(
                                     labelText: 'Email',
                                     labelStyle:
-                                    AuthConstants.getLabelAndHintStyle(),
+                                        AuthConstants.getLabelAndHintStyle(),
                                     filled: true,
                                     fillColor: Colors.white,
                                     border: AuthConstants.getEnabledBorder(),
                                     enabledBorder:
-                                    AuthConstants.getEnabledBorder(),
+                                        AuthConstants.getEnabledBorder(),
                                     focusedBorder:
-                                    AuthConstants.getFocusedBorder(),
+                                        AuthConstants.getFocusedBorder(),
                                   ),
                                 ),
                                 SizedBox(height: 16),
@@ -760,16 +830,17 @@ class _SignUpState extends State<SignUp> {
                                             : Icons.visibility_off,
                                       ),
                                     ),
-                                    suffixIconColor: ColorConstants.formLabelTextColor,
+                                    suffixIconColor:
+                                        ColorConstants.formLabelTextColor,
                                     labelStyle:
-                                    AuthConstants.getLabelAndHintStyle(),
+                                        AuthConstants.getLabelAndHintStyle(),
                                     filled: true,
                                     fillColor: Colors.white,
                                     border: AuthConstants.getEnabledBorder(),
                                     enabledBorder:
-                                    AuthConstants.getEnabledBorder(),
+                                        AuthConstants.getEnabledBorder(),
                                     focusedBorder:
-                                    AuthConstants.getFocusedBorder(),
+                                        AuthConstants.getFocusedBorder(),
                                   ),
                                 ),
                                 SizedBox(height: 16),
@@ -796,7 +867,8 @@ class _SignUpState extends State<SignUp> {
                                     suffixIcon: GestureDetector(
                                       onTap: () {
                                         setState(() {
-                                          _obscureTextConfirm = !_obscureTextConfirm;
+                                          _obscureTextConfirm =
+                                              !_obscureTextConfirm;
                                         });
                                       },
                                       child: Icon(
@@ -805,16 +877,17 @@ class _SignUpState extends State<SignUp> {
                                             : Icons.visibility_off,
                                       ),
                                     ),
-                                    suffixIconColor: ColorConstants.formLabelTextColor,
+                                    suffixIconColor:
+                                        ColorConstants.formLabelTextColor,
                                     labelStyle:
-                                    AuthConstants.getLabelAndHintStyle(),
+                                        AuthConstants.getLabelAndHintStyle(),
                                     filled: true,
                                     fillColor: Colors.white,
                                     border: AuthConstants.getEnabledBorder(),
                                     enabledBorder:
-                                    AuthConstants.getEnabledBorder(),
+                                        AuthConstants.getEnabledBorder(),
                                     focusedBorder:
-                                    AuthConstants.getFocusedBorder(),
+                                        AuthConstants.getFocusedBorder(),
                                   ),
                                 ),
                                 SizedBox(height: 16),
@@ -851,6 +924,7 @@ class _SignUpState extends State<SignUp> {
                       print("DOB : $dob");
                       print("Taluka : $_selectedTaluka");
                       print("Village : $_selectedVillage");
+                      print("Gender : $_selectedGender");
 
                       setState(() {
                         isAPIcallProcess = true;
@@ -863,33 +937,37 @@ class _SignUpState extends State<SignUp> {
                         address: _address,
                         pincode: _pincode,
                         phone: _phone,
+                        gender: _genderMap[_selectedGender],
                         taluka: _selectedTaluka,
                         village: _selectedVillage,
                         dateofbirth: dob,
                       );
 
-                      APIService.register(model).then((response) {
-                        setState(() {
-                          isAPIcallProcess = false;
-                        });
-                        if (response) {
-                          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                              content: Text(
-                                  'Registered successfully. Welcome to wE-Panchayat.')));
+                      var response = await APIService.register(model);
 
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const Home()),
-                            (route) => false,
-                          );
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text('Failed to Register.')));
-                        }
-                        print("Navigate to Home Page.");
-                      });
+                      if(response.statusCode == 200) {
+                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                            content: Text(
+                                'Registered successfully. Welcome to wE-Panchayat.')));
+
+
+
+                        var jsonResponse = jsonDecode(response.body);
+
+                        int id = jsonResponse['id'];
+
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ProfilePicturePage(userId: id, mongoId: "NA", isSignup: true,)),
+                              (route) => false,
+                        );
+                      }
+                      else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text('Failed to Register.')));
+                      }
                     }
                   },
                   child: Text("Sign up",

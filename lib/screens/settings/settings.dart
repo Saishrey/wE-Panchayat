@@ -20,7 +20,7 @@ class _SettingsPageState extends State<SettingsPage> {
         //   statusBarColor: ColorConstants.backgroundClipperColor,
         // ),
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        foregroundColor: ColorConstants.darkBlueThemeColor,
+        foregroundColor: ColorConstants.lightBlackColor,
         elevation: 0,
       ),
       body: ListView(

@@ -4,7 +4,7 @@ import 'package:we_panchayat_dev/screens/auth/signup.dart';
 import 'package:we_panchayat_dev/screens/otp/otptimer.dart';
 import 'package:we_panchayat_dev/screens/homepage/homepage.dart';
 import 'package:we_panchayat_dev/screens/reset_password/reset_password.dart';
-import 'package:we_panchayat_dev/services/api_service.dart';
+import 'package:we_panchayat_dev/services/auth_api_service.dart';
 
 import '../../constants.dart';
 

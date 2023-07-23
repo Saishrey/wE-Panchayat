@@ -6,7 +6,7 @@ import 'package:we_panchayat_dev/models/login_request_model.dart';
 import 'package:we_panchayat_dev/screens/auth/signup_mobile_input.dart';
 
 import 'package:we_panchayat_dev/screens/homepage/homepage.dart';
-import 'package:we_panchayat_dev/services/api_service.dart';
+import 'package:we_panchayat_dev/services/auth_api_service.dart';
 
 import 'package:we_panchayat_dev/screens/auth/signup.dart';
 
@@ -250,6 +250,13 @@ class _LoginState extends State<Login> {
                                         if (message ==
                                             "User is blocked. Please reset password to verify and login") {
                                           showAccountBlockedDialogBox();
+                                        } else {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                              content: Text(message),
+                                            ),
+                                          );
                                         }
                                       } else if (response.statusCode == 401) {
                                         setState(() {

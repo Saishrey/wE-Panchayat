@@ -191,7 +191,6 @@ class TradeLicenseAPIService {
 
     print(body);
 
-
     var response = await client.post(url,
         body: body, headers: requestHeaders);
 

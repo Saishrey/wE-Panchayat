@@ -6,7 +6,7 @@ import 'package:we_panchayat_dev/constants.dart';
 import 'package:we_panchayat_dev/screens/otp/otptimer.dart';
 import 'package:we_panchayat_dev/screens/homepage/homepage.dart';
 import 'package:we_panchayat_dev/screens/security/security.dart';
-import 'package:we_panchayat_dev/services/api_service.dart';
+import 'package:we_panchayat_dev/services/auth_api_service.dart';
 
 import '../../services/shared_service.dart';
 import 'mpin_confirm.dart';
@@ -40,7 +40,7 @@ class EnterMPINScreenState extends State<EnterMPINScreen> {
         //   statusBarColor: ColorConstants.backgroundClipperColor,
         // ),
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        foregroundColor: ColorConstants.darkBlueThemeColor,
+        foregroundColor: ColorConstants.lightBlackColor,
         elevation: 0,
       ),
       body: Column(

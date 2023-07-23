@@ -4,12 +4,13 @@ import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:we_panchayat_dev/constants.dart';
 import 'package:we_panchayat_dev/screens/otp/otptimer.dart';
 import 'package:we_panchayat_dev/screens/homepage/homepage.dart';
-import 'package:we_panchayat_dev/services/api_service.dart';
+import 'package:we_panchayat_dev/services/auth_api_service.dart';
 
 import 'mpin_confirm.dart';
 
 class CreateMPINScreen extends StatefulWidget {
-  const CreateMPINScreen({super.key});
+  final bool isSignUp;
+  const CreateMPINScreen({super.key, required this.isSignUp});
 
   @override
   CreateMPINScreenState createState() => new CreateMPINScreenState();
@@ -29,7 +30,7 @@ class CreateMPINScreenState extends State<CreateMPINScreen> {
         //   statusBarColor: ColorConstants.backgroundClipperColor,
         // ),
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        foregroundColor: ColorConstants.darkBlueThemeColor,
+        foregroundColor: ColorConstants.lightBlackColor,
         elevation: 0,
       ),
       body: Column(
@@ -103,7 +104,7 @@ class CreateMPINScreenState extends State<CreateMPINScreen> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => ConfirmMPINScreen(
-                                        mpin: _createMPINController.text)),
+                                        mpin: _createMPINController.text, isSignUp: widget.isSignUp)),
                               );
                             },
                             appContext: context,
@@ -128,6 +129,34 @@ class CreateMPINScreenState extends State<CreateMPINScreen> {
               ),
             ),
           ),
+          const SizedBox(height: 40),
+          Visibility(
+            visible: widget.isSignUp,
+            child: Center(
+              child: Padding(
+                padding: EdgeInsets.only(bottom: 20),
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (context) => const Home()),
+                          (route) => false,
+                    );
+                  },
+                  child: Text(
+                    "Skip",
+                    style: TextStyle(
+                      color: ColorConstants.colorHuntCode2,
+                      fontWeight: FontWeight.w700,
+                      fontSize: 16,
+                      fontFamily: 'Poppins-Medium',
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+            ),
+          ),
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
@@ -140,7 +169,7 @@ class CreateMPINScreenState extends State<CreateMPINScreen> {
                       context,
                       MaterialPageRoute(
                           builder: (context) => ConfirmMPINScreen(
-                              mpin: _createMPINController.text)),
+                              mpin: _createMPINController.text, isSignUp: widget.isSignUp)),
                     );
                   } else {
                     setState(() {

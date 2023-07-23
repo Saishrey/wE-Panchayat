@@ -1,10 +1,16 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:we_panchayat_dev/models/profile_picture_retrieve.dart';
+import 'package:we_panchayat_dev/screens/profile/profile_pic.dart';
+import 'package:we_panchayat_dev/services/update_email_api_service.dart';
 
 import '../../constants.dart';
 import '../../models/login_response_model.dart';
 import '../../services/shared_service.dart';
 import '../background_painter.dart';
+import '../update_email/verify_user.dart';
 
 class UserProfile extends StatefulWidget {
   UserProfile({Key? key}) : super(key: key);
@@ -14,25 +20,48 @@ class UserProfile extends StatefulWidget {
 }
 
 class _UserProfileState extends State<UserProfile> {
+  int? _id;
   String? _fullname;
   String? _dob;
-  String? _gender = "Male";
+  String? _gender;
   String? _taluka;
   String? _village;
   String? _address;
   String? _pincode;
   String? _phone;
   String? _email;
+  String? _mongoId;
+
+  final Map<String, String> _genderMap = {
+    'M': 'Male',
+    'F': 'Female',
+    'O': 'Other',
+  };
+
+  String? _tempPath;
+
+  File? _profile_pic;
 
   @override
   void initState() {
     super.initState();
-    initialiseNamePhoneAddress();
+    initialiseDetails();
+    _initProfilePic();
   }
 
-  Future<void> initialiseNamePhoneAddress() async {
+  void _initProfilePic() async {
+    File? file = await SharedService.getProfilePicture();
+    if (file != null) {
+      setState(() {
+        _profile_pic = file;
+      });
+    }
+  }
+
+  Future<void> initialiseDetails() async {
     LoginResponseModel? loginResponseModel = await SharedService.loginDetails();
     setState(() {
+      _id = loginResponseModel?.id;
       _fullname = loginResponseModel?.fullname;
       _dob = formatDate(loginResponseModel?.dateofbirth);
       _taluka = loginResponseModel?.taluka;
@@ -40,7 +69,9 @@ class _UserProfileState extends State<UserProfile> {
       _address = loginResponseModel?.address;
       _pincode = loginResponseModel?.pincode;
       _phone = loginResponseModel?.phone;
+      _gender = loginResponseModel?.gender;
       _email = loginResponseModel?.email;
+      _mongoId = loginResponseModel?.mongoId;
     });
   }
 
@@ -51,7 +82,14 @@ class _UserProfileState extends State<UserProfile> {
 
   @override
   Widget build(BuildContext context) {
-    if(_fullname == null || _dob == null || _taluka == null || _village == null || _address == null || _pincode == null || _phone == null || _email == null) {
+    if (_fullname == null ||
+        _dob == null ||
+        _taluka == null ||
+        _village == null ||
+        _address == null ||
+        _pincode == null ||
+        _phone == null ||
+        _email == null) {
       return Scaffold(
         resizeToAvoidBottomInset: true,
         // backgroundColor: Colors.white,
@@ -81,13 +119,12 @@ class _UserProfileState extends State<UserProfile> {
               ),
             ),
             SliverToBoxAdapter(
-              child: Center(
-                child: CircularProgressIndicator(
-                  color: ColorConstants.lightBlueThemeColor,
-                  strokeWidth: 6,
-                ),
-              )
-            ),
+                child: Center(
+              child: CircularProgressIndicator(
+                color: ColorConstants.lightBlueThemeColor,
+                strokeWidth: 6,
+              ),
+            )),
           ],
         ),
       );
@@ -96,7 +133,7 @@ class _UserProfileState extends State<UserProfile> {
       resizeToAvoidBottomInset: true,
       appBar: AppBar(
         backgroundColor: ColorConstants.backgroundClipperColor,
-        foregroundColor: ColorConstants.darkBlueThemeColor,
+        foregroundColor: ColorConstants.lightBlackColor,
         title: Text(
           'My Profile',
           style: TextStyle(
@@ -119,21 +156,34 @@ class _UserProfileState extends State<UserProfile> {
                   child: Center(
                     child: Stack(
                       children: [
-                        Container(
-                          width: 200,
-                          height: 200,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: Colors.white,
-                              width: 4.0,
+                        GestureDetector(
+                          onTap: () {
+                            print("Tapped on Profile Picture.");
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ProfilePicturePage(userId: _id!, mongoId: _mongoId ?? "NA", isSignup: false)),
+                            );
+                          },
+                          child: Container(
+                            width: 200,
+                            height: 200,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Colors.white,
+                                width: 4.0,
+                              ),
                             ),
-                          ),
-                          child: CircleAvatar(
-                            radius: 56,
-                            backgroundColor: Colors.blue,
-                            child: Image.asset(
-                                'assets/images/user_profile_blue.png'),
+                            child: _profile_pic != null
+                                ? CircleAvatar(
+                                    radius: 56,
+                                    backgroundImage: FileImage(_profile_pic!))
+                                : CircleAvatar(
+                                    radius: 56,
+                                    child: Image.asset(
+                                        'assets/images/user_profile_blue.png'),
+                                  ),
                           ),
                         ),
                       ],
@@ -147,7 +197,7 @@ class _UserProfileState extends State<UserProfile> {
             child: Column(
               children: [
                 Text(
-                  "Shreyas Prasad Naik",
+                  _fullname!,
                   style: TextStyle(
                     fontFamily: 'Poppins-Bold',
                     fontSize: 24,
@@ -178,7 +228,7 @@ class _UserProfileState extends State<UserProfile> {
                         const SizedBox(
                           height: 8.0,
                         ),
-                        _buildSection('Phone', _phone!, true),
+                        _buildSection(context, 'Email', _email!, true),
                         const Padding(
                           padding: EdgeInsets.symmetric(horizontal: 16),
                           child: Divider(
@@ -186,7 +236,7 @@ class _UserProfileState extends State<UserProfile> {
                             color: Colors.black12,
                           ),
                         ),
-                        _buildSection('Email', _email!, true),
+                        _buildSection(context, 'Phone', _phone!, false),
                         const Padding(
                           padding: EdgeInsets.symmetric(horizontal: 16),
                           child: Divider(
@@ -194,7 +244,7 @@ class _UserProfileState extends State<UserProfile> {
                             color: Colors.black12,
                           ),
                         ),
-                        _buildSection('DOB', _dob!, false),
+                        _buildSection(context, 'DOB', _dob!, false),
                         const Padding(
                           padding: EdgeInsets.symmetric(horizontal: 16),
                           child: Divider(
@@ -202,7 +252,7 @@ class _UserProfileState extends State<UserProfile> {
                             color: Colors.black12,
                           ),
                         ),
-                        _buildSection('Gender', _gender!, false),
+                        _buildSection(context, 'Gender', _genderMap[_gender!]!, false),
                         const Padding(
                           padding: EdgeInsets.symmetric(horizontal: 16),
                           child: Divider(
@@ -210,7 +260,7 @@ class _UserProfileState extends State<UserProfile> {
                             color: Colors.black12,
                           ),
                         ),
-                        _buildSection('Taluka', _taluka!, false),
+                        _buildSection(context, 'Taluka', _taluka!, false),
                         const Padding(
                           padding: EdgeInsets.symmetric(horizontal: 16),
                           child: Divider(
@@ -218,7 +268,7 @@ class _UserProfileState extends State<UserProfile> {
                             color: Colors.black12,
                           ),
                         ),
-                        _buildSection('Village', _village!, false),
+                        _buildSection(context, 'Village', _village!, false),
                         const Padding(
                           padding: EdgeInsets.symmetric(horizontal: 16),
                           child: Divider(
@@ -226,7 +276,7 @@ class _UserProfileState extends State<UserProfile> {
                             color: Colors.black12,
                           ),
                         ),
-                        _buildSection('Address', _address!, false),
+                        _buildSection(context, 'Address', _address!, false),
                         const Padding(
                           padding: EdgeInsets.symmetric(horizontal: 16),
                           child: Divider(
@@ -234,7 +284,7 @@ class _UserProfileState extends State<UserProfile> {
                             color: Colors.black12,
                           ),
                         ),
-                        _buildSection('Pincode', _pincode!, false),
+                        _buildSection(context, 'Pincode', _pincode!, false),
                         const SizedBox(
                           height: 8.0,
                         ),
@@ -254,7 +304,7 @@ class _UserProfileState extends State<UserProfile> {
   }
 }
 
-Widget _buildSection(String title, String text, bool isEditable) {
+Widget _buildSection(BuildContext context, String title, String text, bool isEditable) {
   return Padding(
     padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 16.0),
     child: Row(
@@ -296,9 +346,22 @@ Widget _buildSection(String title, String text, bool isEditable) {
               color: Colors.transparent,
               child: InkWell(
                 borderRadius: BorderRadius.circular(25.0),
-                onTap: () {
-                  // Add your desired logic or function here
-                  // This function will be called when the icon button is pressed
+                onTap: () async {
+
+                  if(title == "Email") {
+                    bool response = await UpdateEmailAPIService.getOtpUpdateEmail();
+
+                    if(response) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => VerifyUserUpdateEmail()),
+                      );
+                    }
+                    else {
+                      print('Error sending otp.');
+                    }
+                  }
                 },
                 child: Ink(
                   padding: EdgeInsets.all(8.0),
@@ -318,6 +381,3 @@ Widget _buildSection(String title, String text, bool isEditable) {
     ),
   );
 }
-
-
-

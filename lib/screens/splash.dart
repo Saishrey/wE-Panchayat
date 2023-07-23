@@ -10,7 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:we_panchayat_dev/screens/auth/login.dart';
 import 'package:we_panchayat_dev/screens/security/mpin_enter.dart';
 import '../constants.dart';
-import '../services/api_service.dart';
+import '../services/auth_api_service.dart';
 import '../services/shared_service.dart';
 import 'homepage/homepage.dart';
 import 'package:connectivity/connectivity.dart';

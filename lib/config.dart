@@ -60,3 +60,17 @@ class GrievanceAPI {
   static const String retrieveGrievanceAPI = "/grievance/retrieve";
   static const String retrieveAllGrievanceAPI = "/grievance/retrieve-all";
 }
+
+
+class ProfilePicAPI {
+  static const String uploadPictureAPI = "/user/upload-profile-pic";
+  static const String updatePictureAPI = "/user/update-profile-pic";
+  static const String retrievePictureAPI = "/user/retrieve-profile-pic";
+  static const String deletePictureAPI = "/user/delete-profile-pic";
+}
+
+class UpdateEmailAPI {
+  static const String getOtpAPI = "/user/get-otp";
+  static const String verifyOtpAPI = "/auth/verify-otp";
+  static const String updateEmailAPI = "/user/update-email";
+}

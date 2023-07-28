@@ -19,262 +19,313 @@ class TradeLicenseAPIService {
   static var client = http.Client();
 
   static Future<http.Response> saveForm(Map<String, String> body) async {
+    // try {
+      Map<String, String> requestHeaders = {
+        // "Content-Type": "application/json",
+      };
 
-    Map<String, String> requestHeaders = {
-      // "Content-Type": "application/json",
-    };
+      final url = Uri.http(Config.apiURL, TradeLicenseAPI.saveFormAPI);
+      print(url);
 
-    final url = Uri.http(Config.apiURL, TradeLicenseAPI.saveFormAPI);
-    print(url);
+      print("COOKIE DETAILS Trade License SAVE FORM");
+      Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
+      requestHeaders['cookie'] = cookieHeaders!['cookie']!;
+      requestHeaders['Device-Info'] = cookieHeaders['Device-Info']!;
 
-    print("COOKIE DETAILS Trade License SAVE FORM");
-    Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
-    requestHeaders['cookie'] = cookieHeaders!['cookie']!;
+      // var response = await client.get(url);
+      // print(response.body);
 
-    // var response = await client.get(url);
-    // print(response.body);
+      print(requestHeaders);
 
-    print(requestHeaders);
-
-    print(body);
+      print(body);
 
 
-    var response = await client.post(url,
-        body: body, headers: requestHeaders);
+      var response = await client.post(url,
+          body: body, headers: requestHeaders).timeout(const Duration(seconds: 5));
 
-    print("${response.body}");
+      print("${response.body}");
 
-    return response;
-    // print("${response.runtimeType}");
-    //
-    // if (response.statusCode == 200) {
-    //   print("Trade License Form Data Successfully Submitted.");
-    //
-    //   return true;
+      return response;
     // }
-    //
-    // print("Failed to Submit Trade License Form.");
-    // return false;
+    // catch (e) {
+    //   print('Error : $e');
+    //   return null;
+    // }
+  }
+
+  static Future<bool> deleteForm(String applicationId) async {
+    // try {
+      String query = "${TradeLicenseAPI.deleteFormAPI}/$applicationId";
+
+      final url = Uri.http(Config.apiURL, query);
+
+      print(url);
+
+      print("COOKIE DETAILS Trade License DELETE FORM");
+      Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
+
+
+      var response = await client.delete(url, headers: cookieHeaders).timeout(const Duration(seconds: 5));
+
+      print("${response.body}");
+
+      return response.statusCode == 200;
+    // }
+    // catch (e) {
+    //   print('Error : $e');
+    //   return false;
+    // }
   }
 
 
   static Future<bool> uploadFiles(Map<String, File> fileMap, String applicationId) async {
-    final url = Uri.http(Config.apiURL, TradeLicenseAPI.uploadDocumentsAPI);
-    print(url);
-    var request = http.MultipartRequest('POST', url);
+    // try {
+      final url = Uri.http(Config.apiURL, TradeLicenseAPI.uploadDocumentsAPI);
+      print(url);
+      var request = http.MultipartRequest('POST', url);
 
-    print("COOKIE DETAILS Trade License Upload Documents");
-    Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
-    request.headers["Content-Type"] = "multipart/form-data";
-    request.headers['cookie'] = cookieHeaders!['cookie']!;
+      print("COOKIE DETAILS Trade License Upload Documents");
+      Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
+      request.headers["Content-Type"] = "multipart/form-data";
+      request.headers['cookie'] = cookieHeaders!['cookie']!;
 
-    //add files to request
-    int count = 0;
-    for (var entry in fileMap.entries) {
+      //add files to request
+      int count = 0;
+      for (var entry in fileMap.entries) {
         print(entry);
         count++;
         request.files.add(await http.MultipartFile.fromPath(entry.key, entry.value.path));
-    }
-    request.fields['totalFilesCount'] = "$count" ;
-    request.fields['applicationId'] = applicationId;
-    print(request.files);
-    print(request.fields);
+      }
+      request.fields['totalFilesCount'] = "$count" ;
+      request.fields['applicationId'] = applicationId;
+      print(request.files);
+      print(request.fields);
 
-    //send request
-    var response = await request.send();
-    print(response.statusCode);
-    print(response.reasonPhrase);
+      //send request
+      var response = await request.send().timeout(const Duration(seconds: 5));
+      print(response.statusCode);
+      print(response.reasonPhrase);
 
-    if (response.statusCode == 200) {
-      print("Trade License Form Data Successfully Submitted.");
-      String responseBody = await response.stream.bytesToString();
-      print(responseBody);
-      return true;
-    }
-    print("Failed to Submit Trade License Form.");
-    return false;
+      if (response.statusCode == 200) {
+        print("Trade License Form Data Successfully Submitted.");
+        String responseBody = await response.stream.bytesToString();
+        print(responseBody);
+        return true;
+      }
+      print("Failed to Submit Trade License Form.");
+      return false;
+    // }
+    // catch (e) {
+    //   print('Error : $e');
+    //   return false;
+    // }
+
   }
 
   static Future<http.Response> updateForm(Map<String, String> body) async {
+    // try {
+      Map<String, String> requestHeaders = {
+        // "Content-Type": "application/json",
+      };
 
-    Map<String, String> requestHeaders = {
-      // "Content-Type": "application/json",
-    };
+      final url = Uri.http(Config.apiURL, TradeLicenseAPI.updateFormAPI);
+      print(url);
 
-    final url = Uri.http(Config.apiURL, TradeLicenseAPI.updateFormAPI);
-    print(url);
+      print("COOKIE DETAILS Trade License UPDATE FORM");
+      Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
+      requestHeaders['cookie'] = cookieHeaders!['cookie']!;
+      requestHeaders['Device-Info'] = cookieHeaders['Device-Info']!;
 
-    print("COOKIE DETAILS Trade License UPDATE FORM");
-    Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
-    requestHeaders['cookie'] = cookieHeaders!['cookie']!;
+      // var response = await client.get(url);
+      // print(response.body);
 
-    // var response = await client.get(url);
-    // print(response.body);
+      print(requestHeaders);
 
-    print(requestHeaders);
-
-    print(body);
+      print(body);
 
 
-    var response = await client.post(url,
-        body: body, headers: requestHeaders);
+      var response = await client.patch(url,
+          body: body, headers: requestHeaders).timeout(const Duration(seconds: 5));
 
-    print("${response.body}");
+      print("${response.body}");
 
-    return response;
-    // print("${response.runtimeType}");
-    //
-    // if (response.statusCode == 200) {
-    //   print("Trade License Form Data Successfully Submitted.");
-    //
-    //   return true;
+      return response;
     // }
-    //
-    // print("Failed to Submit Trade License Form.");
-    // return false;
+    // catch (e) {
+    //   print('Error : $e');
+    //   return null;
+    // }
   }
 
   static Future<bool> updateFiles(Map<String, File> fileMap, String mongoId) async {
-    final url = Uri.http(Config.apiURL, TradeLicenseAPI.updateDocumentsAPI);
-    print(url);
-    var request = http.MultipartRequest('POST', url);
+    // try {
+      final url = Uri.http(Config.apiURL, TradeLicenseAPI.updateDocumentsAPI);
+      print(url);
+      var request = http.MultipartRequest('PATCH', url);
 
-    print("COOKIE DETAILS Trade License UPDATE Documents");
-    Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
-    request.headers["Content-Type"] = "multipart/form-data";
-    request.headers['cookie'] = cookieHeaders!['cookie']!;
+      print("COOKIE DETAILS Trade License UPDATE Documents");
+      Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
+      request.headers["Content-Type"] = "multipart/form-data";
+      request.headers['cookie'] = cookieHeaders!['cookie']!;
 
-    //add files to request
-    int count = 0;
-    for (var entry in fileMap.entries) {
-      print(entry);
-      count++;
-      request.files.add(await http.MultipartFile.fromPath(entry.key, entry.value.path));
-    }
-    request.fields['totalFilesCount'] = "$count" ;
-    request.fields['mongoId'] = mongoId;
-    print(request.files);
-    print(request.fields);
+      //add files to request
+      int count = 0;
+      for (var entry in fileMap.entries) {
+        print(entry);
+        count++;
+        request.files.add(await http.MultipartFile.fromPath(entry.key, entry.value.path));
+      }
+      request.fields['totalFilesCount'] = "$count" ;
+      request.fields['mongoId'] = mongoId;
+      print(request.files);
+      print(request.fields);
 
-    //send request
-    var response = await request.send();
-    print(response.statusCode);
-    print(response.reasonPhrase);
+      //send request
+      var response = await request.send().timeout(const Duration(seconds: 5));
+      print(response.statusCode);
+      print(response.reasonPhrase);
 
-    if (response.statusCode == 200) {
-      print("Trade License Form Data Successfully UPDATED.");
-      String responseBody = await response.stream.bytesToString();
-      print(responseBody);
-      return true;
-    }
-    print("Failed to UPDATE Trade License Form.");
-    return false;
+      if (response.statusCode == 200) {
+        print("Trade License Form Data Successfully UPDATED.");
+        String responseBody = await response.stream.bytesToString();
+        print(responseBody);
+        return true;
+      }
+      print("Failed to UPDATE Trade License Form.");
+      return false;
+    // }
+    // catch (e) {
+    //   print('Error : $e');
+    //   return false;
+    // }
+
   }
 
-  static Future<http.Response> retrieveForm(Map<String, String> body) async {
+  static Future<http.Response> retrieveForm(String applicationId) async {
+    // try {
+      Map<String, String> requestHeaders = {
+        // "Content-Type": "application/json",
+      };
 
-    Map<String, String> requestHeaders = {
-      // "Content-Type": "application/json",
-    };
+      String query = "${TradeLicenseAPI.retrieveFormAPI}/$applicationId";
 
-    final url = Uri.http(Config.apiURL, TradeLicenseAPI.retrieveFormAPI);
-    print(url);
+      final url = Uri.http(Config.apiURL, query);
+      print(url);
 
-    print("COOKIE DETAILS Trade License RETRIEVE FORM");
-    Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
-    requestHeaders['cookie'] = cookieHeaders!['cookie']!;
+      print("COOKIE DETAILS Trade License RETRIEVE FORM");
+      Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
+      requestHeaders['cookie'] = cookieHeaders!['cookie']!;
+      requestHeaders['Device-Info'] = cookieHeaders['Device-Info']!;
 
-    // var response = await client.get(url);
-    // print(response.body);
+      // var response = await client.get(url);
+      // print(response.body);
 
-    print(requestHeaders);
+      print(requestHeaders);
 
-    print(body);
 
-    var response = await client.post(url,
-        body: body, headers: requestHeaders);
+      var response = await client.get(url, headers: requestHeaders);
 
-    print("${jsonDecode(response.body)['data']}");
+      print("${jsonDecode(response.body)['data']}");
 
-    // print(tradeLicenseFormResponseJson(response.body));
 
-    return response;
+      return response;
+    // }
+    // catch (e) {
+    //   print('Error : $e');
+    //   return null;
+    // }
+
 
   }
 
   static Future<http.Response> generateLicensePDF(Map<String, String> body) async {
+    // try {
+      Map<String, String> requestHeaders = {
+        // "Content-Type": "application/json",
+      };
 
-    Map<String, String> requestHeaders = {
-      // "Content-Type": "application/json",
-    };
+      final url = Uri.http(Config.apiURL, TradeLicenseAPI.generateLicensePDFAPI);
+      print(url);
 
-    final url = Uri.http(Config.apiURL, TradeLicenseAPI.generateLicensePDFAPI);
-    print(url);
+      print("COOKIE DETAILS Trade License GENERATE FORM PDF");
+      Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
+      requestHeaders['cookie'] = cookieHeaders!['cookie']!;
+      requestHeaders['Device-Info'] = cookieHeaders['Device-Info']!;
 
-    print("COOKIE DETAILS Trade License GENERATE FORM PDF");
-    Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
-    requestHeaders['cookie'] = cookieHeaders!['cookie']!;
+      // var response = await client.get(url);
+      // print(response.body);
 
-    // var response = await client.get(url);
-    // print(response.body);
+      print(requestHeaders);
 
-    print(requestHeaders);
-
-    print(body);
+      print(body);
 
 
-    var response = await client.post(url,
-        body: body, headers: requestHeaders);
+      var response = await client.post(url,
+          body: body, headers: requestHeaders).timeout(const Duration(seconds: 5));
 
-    print(response.body);
+      print(response.body);
 
-    if(response.statusCode == 200) {
-      print("Generated trade license pdf successfully.");
+      if(response.statusCode == 200) {
+        print("Generated trade license pdf successfully.");
 
-      var pdfResponse = await retrieveLicensePDF(body);
-    }
-    else {
-      print("Failed to generate trade license pdf.");
-    }
+        await retrieveLicensePDF(body);
+      }
+      else {
+        print("Failed to generate trade license pdf.");
+      }
 
-    // print(tradeLicenseFormResponseJson(response.body));
+      // print(tradeLicenseFormResponseJson(response.body));
 
-    return response;
+      return response;
+    // }
+    // catch (e) {
+    //   print('Error : $e');
+    //   return null;
+    // }
+
 
   }
 
   static Future<http.Response> retrieveLicensePDF(Map<String, String> body) async {
+    // try {
+      Map<String, String> requestHeaders = {
+        // "Content-Type": "application/json",
+      };
 
-    Map<String, String> requestHeaders = {
-      // "Content-Type": "application/json",
-    };
+      String query = "${TradeLicenseAPI.retrieveLicensePDFAPI}/${body["application_id"]}";
 
-    final url = Uri.http(Config.apiURL, TradeLicenseAPI.retrieveLicensePDFAPI);
-    print(url);
+      final url = Uri.http(Config.apiURL, query);
+      print(url);
 
-    print("COOKIE DETAILS Trade License GENERATE FORM PDF");
-    Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
-    requestHeaders['cookie'] = cookieHeaders!['cookie']!;
+      print("COOKIE DETAILS Trade License GENERATE FORM PDF");
+      Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
+      requestHeaders['cookie'] = cookieHeaders!['cookie']!;
+      requestHeaders['Device-Info'] = cookieHeaders['Device-Info']!;
 
-    // var response = await client.get(url);
-    // print(response.body);
+      // var response = await client.get(url);
+      // print(response.body);
 
-    print(requestHeaders);
-
-    print(body);
+      print(requestHeaders);
 
 
-    var response = await client.post(url,
-        body: body, headers: requestHeaders);
 
-    // print(response.body);
+      var response = await client.get(url,
+          headers: requestHeaders).timeout(const Duration(seconds: 5));
 
-    if(response.statusCode == 200) {
-      TradeLicensePDFResponseModel model = tradeLicensePDFResponseJson(response.body);
+      // print(response.body);
 
-      displayPDF(body['application_id']!, model.license?.data);
-    }
-    return response;
+      if(response.statusCode == 200) {
+        TradeLicensePDFResponseModel model = tradeLicensePDFResponseJson(response.body);
+
+        displayPDF(body['application_id']!, model.license?.data);
+      }
+      return response;
+    // }
+    // catch (e) {
+    //   print('Error : $e');
+    //   return null;
+    // }
+
   }
 
   static void displayPDF(String applicationId, List<int>? data) async {

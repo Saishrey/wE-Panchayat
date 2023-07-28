@@ -12,36 +12,44 @@ import 'package:we_panchayat_dev/services/shared_service.dart';
 class ApplicationsAPIService {
   static var client = http.Client();
 
-  static Future<ApplicationsResponseModel> retrieveAllApplications() async {
+  static Future<ApplicationsResponseModel
 
-    String? phone = await getPhone();
-    print(phone);
-    Map<String, String> body = {
-      "phone": phone!,
-    };
+  > retrieveAllApplications() async {
+    // try{
+      String? phone = await getPhone();
+      print(phone);
+      // Map<String, String> body = {
+      //   "phone": phone!,
+      // };
 
-    Map<String, String> requestHeaders = {
-      // "Content-Type": "application/json",
-    };
+      Map<String, String> requestHeaders = {
+        // "Content-Type": "application/json",
+      };
 
-    final url = Uri.http(Config.apiURL, ApplicationsAPI.allApplicationsAPI);
-    print(url);
+      String query = "${ApplicationsAPI.allApplicationsAPI}/$phone";
 
-    print("COOKIE DETAILS All applications RETRIEVE DOCUMENTS");
-    Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
-    requestHeaders['cookie'] = cookieHeaders!['cookie']!;
+      final url = Uri.http(Config.apiURL, query);
+      print(url);
 
-    // var response = await client.get(url);
-    // print(response.body);
+      print("COOKIE DETAILS All applications RETRIEVE DOCUMENTS");
+      Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
+      requestHeaders['cookie'] = cookieHeaders!['cookie']!;
+      requestHeaders['Device-Info'] = cookieHeaders['Device-Info']!;
 
-    print(requestHeaders);
-    print(body);
 
-    var response = await client.post(url, body: body, headers: requestHeaders);
+      print(requestHeaders);
 
-    // print("${response.body}");
+      var response = await client.get(url, headers: requestHeaders);
 
-    return applicationsResponseJson(response.body);
+      // print("${response.body}");
+
+      return applicationsResponseJson(response.body);
+      
+    // } catch (e) {
+    //   print('Error : $e');
+    //   return null;
+    // }
+
   }
 
   static Future<String?> getPhone() async {

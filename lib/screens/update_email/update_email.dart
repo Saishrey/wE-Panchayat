@@ -12,6 +12,7 @@ import '../../models/login_response_model.dart';
 import '../../services/auth_api_service.dart';
 import '../../services/shared_service.dart';
 import '../../services/update_email_api_service.dart';
+import '../dialog_boxes.dart';
 
 class UpdateEmailPage extends StatefulWidget {
   @override
@@ -167,24 +168,31 @@ class _UpdateEmailPageState extends State<UpdateEmailPage> {
                     var response =
                         await UpdateEmailAPIService.updateEmail(body);
 
-                    if (response.statusCode == 200) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Email updated')));
-                      Navigator.of(context).pop();
-                      Navigator.of(context).pop();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => UserProfile()),
-                      );
-                    } else if(response.statusCode == 500) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Email already exists.')));
+
+                    if(response != null) {
+                      if (response.statusCode == 200) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Email updated')));
+                        Navigator.of(context).pop();
+                        Navigator.of(context).pop();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => UserProfile()),
+                        );
+                      } else if(response.statusCode == 500) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Email already exists.')));
+                      }
+                      else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Error updating email')));
+                      }
+                    } else {
+                      DialogBoxes.showServerDownDialogBox(context);
                     }
-                    else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Error updating email')));
-                    }
+
+
                   }
                 },
                 child: Text(

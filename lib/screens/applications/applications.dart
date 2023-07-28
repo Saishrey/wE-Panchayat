@@ -203,7 +203,7 @@ class ApplicationsState extends State<Applications> {
   }
 
   void fetchApplicationsList() async {
-    ApplicationsResponseModel? responseModel =
+    ApplicationsResponseModel responseModel =
         await ApplicationsAPIService.retrieveAllApplications();
 
     GrievanceRetrieveAllResponseModel grievanceRetrieveAllResponseModel =

@@ -19,74 +19,84 @@ import 'package:path/path.dart' as path;
 class BirthAndDeathCertificateAPIService {
   static var client = http.Client();
 
-  static Future<http.Response> getBirthCertificate(Map<String, String> body) async {
+  static Future<http.Response> getBirthCertificate(
+      Map<String, String> body) async {
+    // try {
+      Map<String, String> requestHeaders = {
+        // "Content-Type": "application/json",
+      };
 
-    Map<String, String> requestHeaders = {
-      // "Content-Type": "application/json",
-    };
+      final url =
+          Uri.http(Config.apiURL, BirthCertificateAPI.birthCertificateAPI);
+      print(url);
 
-    final url = Uri.http(Config.apiURL, BirthCertificateAPI.birthCertificateAPI);
-    print(url);
+      print("COOKIE DETAILS Birth Certificate");
+      Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
+      requestHeaders['cookie'] = cookieHeaders!['cookie']!;
+      requestHeaders['Device-Info'] = cookieHeaders['Device-Info']!;
 
-    print("COOKIE DETAILS Birth Certificate");
-    Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
-    requestHeaders['cookie'] = cookieHeaders!['cookie']!;
+      print(requestHeaders);
 
-    print(requestHeaders);
+      print(body);
 
-    print(body);
+      var response =
+          await client.post(url, body: body, headers: requestHeaders).timeout(const Duration(seconds: 5));
 
+      // print("${response.body}");
 
-    var response = await client.post(url,
-        body: body, headers: requestHeaders);
-
-    // print("${response.body}");
-
-    return response;
+      return response;
+    // } catch (e) {
+    //   print('Error : $e');
+    //   return null;
+    // }
   }
 
+  static Future<http.Response> getDeathCertificate(
+      Map<String, String> body) async {
+    // try {
+      Map<String, String> requestHeaders = {
+        // "Content-Type": "application/json",
+      };
 
-  static Future<http.Response> getDeathCertificate(Map<String, String> body) async {
+      final url =
+      Uri.http(Config.apiURL, DeathCertificateAPI.deathCertificateAPI);
+      print(url);
 
-    Map<String, String> requestHeaders = {
-      // "Content-Type": "application/json",
-    };
+      print("COOKIE DETAILS Death Certificate");
+      Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
+      requestHeaders['cookie'] = cookieHeaders!['cookie']!;
+      requestHeaders['Device-Info'] = cookieHeaders['Device-Info']!;
 
-    final url = Uri.http(Config.apiURL, DeathCertificateAPI.deathCertificateAPI);
-    print(url);
+      print(requestHeaders);
 
-    print("COOKIE DETAILS Death Certificate");
-    Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
-    requestHeaders['cookie'] = cookieHeaders!['cookie']!;
+      print(body);
 
+      var response = await client.post(url, body: body, headers: requestHeaders).timeout(const Duration(seconds: 5));
 
-    print(requestHeaders);
+      // print("${response.body}");
 
-    print(body);
-
-
-    var response = await client.post(url,
-        body: body, headers: requestHeaders);
-
-    // print("${response.body}");
-
-    return response;
+      return response;
+    // } catch (e) {
+    //   print('Error : $e');
+    //   return null;
+    // }
   }
 
   static void displayPDF(String name, List<int>? data) async {
     print(data);
     Directory? tempDir = await getExternalStorageDirectory();
     String filename = "${name}_certificate";
-    if(tempDir != null) {
+    if (tempDir != null) {
       File? pdfFile = await convertToPDF(filename, tempDir.path, data);
-      if(pdfFile != null) {
+      if (pdfFile != null) {
         print("Birth or Death Certificate PDF: ${pdfFile.path}");
         await OpenFile.open(pdfFile.path);
       }
     }
   }
 
-  static Future<File?> convertToPDF(String filename, String path, List<int>? binaryData) async {
+  static Future<File?> convertToPDF(
+      String filename, String path, List<int>? binaryData) async {
     // final directory = await getTemporaryDirectory();
     if (binaryData != null) {
       final file = File('$path/$filename.pdf');

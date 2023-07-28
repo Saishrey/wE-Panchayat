@@ -257,6 +257,9 @@ class _NavBarState extends State<NavBar> {
                   if (isLoggedOut) {
                     ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('Logged out.')));
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Error: Failed to log out.')));
                   }
                 },
                 child: Ink(
@@ -502,6 +505,10 @@ class _NavBarState extends State<NavBar> {
                 if (isLoggedOut) {
                   ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Logged out.')));
+                }
+                else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Error: Failed to log out.')));
                 }
               },
               child: Ink(

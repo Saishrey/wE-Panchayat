@@ -10,6 +10,7 @@ import 'package:we_panchayat_dev/screens/review_form/trade_license_review_form.d
 import 'package:we_panchayat_dev/services/income_certificate_api_service.dart';
 import 'package:we_panchayat_dev/services/trade_license_api_service.dart';
 
+import '../dialog_boxes.dart';
 import '../review_form/income_certificate_review_form.dart';
 import '../review_form/trade_license_review_form.dart';
 
@@ -142,55 +143,74 @@ class ApplicationsListView extends StatelessWidget {
   void _navigateToTradeLicenseDetails(
       BuildContext context, String applicationId) async {
     final licenseData = await _fetchLicenseDetails(applicationId);
-    if (licenseData.statusCode == 200) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => TradeLicenseReviewForm(
-            license: licenseData,
+    if(licenseData != null) {
+      if (licenseData.statusCode == 200) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => TradeLicenseReviewForm(
+              license: licenseData,
+            ),
           ),
-        ),
-      );
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Could not fetch details.')));
+      }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not fetch details.')));
+      DialogBoxes.showServerDownDialogBox(context);
     }
+
   }
 
-  Future<TradeLicenseFormResponseModel> _fetchLicenseDetails(
+  Future<TradeLicenseFormResponseModel?> _fetchLicenseDetails(
       String applicationId) async {
-    Map<String, String> body1 = {
-      "application_id": applicationId,
-    };
-    var response = await TradeLicenseAPIService.retrieveForm(body1);
-    return tradeLicenseFormResponseJson(response.body);
+    // Map<String, String> body1 = {
+    //   "application_id": applicationId,
+    // };
+    var response = await TradeLicenseAPIService.retrieveForm(applicationId);
+    if(response != null) {
+      return tradeLicenseFormResponseJson(response.body);
+    } else {
+      return null;
+    }
   }
 
   void _navigateToIncomeCertificateDetails(
       BuildContext context, String applicationId) async {
     final incomeCertificateData =
         await _fetchIncomeCertificateDetails(applicationId);
-    if (incomeCertificateData.statusCode == 200) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => IncomeCertificateReviewForm(
-            incomeCertificate: incomeCertificateData,
+    if(incomeCertificateData != null) {
+      if (incomeCertificateData.statusCode == 200) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => IncomeCertificateReviewForm(
+              incomeCertificate: incomeCertificateData,
+            ),
           ),
-        ),
-      );
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Could not fetch details.')));
+      }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not fetch details.')));
+      DialogBoxes.showServerDownDialogBox(context);
     }
+
   }
 
-  Future<IncomeCertificateFormResponseModel> _fetchIncomeCertificateDetails(
+  Future<IncomeCertificateFormResponseModel?> _fetchIncomeCertificateDetails(
       String applicationId) async {
-    Map<String, String> body1 = {
-      "application_id": applicationId,
-    };
-    var response = await IncomeCertificateAPIService.retrieveForm(body1);
-    return incomeCertificateFormResponseJson(response.body);
+    // Map<String, String> body1 = {
+    //   "application_id": applicationId,
+    // };
+    var response = await IncomeCertificateAPIService.retrieveForm(applicationId);
+    if(response != null) {
+      return incomeCertificateFormResponseJson(response.body);
+
+    } else {
+      return null;
+    }
   }
 }

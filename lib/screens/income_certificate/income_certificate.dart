@@ -17,6 +17,7 @@ import 'package:we_panchayat_dev/services/income_certificate_api_service.dart';
 import '../../constants.dart';
 import '../../models/login_response_model.dart';
 import '../../services/shared_service.dart';
+import '../dialog_boxes.dart';
 
 enum MaritalStatus { married, unmarried }
 
@@ -589,7 +590,7 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
                       "purpose": applicantPurposeController.text,
                     };
 
-                    http.Response response;
+                    var response;
 
                     if (widget.isEdit) {
                       print(
@@ -602,44 +603,64 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
                       response =
                           await IncomeCertificateAPIService.saveForm(body);
                     }
+                    if(response != null) {
+                      if (response.statusCode == 200) {
+                        print(
+                            "Income certificate Form Data Successfully Submitted.");
+                        String? newKeyFile3 = _file3TypeMap[_selectedFile3Type!];
+                        bool isSuccessful;
+                        String applicationId = '';
 
-                    if (response.statusCode == 200) {
-                      print(
-                          "Income certificate Form Data Successfully Submitted.");
-                      String? newKeyFile3 = _file3TypeMap[_selectedFile3Type!];
-                      bool isSuccessful;
+                        if (widget.isEdit) {
+                          //update files
+                          isSuccessful =
+                          await IncomeCertificateAPIService.updateFiles(
+                              {..._fileMap},
+                              newKeyFile3!,
+                              widget.formData!["mongo_id"]!);
+                        } else {
+                          //upload files
+                          Map<String, dynamic> map = jsonDecode(response.body);
+                          applicationId = map['application_id'];
+                          print(applicationId);
 
-                      if (widget.isEdit) {
-                        //update files
-                        isSuccessful =
-                            await IncomeCertificateAPIService.updateFiles(
-                                {..._fileMap},
-                                newKeyFile3!,
-                                widget.formData!["mongo_id"]!);
+                          isSuccessful =
+                          await IncomeCertificateAPIService.uploadFiles(
+                              {..._fileMap}, newKeyFile3!, applicationId);
+                        }
+
+                        if (isSuccessful) {
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ApplicationSubmitted()),
+                                (route) => false,
+                          );
+                        } else {
+                          await IncomeCertificateAPIService.deleteForm(applicationId);
+
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(
+                            SnackBar(
+                              content: Text("Error: Failed to upload documents"),
+                            ),
+                          );
+                          print("Failed to upload documents INCOME CERTIFICATE");
+                        }
                       } else {
-                        //upload files
-                        Map<String, dynamic> map = jsonDecode(response.body);
-                        String applicationId = map['application_id'];
-                        print(applicationId);
-
-                        isSuccessful =
-                            await IncomeCertificateAPIService.uploadFiles(
-                                {..._fileMap}, newKeyFile3!, applicationId);
-                      }
-
-                      if (isSuccessful) {
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => ApplicationSubmitted()),
-                          (route) => false,
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(
+                          SnackBar(
+                            content: Text("Error: Failed to Submit Income Certificate Form"),
+                          ),
                         );
-                      } else {
-                        print("Failed to upload documents INCOME CERTIFICATE");
+                        print("Failed to Submit Income Certificate Form.");
                       }
                     } else {
-                      print("Failed to Submit Income Certificate Form.");
+                      DialogBoxes.showServerDownDialogBox(context);
                     }
+
+
                   }
                 } else if (_validateStep(_currentStep)) {
                   setState(() {

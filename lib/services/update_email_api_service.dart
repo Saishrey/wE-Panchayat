@@ -17,63 +17,85 @@ class UpdateEmailAPIService {
   static var client = http.Client();
 
   static Future<bool> getOtpUpdateEmail() async {
-    final url = Uri.http(Config.apiURL, UpdateEmailAPI.getOtpAPI);
-    print(url);
+    // try {
+      final url = Uri.http(Config.apiURL, UpdateEmailAPI.getOtpAPI);
+      print(url);
 
-    Map<String, String> body = {
-      "isUpdate": "true",
-    };
+      Map<String, String> body = {
+        "isUpdate": "true",
+      };
 
-    print("COOKIE DETAILS Email update otp");
-    Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
-    print(cookieHeaders);
+      print("COOKIE DETAILS Email update otp");
+      Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
+      print(cookieHeaders);
 
-    var response = await client.post(url, headers: cookieHeaders, body: body);
+      var response = await client.post(url, headers: cookieHeaders, body: body).timeout(const Duration(seconds: 5));
 
-    if (response.statusCode == 200) {
-      print(response.body);
-      return true;
-    }
-    return false;
+      if (response.statusCode == 200) {
+        print(response.body);
+        return true;
+      }
+      return false;
+    // }
+    // catch (e) {
+    //   print('Error : $e');
+    //   return false;
+    // }
+
   }
 
 
   static Future<bool> verifyOtpUpdateEmail(Map<String, String> body) async {
-    final url = Uri.http(Config.apiURL, UpdateEmailAPI.verifyOtpAPI);
-    print(url);
+    // try {
+      final url = Uri.http(Config.apiURL, UpdateEmailAPI.verifyOtpAPI);
+      print(url);
 
-    print("COOKIE DETAILS Email update verify otp");
-    Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
-    print(cookieHeaders);
+      print("COOKIE DETAILS Email update verify otp");
+      Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
+      print(cookieHeaders);
 
-    var response = await client.post(url, headers: cookieHeaders, body: body);
+      var response = await client.post(url, headers: cookieHeaders, body: body).timeout(const Duration(seconds: 5));
 
-    print(response.body);
+      print(response.body);
 
-    if (response.statusCode == 200) {
+      if (response.statusCode == 200) {
 
-      return true;
-    }
-    return false;
+        return true;
+      }
+      return false;
+    // }
+    // catch (e) {
+    //   print('Error : $e');
+    //   return false;
+    // }
+
   }
 
   static Future<http.Response> updateEmail(Map<String, String> body) async {
-    final url = Uri.http(Config.apiURL, UpdateEmailAPI.updateEmailAPI);
-    print(url);
+    // try {
+      final url = Uri.http(Config.apiURL, UpdateEmailAPI.updateEmailAPI);
+      print(url);
 
-    print("COOKIE DETAILS Email update");
-    Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
-    print(cookieHeaders);
+      print("COOKIE DETAILS Email update");
+      Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
+      print(cookieHeaders);
 
-    var response = await client.post(url, headers: cookieHeaders, body: body);
+      var response = await client.post(url, headers: cookieHeaders, body: body).timeout(const Duration(seconds: 5));
 
-    print(response.body);
+      print(response.body);
 
-    if (response.statusCode == 200) {
-      print("Email updated successfully.");
-      await SharedService.updateLoginDetails(loginResponseJson(response.body));
-    }
-    print("Error updating email.");
-    return response;
+      if (response.statusCode == 200) {
+        print("Email updated successfully.");
+        await SharedService.updateLoginDetails(loginResponseJson(response.body));
+      }
+      print("Error updating email.");
+      return response;
+    // }
+    // catch (e) {
+    //   print('Error : $e');
+    //   return null;
+    // }
+
+
   }
 }

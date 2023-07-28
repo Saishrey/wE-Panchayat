@@ -6,6 +6,7 @@ import 'package:we_panchayat_dev/models/grievance_retrieve_all_response_model.da
 import 'package:we_panchayat_dev/models/income_certificate_response_model.dart';
 import 'package:we_panchayat_dev/models/trade_license_reponse_model.dart';
 import 'package:we_panchayat_dev/models/income_certificate_response_model.dart';
+import 'package:we_panchayat_dev/screens/dialog_boxes.dart';
 import 'package:we_panchayat_dev/screens/review_form/grievance_review_form.dart';
 import 'package:we_panchayat_dev/screens/review_form/income_certificate_review_form.dart';
 import 'package:we_panchayat_dev/screens/review_form/trade_license_review_form.dart';
@@ -122,27 +123,35 @@ class GrievancesListView extends StatelessWidget {
 
   void _navigateToGrievanceDetails(
       BuildContext context, String grievanceId) async {
-    Map<String, String?> body = {
-      "gid": grievanceId,
-    };
+    // Map<String, String?> body = {
+    //   "gid": grievanceId,
+    // };
 
-    var response = await GrievanceAPIService.retrieveGrievance(body);
 
-    if (response.statusCode == 200) {
-      GrievanceDataResponseModel model =
-          grievanceDataResponseModelJson(response.body);
 
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => GrievanceReviewForm(
-            grievanceData: model,
+    var response = await GrievanceAPIService.retrieveGrievance(grievanceId);
+
+    if(response != null) {
+      if (response.statusCode == 200) {
+        GrievanceDataResponseModel model =
+        grievanceDataResponseModelJson(response.body);
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => GrievanceReviewForm(
+              grievanceData: model,
+            ),
           ),
-        ),
-      );
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Could not fetch details.')));
+      }
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not fetch details.')));
+      DialogBoxes.showServerDownDialogBox(context);
     }
+
+
   }
 }

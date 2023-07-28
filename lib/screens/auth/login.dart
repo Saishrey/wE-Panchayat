@@ -14,6 +14,7 @@ import 'package:we_panchayat_dev/screens/otp/otp.dart';
 import 'package:we_panchayat_dev/screens/reset_password/username_input.dart';
 
 import '../../constants.dart';
+import '../dialog_boxes.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -69,6 +70,9 @@ class _LoginState extends State<Login> {
     return false;
   }
 
+
+  bool _isLoggingIn = false;
+
   @override
   Widget build(BuildContext context) {
     TextStyle textStyle = Theme.of(context).textTheme.titleMedium!;
@@ -86,323 +90,363 @@ class _LoginState extends State<Login> {
       child: Scaffold(
         resizeToAvoidBottomInset: true,
         backgroundColor: Colors.transparent,
-        body: Column(
+        body: Stack(
           children: [
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.only(top: 15.0, bottom: 0),
-                      child: Image.asset(
-                        'assets/images/icon.png',
-                        height: 150.0,
-                        width: 150.0,
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 0, bottom: 15.0),
-                      child: Container(
-                        margin: EdgeInsets.fromLTRB(0, 10, 0, 5),
-                        child: Text(
-                          'wE-Panchayat',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 32,
-                            fontFamily: 'Poppins-Bold',
-                            fontWeight: FontWeight.w700,
-                            color: Color(0xff21205b),
+            Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Padding(
+                          padding: EdgeInsets.only(top: 15.0, bottom: 0),
+                          child: Image.asset(
+                            'assets/images/icon.png',
+                            height: 150.0,
+                            width: 150.0,
                           ),
                         ),
-                      ),
-                    ),
-                    Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(0),
-                        child: Form(
-                          key: _formKey,
+                        Padding(
+                          padding: EdgeInsets.only(top: 0, bottom: 15.0),
+                          child: Container(
+                            margin: EdgeInsets.fromLTRB(0, 10, 0, 5),
+                            child: Text(
+                              'wE-Panchayat',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 32,
+                                fontFamily: 'Poppins-Bold',
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xff21205b),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Center(
                           child: Padding(
-                            padding:
-                                const EdgeInsets.only(right: 15.0, left: 15.0),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                SizedBox(height: 16),
-                                TextFormField(
-                                  controller: _usernameController,
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return "Required";
-                                    }
-                                    print("Username : $value");
+                            padding: EdgeInsets.all(0),
+                            child: Form(
+                              key: _formKey,
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.only(right: 15.0, left: 15.0),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  children: [
+                                    SizedBox(height: 16),
+                                    TextFormField(
+                                      controller: _usernameController,
+                                      validator: (value) {
+                                        if (value!.isEmpty) {
+                                          return "Required";
+                                        }
+                                        print("Username : $value");
 
-                                    return null;
-                                  },
-                                  onChanged: (value) {
-                                    if(_checkEmailOrPhone(value) == 1) {
-                                      setState(() {
-                                        _usernameLabelText = 'Email';
-                                      });
-                                    }
-                                    else if(_checkEmailOrPhone(value) == 2) {
-                                      setState(() {
-                                        _usernameLabelText = 'Phone';
-                                      });
-                                    }
-                                    else {
-                                      setState(() {
-                                        _usernameLabelText = 'Email or Phone';
-                                      });
-                                    }
-                                  },
-                                  style: AuthConstants.getTextStyle(),
-                                  decoration: InputDecoration(
-                                    labelText: _usernameLabelText,
-                                    labelStyle:
-                                        AuthConstants.getLabelAndHintStyle(),
-                                    filled: true,
-                                    fillColor: Colors.white,
-                                    border: AuthConstants.getEnabledBorder(),
-                                    enabledBorder:
-                                        AuthConstants.getEnabledBorder(),
-                                    focusedBorder:
-                                        AuthConstants.getFocusedBorder(),
-                                  ),
-                                ),
-                                SizedBox(height: 16),
-                                TextFormField(
-                                  controller: _passwordController,
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return "Required";
-                                    }
-                                    print("Password : $value");
-                                    return null;
-                                  },
-                                  style: AuthConstants.getTextStyle(),
-                                  obscureText: _obscureText,
-                                  decoration: InputDecoration(
-                                    filled: true,
-                                    fillColor: Colors.white,
-                                    labelText: 'Password',
-                                    suffixIcon: GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          _obscureText = !_obscureText;
-                                        });
+                                        return null;
                                       },
-                                      child: Icon(
-                                        _obscureText
-                                            ? Icons.visibility
-                                            : Icons.visibility_off,
-                                      ),
-                                    ),
-                                    suffixIconColor:
-                                        ColorConstants.formLabelTextColor,
-                                    labelStyle:
-                                        AuthConstants.getLabelAndHintStyle(),
-                                    // filled: true,
-                                    // fillColor: Color(0xffF6F6F6),
-                                    border: AuthConstants.getEnabledBorder(),
-                                    enabledBorder:
-                                        AuthConstants.getEnabledBorder(),
-                                    focusedBorder:
-                                        AuthConstants.getFocusedBorder(),
-                                  ),
-                                ),
-                                SizedBox(height: 16),
-                                ElevatedButton(
-                                  onPressed: () async {
-                                    if (_formKey.currentState!.validate()) {
-                                      if (_checkUsernameChanged()) {
-                                        if (!_usernameRecord.containsKey(
-                                            _usernameController.text)) {
+                                      onChanged: (value) {
+                                        if(_checkEmailOrPhone(value) == 1) {
                                           setState(() {
-                                            _usernameRecord[
-                                                _usernameController.text] = 3;
+                                            _usernameLabelText = 'Email';
                                           });
                                         }
-                                      }
-
-                                      LoginRequestModel model = LoginRequestModel(
-                                          username: _usernameController.text,
-                                          password: _passwordController.text,
-                                          isAdmin: false.toString());
-
-                                      var response =
-                                          await APIService.login(model);
-
-                                      if (response.statusCode == 200) {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    const Otp()));
-                                      } else if (response.statusCode == 404) {
-                                        final jsonData =
-                                            json.decode(response.body);
-                                        // Access the "message" key
-                                        String message = jsonData['message'];
-
-                                        if (message ==
-                                            "User is blocked. Please reset password to verify and login") {
-                                          showAccountBlockedDialogBox();
-                                        } else {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                              content: Text(message),
-                                            ),
-                                          );
+                                        else if(_checkEmailOrPhone(value) == 2) {
+                                          setState(() {
+                                            _usernameLabelText = 'Phone';
+                                          });
                                         }
-                                      } else if (response.statusCode == 401) {
-                                        setState(() {
-                                          _usernameRecord[_usernameController
-                                              .text] = (_usernameRecord[
-                                                  _usernameController.text]! -
-                                              1);
-                                        });
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          const SnackBar(
-                                            content: Text('Invalid credentials.'),
+                                        else {
+                                          setState(() {
+                                            _usernameLabelText = 'Email or Phone';
+                                          });
+                                        }
+                                      },
+                                      style: AuthConstants.getTextStyle(),
+                                      decoration: InputDecoration(
+                                        labelText: _usernameLabelText,
+                                        labelStyle:
+                                            AuthConstants.getLabelAndHintStyle(),
+                                        filled: true,
+                                        fillColor: Colors.white,
+                                        border: AuthConstants.getEnabledBorder(),
+                                        enabledBorder:
+                                            AuthConstants.getEnabledBorder(),
+                                        focusedBorder:
+                                            AuthConstants.getFocusedBorder(),
+                                      ),
+                                    ),
+                                    SizedBox(height: 16),
+                                    TextFormField(
+                                      controller: _passwordController,
+                                      validator: (value) {
+                                        if (value!.isEmpty) {
+                                          return "Required";
+                                        }
+                                        print("Password : $value");
+                                        return null;
+                                      },
+                                      style: AuthConstants.getTextStyle(),
+                                      obscureText: _obscureText,
+                                      decoration: InputDecoration(
+                                        filled: true,
+                                        fillColor: Colors.white,
+                                        labelText: 'Password',
+                                        suffixIcon: GestureDetector(
+                                          onTap: () {
+                                            setState(() {
+                                              _obscureText = !_obscureText;
+                                            });
+                                          },
+                                          child: Icon(
+                                            _obscureText
+                                                ? Icons.visibility
+                                                : Icons.visibility_off,
                                           ),
-                                        );
+                                        ),
+                                        suffixIconColor:
+                                            ColorConstants.formLabelTextColor,
+                                        labelStyle:
+                                            AuthConstants.getLabelAndHintStyle(),
+                                        // filled: true,
+                                        // fillColor: Color(0xffF6F6F6),
+                                        border: AuthConstants.getEnabledBorder(),
+                                        enabledBorder:
+                                            AuthConstants.getEnabledBorder(),
+                                        focusedBorder:
+                                            AuthConstants.getFocusedBorder(),
+                                      ),
+                                    ),
+                                    SizedBox(height: 16),
+                                    ElevatedButton(
+                                      onPressed: () async {
+                                        if (_formKey.currentState!.validate()) {
+                                          if (_checkUsernameChanged()) {
+                                            if (!_usernameRecord.containsKey(
+                                                _usernameController.text)) {
+                                              setState(() {
+                                                _usernameRecord[
+                                                    _usernameController.text] = 3;
+                                              });
+                                            }
+                                          }
 
-                                        // WARN USER
-                                        if (_usernameRecord[
-                                                _usernameController.text] ==
-                                            1) {
-                                          showWarningDialogBox();
-                                        }
+                                          LoginRequestModel model = LoginRequestModel(
+                                              username: _usernameController.text,
+                                              password: _passwordController.text,
+                                              isAdmin: false.toString());
 
-                                        // BLOCK USER
-                                        if (_usernameRecord[
-                                                _usernameController.text] ==
-                                            0) {
-                                          Map<String, String> body = {
-                                            'username': _usernameController.text,
-                                          };
+                                          setState(() {
+                                            _isLoggingIn = true;
+                                          });
 
                                           var response =
-                                              await APIService.blockAccount(body);
+                                              await APIService.login(model);
 
-                                          if (response.statusCode == 200) {
-                                            showAccountBlockedDialogBox();
+                                          setState(() {
+                                            _isLoggingIn = false;
+                                          });
+                                          if(response != null) {
+                                            if (response.statusCode == 200) {
+                                              Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                      const Otp()));
+                                            }
+                                            else if (response.statusCode == 404) {
+                                              final jsonData =
+                                              json.decode(response.body);
+                                              // Access the "message" key
+                                              String message = jsonData['message'];
+
+                                              if (message ==
+                                                  "User is blocked. Please reset password to verify and login") {
+                                                showAccountBlockedDialogBox();
+                                              } else {
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  SnackBar(
+                                                    content: Text(message),
+                                                  ),
+                                                );
+                                              }
+                                            }
+                                            else if (response.statusCode == 401) {
+                                              setState(() {
+                                                _usernameRecord[_usernameController
+                                                    .text] = (_usernameRecord[
+                                                _usernameController.text]! -
+                                                    1);
+                                              });
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                const SnackBar(
+                                                  content: Text('Invalid credentials.'),
+                                                ),
+                                              );
+
+                                              // WARN USER
+                                              if (_usernameRecord[
+                                              _usernameController.text] ==
+                                                  1) {
+                                                showWarningDialogBox();
+                                              }
+
+                                              // BLOCK USER
+                                              if (_usernameRecord[
+                                              _usernameController.text] ==
+                                                  0) {
+                                                Map<String, String> body = {
+                                                  'username': _usernameController.text,
+                                                };
+
+                                                setState(() {
+                                                  _isLoggingIn = true;
+                                                });
+                                                var response =
+                                                await APIService.blockAccount(body);
+                                                setState(() {
+                                                  _isLoggingIn = false;
+                                                });
+                                                    if( response != null) {
+                                                      if (response.statusCode == 200) {
+                                                        showAccountBlockedDialogBox();
+                                                      }
+                                                    } else {
+                                                      DialogBoxes.showServerDownDialogBox(context);
+                                                    }
+
+                                              }
+                                            }
+                                            else {
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                const SnackBar(
+                                                  content: Text('Invalid credentials.'),
+                                                ),
+                                              );
+                                            }
+                                          } else {
+                                            DialogBoxes.showServerDownDialogBox(context);
                                           }
                                         }
-                                      }
-                                      else {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          const SnackBar(
-                                            content: Text('Invalid credentials.'),
-                                          ),
-                                        );
-                                      }
-                                    }
-                                  },
-                                  child: Text("Log in",
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontFamily: 'Poppins-Bold',
-                                      )),
-                                  // style: ElevatedButton.styleFrom(
-                                  //   primary: Color(0xFF5386E4),
-                                  //   onPrimary: Colors.white,
-                                  //   shape: StadiumBorder(),
-                                  //   padding: EdgeInsets.only(
-                                  //       top: 15.0, bottom: 15.0),
-                                  // ),
-                                  style: AuthConstants.getSubmitButtonStyle(),
+                                      },
+                                      child: Text("Log in",
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontFamily: 'Poppins-Bold',
+                                          )),
+                                      // style: ElevatedButton.styleFrom(
+                                      //   primary: Color(0xFF5386E4),
+                                      //   onPrimary: Colors.white,
+                                      //   shape: StadiumBorder(),
+                                      //   padding: EdgeInsets.only(
+                                      //       top: 15.0, bottom: 15.0),
+                                      // ),
+                                      style: AuthConstants.getSubmitButtonStyle(),
+                                    ),
+                                  ],
                                 ),
-                              ],
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ),
-                    // Padding(
-                    //   padding: EdgeInsets.only(
-                    //       top: 20.0, bottom: 20.0, right: 10.0, left: 10.0),
-                    //   child: Divider(
-                    //     height: 1,
-                    //     thickness: 0.8,
-                    //     color: Colors.black54,
-                    //   ),
-                    // ),
-                    Center(
-                      child: Padding(
-                        padding: EdgeInsets.only(top: 40.0, right: 10.0, left: 10.0, bottom: 40.0),
-                        child: TextButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => UsernameInput()),
-                            );
-                          },
-                          child: Text(
-                            "Forgot your password?",
-                            style: TextStyle(
-                              color: ColorConstants.colorHuntCode2,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 14,
-                              fontFamily: 'Poppins-Medium',
+                        // Padding(
+                        //   padding: EdgeInsets.only(
+                        //       top: 20.0, bottom: 20.0, right: 10.0, left: 10.0),
+                        //   child: Divider(
+                        //     height: 1,
+                        //     thickness: 0.8,
+                        //     color: Colors.black54,
+                        //   ),
+                        // ),
+                        Center(
+                          child: Padding(
+                            padding: EdgeInsets.only(top: 40.0, right: 10.0, left: 10.0, bottom: 40.0),
+                            child: TextButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => UsernameInput()),
+                                );
+                              },
+                              child: Text(
+                                "Forgot your password?",
+                                style: TextStyle(
+                                  color: ColorConstants.colorHuntCode2,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 14,
+                                  fontFamily: 'Poppins-Medium',
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
                             ),
-                            textAlign: TextAlign.center,
                           ),
                         ),
-                      ),
+                      ],
                     ),
-                  ],
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Divider(
+                        height: 1,
+                        thickness: 0.8,
+                        color: ColorConstants.formBorderColor,
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
+                        child: InkWell(
+                          onTap: () {},
+                          child: GestureDetector(
+                            child: Padding(
+                              padding: const EdgeInsets.all(1.0),
+                              child: Text(
+                                "Don’t have an account? Sign up",
+                                style: TextStyle(
+                                  color: ColorConstants.colorHuntCode2,
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 14,
+                                  fontFamily: 'Poppins-Medium',
+                                ),
+                                // Your bottom element goes here
+                              ),
+                            ),
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const SignUpMobileInput()),
+                              );
+                            },
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            if (_isLoggingIn)
+              Opacity(
+                opacity: 0.3,
+                child: ModalBarrier(
+                  dismissible: false,
+                  color: Colors.black,
                 ),
               ),
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Divider(
-                    height: 1,
-                    thickness: 0.8,
-                    color: ColorConstants.formBorderColor,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
-                    child: InkWell(
-                      onTap: () {},
-                      child: GestureDetector(
-                        child: Padding(
-                          padding: const EdgeInsets.all(1.0),
-                          child: Text(
-                            "Don’t have an account? Sign up",
-                            style: TextStyle(
-                              color: ColorConstants.colorHuntCode2,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 14,
-                              fontFamily: 'Poppins-Medium',
-                            ),
-                            // Your bottom element goes here
-                          ),
-                        ),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    const SignUpMobileInput()),
-                          );
-                        },
-                      ),
-                    ),
-                  )
-                ],
+            if (_isLoggingIn)
+              Center(
+                child: CircularProgressIndicator(color: Colors.white,
+                strokeWidth: 6,),
               ),
-            ),
           ],
         ),
       ),

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:image/image.dart' as img;
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:we_panchayat_dev/config.dart';
 import 'package:we_panchayat_dev/models/login_request_model.dart';
@@ -36,7 +37,9 @@ class APIService {
       Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
       print(cookieHeaders);
 
-      var response = await client.post(url, headers: cookieHeaders);
+      var response = await client
+          .post(url, headers: cookieHeaders)
+          .timeout(const Duration(seconds: 5));
       print(response.body);
 
       if (response.statusCode == 200) {
@@ -46,106 +49,112 @@ class APIService {
 
       print("COOKIE ABSENT");
       return 0;
-
     } catch (e) {
       print("CONNECTION FAILED");
       return 2;
     }
   }
 
-  static Future<http.Response> login(LoginRequestModel model) async {
+  static Future<http.Response?> login(LoginRequestModel model) async {
     // 'username':'abc@gmail.com', 'password':'Asdfg@123',
+    try {
+      Map<String, String> requestHeaders = {
+        "Content-Type": "application/json",
+      };
 
-    Map<String, String> requestHeaders = {
-      "Content-Type": "application/json",
-    };
+      final url = Uri.http(Config.apiURL, Config.loginAPI);
+      print(url);
+      print("${model.toJson()}");
 
-    final url = Uri.http(Config.apiURL, Config.loginAPI);
-    print(url);
-    print("${model.toJson()}");
+      // jsonEncode(model.toJson())
 
-    // jsonEncode(model.toJson())
+      var response = await client
+          .post(url, body: model.toJson())
+          .timeout(const Duration(seconds: 5));
 
-    var response = await client.post(url, body: model.toJson());
+      print("${response.statusCode}");
+      print("${response.body}");
 
-    print("${response.statusCode}");
-    print("${response.body}");
+      if (response.statusCode == 200) {
+        loginResponse = response;
 
-    if (response.statusCode == 200) {
+        updateCookie(response);
 
-      loginResponse = response;
+        print("Redirect to OTP page");
 
-      updateCookie(response);
+        await SharedService.setCookie(_headers);
 
-      print("Redirect to OTP page");
+        var jsonResponse = jsonDecode(response.body);
 
-      await SharedService.setCookie(_headers);
+        String mongoId = jsonResponse['mongo_id'] ?? "NA";
 
-      var jsonResponse = jsonDecode(response.body);
+        print("MONGOID : $mongoId");
 
-      String mongoId = jsonResponse['mongo_id'] ?? "NA";
-
-      // print("MONGO ID : $mongoId");
-      if(mongoId != "NA") {
-
-        Map<String, String> body = {
-          'mongoId' : mongoId,
-        };
-        var response = await ProfilePicAPIService.retrieveProfilePic(body);
-
-        if(response.statusCode == 200) {
-          profilePicResponse = response;
-        } else {
-          print("Error retrieving profile picture");
+        // print("MONGO ID : $mongoId");
+        if (mongoId != "NA") {
+          // Map<String, String> body = {
+          //   'mongoId' : mongoId,
+          // };
+          var response = await ProfilePicAPIService.retrieveProfilePic(mongoId);
+          if (response.statusCode == 200) {
+            profilePicResponse = response;
+          } else {
+            print("Error retrieving profile picture");
+          }
         }
+
+        return response;
       }
 
+      print("Failed to log in.");
       return response;
+    } catch (e) {
+      print('Error : $e');
+      return null;
     }
-
-    print("Failed to log in.");
-    return response;
   }
-
 
   static Future<int> forgotPassword(Map<String, String> body) async {
     // 'username':'abc@gmail.com', 'password':'Asdfg@123',
+    // try {
+      Map<String, String> requestHeaders = {
+        "Content-Type": "application/json",
+      };
 
-    Map<String, String> requestHeaders = {
-      "Content-Type": "application/json",
-    };
+      final url = Uri.http(Config.apiURL, Config.otpAPI);
+      print(url);
 
-    final url = Uri.http(Config.apiURL, Config.otpAPI);
-    print(url);
+      print(body);
 
-    print(body);
+      // jsonEncode(model.toJson())
 
-    // jsonEncode(model.toJson())
+      var response = await client
+          .post(url, body: body)
+          .timeout(const Duration(seconds: 5));
 
-    var response = await client.post(url, body: body);
+      print("${response.statusCode}");
+      print("${response.body}");
 
-    print("${response.statusCode}");
-    print("${response.body}");
+      if (response.statusCode == 200) {
+        print("Redirect to OTP page reset password");
 
-    if (response.statusCode == 200) {
+        updateCookie(response);
 
-      print("Redirect to OTP page reset password");
+        await SharedService.setCookie(_headers);
+      } else if (response.statusCode == 409) {
+        var msg = jsonDecode(response.body);
+        print("${msg['message']}");
+      }
 
-      updateCookie(response);
-
-      await SharedService.setCookie(_headers);
-
-    }
-    else if(response.statusCode == 409) {
-
-      var msg = jsonDecode(response.body);
-      print("${msg['message']}");
-    }
-
-    return response.statusCode;
+      return response.statusCode;
+    // } catch (e) {
+    //   print('Error : $e');
+    //   return null;
+    // }
   }
 
   static Future<bool> logout(BuildContext context) async {
+    try {
       final url = Uri.http(Config.apiURL, Config.logoutAPI);
       print(url);
 
@@ -153,7 +162,9 @@ class APIService {
       Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
       print(cookieHeaders);
 
-      var response = await client.post(url, headers: cookieHeaders);
+      var response = await client
+          .post(url, headers: cookieHeaders)
+          .timeout(const Duration(seconds: 5));
 
       if (response.statusCode == 200) {
         SharedService.logout(context);
@@ -161,196 +172,233 @@ class APIService {
         return true;
       }
       return false;
+    } catch (e) {
+      print('Error : $e');
+      return false;
+    }
   }
 
-  static Future<Map> resendOtp() async {
-    print("RESEND otp");
+  static Future<Map?> resendOtp() async {
+    try {
+      print("RESEND otp");
 
-    // Map<String, String> cookieHeader = getCookieHeader();
-    //
-    // print(cookieHeader);
+      // Map<String, String> cookieHeader = getCookieHeader();
+      //
+      // print(cookieHeader);
 
-    print("COOKIE DETAILS resendOTP");
-    Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
-    print(cookieHeaders);
+      print("COOKIE DETAILS resendOTP");
+      Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
+      print(cookieHeaders);
 
-    final url = Uri.http(Config.apiURL, Config.resendOtpAPI);
-    print(url);
+      final url = Uri.http(Config.apiURL, Config.resendOtpAPI);
+      print(url);
 
-    http.Response response = await http.post(url, headers: cookieHeaders);
+      http.Response response = await http
+          .post(url, headers: cookieHeaders)
+          .timeout(const Duration(seconds: 5));
 
-    // updateCookie(response);
+      // updateCookie(response);
 
-    Map body = json.decode(response.body);
+      Map body = json.decode(response.body);
 
-    print("OTP get : ");
-    print(body);
+      print("OTP get : ");
+      print(body);
 
-    return body;
+      return body;
+    } catch (e) {
+      print('Error : $e');
+      return null;
+    }
   }
 
   static Future<bool> verifyOtp(Map body) async {
-    print("Verify otp");
+    try {
+      print("Verify otp");
 
-    print(body);
+      print(body);
 
-    print("COOKIE DETAILS resendOTP");
-    Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
-    print(cookieHeaders);
+      print("COOKIE DETAILS resendOTP");
+      Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
+      print(cookieHeaders);
 
-    final url = Uri.http(Config.apiURL, Config.verifyOtpAPI);
-    print(url);
+      final url = Uri.http(Config.apiURL, Config.verifyOtpAPI);
+      print(url);
 
-    http.Response response =
-        await http.post(url, body: body, headers: cookieHeaders);
+      http.Response response = await http
+          .post(url, body: body, headers: cookieHeaders)
+          .timeout(const Duration(seconds: 5));
 
-    // updateCookie(response);
+      // updateCookie(response);
 
-    print("${response.body}");
-    if (response.statusCode == 200) {
-      print("OTP verified.");
+      print("${response.body}");
+      if (response.statusCode == 200) {
+        print("OTP verified.");
 
-      await SharedService.setLoginDetails(loginResponseJson(loginResponse.body));
+        await SharedService.setLoginDetails(
+            loginResponseJson(loginResponse.body));
 
-      if(profilePicResponse != null) {
+        if (profilePicResponse != null) {
+          File? file = await getProfilePicAsFile(
+              profilePictureRetrieveJson(profilePicResponse.body));
 
-        File? file = await getProfilePicAsFile(profilePictureRetrieveJson(profilePicResponse.body));
-
-        if(file != null) {
-          await SharedService.setProfilePicture(file);
+          if (file != null) {
+            await SharedService.setProfilePicture(file, true);
+          }
         }
+
+        loginResponse = null;
+        profilePicResponse = null;
+        return true;
       }
 
-      loginResponse = null;
-      profilePicResponse = null;
-      return true;
+      print("Incorrect OTP.");
+      return false;
+    } catch (e) {
+      print('Error : $e');
+      return false;
     }
-
-    print("Incorrect OTP.");
-    return false;
   }
 
-
   static Future<bool> verifyOtpResetPassword(Map body) async {
-    print("Verify otp Reset Password");
+    try {
+      print("Verify otp Reset Password");
 
-    print(body);
+      print(body);
 
-    print("COOKIE DETAILS resendOTP");
-    Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
-    print(cookieHeaders);
+      print("COOKIE DETAILS resendOTP");
+      Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
+      print(cookieHeaders);
 
-    final url = Uri.http(Config.apiURL, Config.verifyOtpAPI);
-    print(url);
+      final url = Uri.http(Config.apiURL, Config.verifyOtpAPI);
+      print(url);
 
-    http.Response response =
-    await http.post(url, body: body, headers: cookieHeaders);
+      http.Response response = await http
+          .post(url, body: body, headers: cookieHeaders)
+          .timeout(const Duration(seconds: 5));
 
-    // updateCookie(response);
+      // updateCookie(response);
 
-    print("${response.body}");
-    if (response.statusCode == 200) {
-      print("OTP verified.");
+      print("${response.body}");
+      if (response.statusCode == 200) {
+        print("OTP verified.");
 
-      // await SharedService.setLoginDetails(loginResponseJson(loginResponse.body));
+        // await SharedService.setLoginDetails(loginResponseJson(loginResponse.body));
 
-      return true;
+        return true;
+      }
+
+      print("Incorrect OTP.");
+      return false;
+    } catch (e) {
+      print('Error : $e');
+      return false;
     }
-
-    print("Incorrect OTP.");
-    return false;
   }
 
   static Future<bool> updateNewPassword(Map body, BuildContext context) async {
-    print("Update New Password");
+    try {
+      print("Update New Password");
 
-    print(body);
+      print(body);
 
-    print("COOKIE DETAILS update password");
-    Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
-    print(cookieHeaders);
+      print("COOKIE DETAILS update password");
+      Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
+      print(cookieHeaders);
 
-    final url = Uri.http(Config.apiURL, Config.resetPassAPI);
-    print(url);
+      final url = Uri.http(Config.apiURL, Config.resetPassAPI);
+      print(url);
 
-    http.Response response =
-    await http.post(url, body: body, headers: cookieHeaders);
+      http.Response response = await http
+          .post(url, body: body, headers: cookieHeaders)
+          .timeout(const Duration(seconds: 5));
 
+      print("${response.body}");
+      if (response.statusCode == 200) {
+        print("Successfully reset password.");
+        SharedService.logout(context);
+        return true;
+      }
 
-    print("${response.body}");
-    if (response.statusCode == 200) {
-      print("Successfully reset password.");
-      SharedService.logout(context);
-      return true;
+      print("Password reset failed.");
+      return false;
+    } catch (e) {
+      print('Error : $e');
+      return false;
     }
-
-    print("Password reset failed.");
-    return false;
   }
 
-  static Future<http.Response> register(RegisterRequestModel model) async {
-    Map<String, String> requestHeaders = {
-      "Content-Type": "application/json",
-    };
+  static Future<http.Response?> register(RegisterRequestModel model) async {
+    try {
+      Map<String, String> requestHeaders = {
+        "Content-Type": "application/json",
+      };
 
-    final url = Uri.http(Config.apiURL, Config.signupAPI);
-    print(url);
+      final url = Uri.http(Config.apiURL, Config.signupAPI);
+      print(url);
 
-    print("COOKIE DETAILS Signup");
-    Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
-    requestHeaders['cookie'] = cookieHeaders!['cookie']!;
+      print("COOKIE DETAILS Signup");
+      Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
+      requestHeaders['cookie'] = cookieHeaders!['cookie']!;
+      requestHeaders['Device-Info'] = cookieHeaders['Device-Info']!;
 
-    print(requestHeaders);
+      print(requestHeaders);
 
-    print(model.toJson());
+      print(model.toJson());
 
-    var response = await client.post(url,
-        body: jsonEncode(model.toJson()), headers: requestHeaders);
+      var response = await client
+          .post(url, body: jsonEncode(model.toJson()), headers: requestHeaders)
+          .timeout(const Duration(seconds: 5));
 
-    print("${response.body}");
+      print("${response.body}");
 
-    if (response.statusCode == 200) {
-      print("Sign up successful.");
+      if (response.statusCode == 200) {
+        print("Sign up successful.");
 
-      updateCookie(response);
+        updateCookie(response);
 
-      await SharedService.setLoginDetails(loginResponseJson(response.body));
-      await SharedService.setCookie(_headers);
+        await SharedService.setLoginDetails(loginResponseJson(response.body));
+        await SharedService.setCookie(_headers);
 
+        return response;
+      }
 
+      print("Failed to Sign up.");
       return response;
+    } catch (e) {
+      print('Error : $e');
+      return null;
     }
-
-    print("Failed to Sign up.");
-    return response;
   }
 
-  static Future<http.Response> blockAccount(Map<String, String> body) async {
+  static Future<http.Response?> blockAccount(Map<String, String> body) async {
     // 'username':'abc@gmail.com', 'password':'Asdfg@123',
+    try {
+      Map<String, String> requestHeaders = {
+        "Content-Type": "application/json",
+      };
 
-    Map<String, String> requestHeaders = {
-      "Content-Type": "application/json",
-    };
+      final url = Uri.http(Config.apiURL, Config.blockUserAPI);
+      print(url);
 
-    final url = Uri.http(Config.apiURL, Config.blockUserAPI);
-    print(url);
+      var response = await client
+          .post(url, body: body)
+          .timeout(const Duration(seconds: 5));
 
+      print("${response.statusCode}");
+      print("${response.body}");
 
-    var response = await client.post(url, body: body);
+      if (response.statusCode == 200) {
+        print("Account has been blocked.");
 
-    print("${response.statusCode}");
-    print("${response.body}");
+        return response;
+      }
 
-    if (response.statusCode == 200) {
-
-
-      print("Account has been blocked.");
-
+      print("Failed to block account.");
       return response;
+    } catch (e) {
+      print('Error : $e');
+      return null;
     }
-
-    print("Failed to block account.");
-    return response;
   }
 
   static Map<String, String> getCookieHeader() {
@@ -428,24 +476,37 @@ class APIService {
     return cookie;
   }
 
-  static Future<File?> getProfilePicAsFile(ProfilePictureRetrieveModel? model) async {
+  static Future<File?> getProfilePicAsFile(
+      ProfilePictureRetrieveModel? model) async {
     Directory? tempDir = await getExternalStorageDirectory();
 
-    if(model != null) {
+    if (model != null) {
+
+      // Get the current time
+      DateTime now = DateTime.now();
+
+      // Format the time as a string using DateFormat class from intl package
+      String formattedTime = DateFormat('HH:mm:ss').format(now);
+
+      // Create a new file path with the desired file name
+      final newFileName = "PROFILE_PIC_$formattedTime";
+
       List<int>? binaryData;
       binaryData = model.documents?.profilePic?.data;
-      return assignFile("PROFILE_PIC", tempDir?.path, binaryData);
+      return assignFile(newFileName, tempDir?.path, binaryData);
     }
   }
 
-  static Future<File?> assignFile(String filename, String? path, List<int>? binaryData) async {
+  static Future<File?> assignFile(
+      String filename, String? path, List<int>? binaryData) async {
     File? imgFile = await binaryToTempFile(filename, path, binaryData);
     if (imgFile != null) {
       return imgFile;
     }
   }
 
-  static Future<File?> binaryToTempFile(String filename, String? path,  List<int>? binaryData) async {
+  static Future<File?> binaryToTempFile(
+      String filename, String? path, List<int>? binaryData) async {
     // final directory = await getTemporaryDirectory();
     if (binaryData != null && path != null) {
       final File file;

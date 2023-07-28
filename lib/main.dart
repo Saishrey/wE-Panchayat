@@ -1,24 +1,15 @@
 import 'dart:async';
-import 'dart:io';
 
-import 'package:api_cache_manager/utils/cache_manager.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+
 
 import 'package:we_panchayat_dev/screens/splash.dart';
-import 'package:connectivity/connectivity.dart';
-import 'package:flutter_dialogs/flutter_dialogs.dart';
 
-import 'constants.dart';
-import 'package:flutter/services.dart';
-import 'package:local_auth/error_codes.dart' as error_code;
-import 'package:local_auth/local_auth.dart';
-import 'package:local_auth_android/local_auth_android.dart';
-import 'package:local_auth_ios/local_auth_ios.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -42,8 +33,10 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-
   }
+
+
+
 
 
   @override

@@ -1,7 +1,9 @@
 class Config {
   static const String appName = "wE-Panchayat";
-  // static const String apiURL = "10.0.2.2:3001";  // emulator
-  static const String apiURL = "192.168.1.5:3001";  // from phone
+  static const String apiURL = "10.0.2.2:3001";  // emulator
+  // static const String apiURL = "192.168.1.5:3001";  // from phone
+  // static const String apiURL = "e894-14-139-113-18.ngrok-free.app";
+
   static const String loginAPI = "/auth/login";
   static const String signupAPI = "/auth/signup";
   static const String otpAPI = "/auth/get-otp";
@@ -16,6 +18,7 @@ class Config {
 
 class TradeLicenseAPI {
   static const String saveFormAPI = "/trade-license/save-form";
+  static const String deleteFormAPI = "/trade-license/delete-form";
   static const String retrieveFormAPI = "/trade-license/retrieve-form";
   static const String updateFormAPI = "/trade-license/update-form";
   static const String uploadDocumentsAPI = "/trade-license/upload-documents";
@@ -28,6 +31,7 @@ class TradeLicenseAPI {
 
 class IncomeCertificateAPI {
   static const String saveFormAPI = "/income-certificate/save-form";
+  static const String deleteFormAPI = "/income-certificate/delete-form";
   static const String retrieveFormAPI = "/income-certificate/retrieve-form";
   static const String updateFormAPI = "/income-certificate/update-form";
   static const String uploadDocumentsAPI = "/income-certificate/upload-documents";

@@ -259,6 +259,21 @@ class _IncomeCertificateReviewFormState
     }
   }
 
+  Future<bool> _handleBackPressed() async {
+    // Delete files from the file map
+    _fileMap.values.forEach((file) {
+      // file.deleteSync();
+      if (file != null) {
+        file.deleteSync();
+        print('File deleted');
+      } else {
+        print('File not found');
+      }
+    });
+
+    return true; // Allow the app to be closed
+  }
+
   @override
   Widget build(BuildContext context) {
     // if(_licenseFormResponseModel == null) {
@@ -267,629 +282,632 @@ class _IncomeCertificateReviewFormState
     //   );
     // }
 
-    print(_fileMap);
+    // print(_fileMap);
 
-    return Scaffold(
-      appBar: AppBar(
+    return WillPopScope(
+      onWillPop: _handleBackPressed,
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: ColorConstants.backgroundClipperColor,
+          foregroundColor: ColorConstants.darkBlueThemeColor,
+          title: Text(
+            'Income Certificate - Review',
+            style: TextStyle(
+                fontFamily: 'Poppins-Medium',
+                color: ColorConstants.darkBlueThemeColor,
+                fontSize: 18),
+          ),
+          elevation: 0,
+          actions: <Widget>[
+            Visibility(
+              visible: _isEdit,
+              child: IconButton(
+                icon: const Icon(Icons.edit_document),
+                onPressed: () {
+                  // do something
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => IncomeCertificate(
+                            fileMap: {..._fileMap},
+                            formData: {..._formData},
+                            isEdit: true)),
+                  );
+                },
+              ),
+            ),
+          ],
+          actionsIconTheme: IconThemeData(
+            color: ColorConstants.darkBlueThemeColor,
+            size: 28,
+          ),
+        ),
         backgroundColor: ColorConstants.backgroundClipperColor,
-        foregroundColor: ColorConstants.darkBlueThemeColor,
-        title: Text(
-          'Income Certificate - Review',
-          style: TextStyle(
-              fontFamily: 'Poppins-Medium',
-              color: ColorConstants.darkBlueThemeColor,
-              fontSize: 18),
-        ),
-        elevation: 0,
-        actions: <Widget>[
-          Visibility(
-            visible: _isEdit,
-            child: IconButton(
-              icon: const Icon(Icons.edit_document),
-              onPressed: () {
-                // do something
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => IncomeCertificate(
-                          fileMap: {..._fileMap},
-                          formData: {..._formData},
-                          isEdit: true)),
-                );
-              },
-            ),
-          ),
-        ],
-        actionsIconTheme: IconThemeData(
-          color: ColorConstants.darkBlueThemeColor,
-          size: 28,
-        ),
-      ),
-      backgroundColor: ColorConstants.backgroundClipperColor,
-      body: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.only(top: 16.0, bottom: 8.0),
-            decoration: BoxDecoration(
-              // color: Colors.white,
-              color: Theme.of(context).scaffoldBackgroundColor,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(30.0),
-                topRight: Radius.circular(30.0),
+        body: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.only(top: 16.0, bottom: 8.0),
+              decoration: BoxDecoration(
+                // color: Colors.white,
+                color: Theme.of(context).scaffoldBackgroundColor,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(30.0),
+                  topRight: Radius.circular(30.0),
+                ),
               ),
-            ),
-            child: TabBar(
-              labelColor: Colors.white,
-              unselectedLabelColor: Colors.grey,
-              indicatorSize: TabBarIndicatorSize.label,
-              indicator: BoxDecoration(
-                borderRadius: BorderRadius.circular(30),
-                color: _darkBlueButton,
-              ),
-              controller: _tabController,
-              tabs: [
-                Tab(
-                  child: Container(
-                    alignment: Alignment.center,
-                    child: Text(
-                      'Details',
-                      style: TextStyle(fontFamily: 'Poppins-Medium'),
-                    ),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(30),
-                      border: Border.all(color: _darkBlueButton),
+              child: TabBar(
+                labelColor: Colors.white,
+                unselectedLabelColor: Colors.grey,
+                indicatorSize: TabBarIndicatorSize.label,
+                indicator: BoxDecoration(
+                  borderRadius: BorderRadius.circular(30),
+                  color: _darkBlueButton,
+                ),
+                controller: _tabController,
+                tabs: [
+                  Tab(
+                    child: Container(
+                      alignment: Alignment.center,
+                      child: Text(
+                        'Details',
+                        style: TextStyle(fontFamily: 'Poppins-Medium'),
+                      ),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(30),
+                        border: Border.all(color: _darkBlueButton),
+                      ),
                     ),
                   ),
-                ),
-                Tab(
-                  child: Container(
-                    alignment: Alignment.center,
-                    child: Text(
-                      'Status',
-                      style: TextStyle(fontFamily: 'Poppins-Medium'),
-                    ),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(30),
-                      border: Border.all(color: _darkBlueButton),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                if (_formData.isEmpty || _fileMap.isEmpty) ...[
-                  const Center(
-                    child: CircularProgressIndicator(),
-                  )
-                ] else ...[
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).scaffoldBackgroundColor,
-                    ),
-                    child: ListView(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 16, horizontal: 24),
-                          child: Container(
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10.0),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.6),
-                                  spreadRadius: 1,
-                                  blurRadius: 3,
-                                  offset: const Offset(0,
-                                      2), // changes the position of the shadow
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 16,
-                                ),
-                                Text(
-                                  "Applicant Details",
-                                  style: TextStyle(
-                                    fontFamily: 'Poppins-Bold',
-                                    fontSize: 16,
-                                    color: ColorConstants.lightBlackColor,
-                                  ),
-                                ),
-                                const SizedBox(
-                                  height: 16,
-                                ),
-                                Row(
-                                  children: [
-                                    const SizedBox(
-                                      width: 16,
-                                    ),
-                                    Expanded(
-                                      flex: 1,
-                                      child: Center(
-                                        child: Image.memory(
-                                          Uint8List.fromList(_fileMap["photo"]
-                                                  ?.readAsBytesSync()
-                                              as List<int>),
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      width: 16,
-                                    ),
-                                    Expanded(
-                                      flex: 2,
-                                      child: SizedBox(
-                                        height: 180,
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            Text(
-                                              "${_formData["title"]} ${_formData["applicants_name"]}",
-                                              style: const TextStyle(
-                                                fontFamily: 'Poppins-Medium',
-                                                fontSize: 14,
-                                                color: Colors.black,
-                                              ),
-                                            ),
-                                            Text(
-                                              "${formatDate(_formData["date_of_birth"]!)}",
-                                              style: const TextStyle(
-                                                fontFamily: 'Poppins-Medium',
-                                                fontSize: 14,
-                                                color: Colors.black,
-                                              ),
-                                            ),
-                                            Text(
-                                              "${_formData["phone"]}",
-                                              style: const TextStyle(
-                                                fontFamily: 'Poppins-Medium',
-                                                fontSize: 14,
-                                                color: Colors.black,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 16),
-                                  child: Divider(
-                                    thickness: 1,
-                                    color: Colors.black12,
-                                  ),
-                                ),
-                                _buildSection('Taluka', _formData["taluka"]!),
-                                const Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 16),
-                                  child: Divider(
-                                    thickness: 1,
-                                    color: Colors.black12,
-                                  ),
-                                ),
-                                _buildSection(
-                                    'Panchayat', _formData["panchayat"]!),
-                                // const Divider(
-                                //   thickness: 1,
-                                // ),
-                                // _buildSection('Title', _formData["title"]!),
-                                // const Divider(
-                                //   thickness: 1,
-                                // ),
-                                // _buildSection("Applicant's Name",
-                                //     _formData["applicants_name"]!),
-                                const Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 16),
-                                  child: Divider(
-                                    thickness: 1,
-                                    color: Colors.black12,
-                                  ),
-                                ),
-                                _buildSection("Parent's/ Husband's Name",
-                                    _formData["parents_name"]!),
-                                // const Divider(
-                                //   thickness: 1,
-                                // ),
-                                // _buildSection(
-                                //     'Mobile No.', _formData["phone"]!),
-                                const Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 16),
-                                  child: Divider(
-                                    thickness: 1,
-                                    color: Colors.black12,
-                                  ),
-                                ),
-                                _buildSection('Email', _formData["email"]!),
-                                const Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 16),
-                                  child: Divider(
-                                    thickness: 1,
-                                    color: Colors.black12,
-                                  ),
-                                ),
-                                _buildSection(
-                                    'Id Proof', _formData["id_proof"]!),
-                                const Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 16),
-                                  child: Divider(
-                                    thickness: 1,
-                                    color: Colors.black12,
-                                  ),
-                                ),
-                                _buildSection('Id Proof Number',
-                                    _formData["id_proof_no"]!),
-                                // const Divider(
-                                //   thickness: 1,
-                                // ),
-                                // _buildSection('Date Of Birth',
-                                //     formatDate(_formData["date_of_birth"]!)),
-                                const Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 16),
-                                  child: Divider(
-                                    thickness: 1,
-                                    color: Colors.black12,
-                                  ),
-                                ),
-                                _buildSection('Place Of Birth',
-                                    _formData["place_of_birth"]!),
-                                const Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 16),
-                                  child: Divider(
-                                    thickness: 1,
-                                    color: Colors.black12,
-                                  ),
-                                ),
-                                _buildSection("Applicant's Relation",
-                                    _formData["applicants_relation"]!),
-                                const Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 16),
-                                  child: Divider(
-                                    thickness: 1,
-                                    color: Colors.black12,
-                                  ),
-                                ),
-                                _buildSection("Applicant's Address",
-                                    _formData["applicants_address"]!),
-                                const Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 16),
-                                  child: Divider(
-                                    thickness: 1,
-                                    color: Colors.black12,
-                                  ),
-                                ),
-                                _buildSection(
-                                    'Occupation', _formData["occupation"]!),
-                                const Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 16),
-                                  child: Divider(
-                                    thickness: 1,
-                                    color: Colors.black12,
-                                  ),
-                                ),
-                                _buildSection('Annual Income',
-                                    _formData["annual_income"]!),
-                                const Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 16),
-                                  child: Divider(
-                                    thickness: 1,
-                                    color: Colors.black12,
-                                  ),
-                                ),
-                                _buildSection(
-                                    'From Year', _formData["from_year"]!),
-                                const Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 16),
-                                  child: Divider(
-                                    thickness: 1,
-                                    color: Colors.black12,
-                                  ),
-                                ),
-                                _buildSection(
-                                    'From Year', _formData["from_year"]!),
-                                const Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 16),
-                                  child: Divider(
-                                    thickness: 1,
-                                    color: Colors.black12,
-                                  ),
-                                ),
-                                _buildSection(
-                                    'To Year', _formData["to_year"]!),
-                                const Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 16),
-                                  child: Divider(
-                                    thickness: 1,
-                                    color: Colors.black12,
-                                  ),
-                                ),
-                                _buildSection('Marital Status',
-                                    _formData["marital_status"]!),
-                                const Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 16),
-                                  child: Divider(
-                                    thickness: 1,
-                                    color: Colors.black12,
-                                  ),
-                                ),
-                                _buildSection('To produce at',
-                                    _formData["to_produce_at"]!),
-                                const Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 16),
-                                  child: Divider(
-                                    thickness: 1,
-                                    color: Colors.black12,
-                                  ),
-                                ),
-                                _buildSection(
-                                    'Purpose', _formData["purpose"]!),
-                                const SizedBox(
-                                  height: 16,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 16, horizontal: 24),
-                          child: Container(
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10.0),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.6),
-                                  spreadRadius: 1,
-                                  blurRadius: 3,
-                                  offset: const Offset(0,
-                                      2), // changes the position of the shadow
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 16,
-                                ),
-                                Text(
-                                  "Documents",
-                                  style: TextStyle(
-                                    fontFamily: 'Poppins-Bold',
-                                    fontSize: 16,
-                                    color: ColorConstants.lightBlackColor,
-                                  ),
-                                ),
-
-                                if (_fileMap["rationCard"] != null) ...[
-                                  _buildPDFListItem(
-                                      'Ration Card (Self Attested)',
-                                      _fileMap["rationCard"]!),
-                                  const Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 16),
-                                    child: Divider(
-                                      thickness: 1,
-                                      color: Colors.black12,
-                                    ),
-                                  ),
-                                ],
-                                if (_fileMap["aadharCard"] != null) ...[
-                                  _buildPDFListItem(
-                                      'Aadhar Card (Self Attested)',
-                                      _fileMap["aadharCard"]!),
-                                  const Padding(
-                                    padding:
-                                    EdgeInsets.symmetric(horizontal: 16),
-                                    child: Divider(
-                                      thickness: 1,
-                                      color: Colors.black12,
-                                    ),
-                                  ),
-                                ],
-                                if (_fileMap["form16"] != null) ...[
-                                  _buildPDFListItem(
-                                      'Form 16', _fileMap["form16"]!),
-                                  const Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 16),
-                                    child: Divider(
-                                      thickness: 1,
-                                      color: Colors.black12,
-                                    ),
-                                  ),
-                                ],
-                                if (_fileMap["bankPassbook"] != null) ...[
-                                  _buildPDFListItem(
-                                    'Bank PassBook(Pensioner)',
-                                    _fileMap["bankPassbook"]!,
-                                  ),
-                                  const Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 16),
-                                    child: Divider(
-                                      thickness: 1,
-                                      color: Colors.black12,
-                                    ),
-                                  ),
-                                ],
-                                if (_fileMap["salaryCertificate"] !=
-                                    null) ...[
-                                  _buildPDFListItem('Salary Certificate',
-                                      _fileMap["salaryCertificate"]!),
-                                  const Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 16),
-                                    child: Divider(
-                                      thickness: 1,
-                                      color: Colors.black12,
-                                    ),
-                                  ),
-                                ],
-                                if (_fileMap["selfDeclaration"] != null) ...[
-                                  _buildPDFListItem('Self Declaration',
-                                      _fileMap["selfDeclaration"]!),
-                                ],
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                      ],
+                  Tab(
+                    child: Container(
+                      alignment: Alignment.center,
+                      child: Text(
+                        'Status',
+                        style: TextStyle(fontFamily: 'Poppins-Medium'),
+                      ),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(30),
+                        border: Border.all(color: _darkBlueButton),
+                      ),
                     ),
                   ),
                 ],
-                Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                  ),
-                  child: Center(
-                    child: SingleChildScrollView(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+              ),
+            ),
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  if (_formData.isEmpty || _fileMap.isEmpty) ...[
+                    const Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  ] else ...[
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).scaffoldBackgroundColor,
+                      ),
+                      child: ListView(
                         children: [
                           Padding(
-                            padding:
-                                const EdgeInsets.only(left: 16.0, right: 16.0),
-                            child: AnotherStepper(
-                              stepperDirection: Axis.vertical,
-                              verticalGap: 15,
-                              iconWidth: 60,
-                              iconHeight: 60,
-                              activeBarColor: Color(0xff28B446),
-                              inActiveBarColor: Colors.grey,
-                              activeIndex: _applicationStatusActiveIndex,
-                              barThickness: 2,
-                              stepperList: getStatusSteps(),
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 16, horizontal: 24),
+                            child: Container(
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(10.0),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.6),
+                                    spreadRadius: 1,
+                                    blurRadius: 3,
+                                    offset: const Offset(0,
+                                        2), // changes the position of the shadow
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                children: [
+                                  const SizedBox(
+                                    height: 16,
+                                  ),
+                                  Text(
+                                    "Applicant Details",
+                                    style: TextStyle(
+                                      fontFamily: 'Poppins-Bold',
+                                      fontSize: 16,
+                                      color: ColorConstants.lightBlackColor,
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 16,
+                                  ),
+                                  Row(
+                                    children: [
+                                      const SizedBox(
+                                        width: 16,
+                                      ),
+                                      Expanded(
+                                        flex: 1,
+                                        child: Center(
+                                          child: Image.memory(
+                                            Uint8List.fromList(_fileMap["photo"]
+                                                    ?.readAsBytesSync()
+                                                as List<int>),
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        width: 16,
+                                      ),
+                                      Expanded(
+                                        flex: 2,
+                                        child: SizedBox(
+                                          height: 180,
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              Text(
+                                                "${_formData["title"]} ${_formData["applicants_name"]}",
+                                                style: const TextStyle(
+                                                  fontFamily: 'Poppins-Medium',
+                                                  fontSize: 14,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                              Text(
+                                                "${formatDate(_formData["date_of_birth"]!)}",
+                                                style: const TextStyle(
+                                                  fontFamily: 'Poppins-Medium',
+                                                  fontSize: 14,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                              Text(
+                                                "${_formData["phone"]}",
+                                                style: const TextStyle(
+                                                  fontFamily: 'Poppins-Medium',
+                                                  fontSize: 14,
+                                                  color: Colors.black,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 16),
+                                    child: Divider(
+                                      thickness: 1,
+                                      color: Colors.black12,
+                                    ),
+                                  ),
+                                  _buildSection('Taluka', _formData["taluka"]!),
+                                  const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 16),
+                                    child: Divider(
+                                      thickness: 1,
+                                      color: Colors.black12,
+                                    ),
+                                  ),
+                                  _buildSection(
+                                      'Panchayat', _formData["panchayat"]!),
+                                  // const Divider(
+                                  //   thickness: 1,
+                                  // ),
+                                  // _buildSection('Title', _formData["title"]!),
+                                  // const Divider(
+                                  //   thickness: 1,
+                                  // ),
+                                  // _buildSection("Applicant's Name",
+                                  //     _formData["applicants_name"]!),
+                                  const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 16),
+                                    child: Divider(
+                                      thickness: 1,
+                                      color: Colors.black12,
+                                    ),
+                                  ),
+                                  _buildSection("Parent's/ Husband's Name",
+                                      _formData["parents_name"]!),
+                                  // const Divider(
+                                  //   thickness: 1,
+                                  // ),
+                                  // _buildSection(
+                                  //     'Mobile No.', _formData["phone"]!),
+                                  const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 16),
+                                    child: Divider(
+                                      thickness: 1,
+                                      color: Colors.black12,
+                                    ),
+                                  ),
+                                  _buildSection('Email', _formData["email"]!),
+                                  const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 16),
+                                    child: Divider(
+                                      thickness: 1,
+                                      color: Colors.black12,
+                                    ),
+                                  ),
+                                  _buildSection(
+                                      'Id Proof', _formData["id_proof"]!),
+                                  const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 16),
+                                    child: Divider(
+                                      thickness: 1,
+                                      color: Colors.black12,
+                                    ),
+                                  ),
+                                  _buildSection('Id Proof Number',
+                                      _formData["id_proof_no"]!),
+                                  // const Divider(
+                                  //   thickness: 1,
+                                  // ),
+                                  // _buildSection('Date Of Birth',
+                                  //     formatDate(_formData["date_of_birth"]!)),
+                                  const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 16),
+                                    child: Divider(
+                                      thickness: 1,
+                                      color: Colors.black12,
+                                    ),
+                                  ),
+                                  _buildSection('Place Of Birth',
+                                      _formData["place_of_birth"]!),
+                                  const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 16),
+                                    child: Divider(
+                                      thickness: 1,
+                                      color: Colors.black12,
+                                    ),
+                                  ),
+                                  _buildSection("Applicant's Relation",
+                                      _formData["applicants_relation"]!),
+                                  const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 16),
+                                    child: Divider(
+                                      thickness: 1,
+                                      color: Colors.black12,
+                                    ),
+                                  ),
+                                  _buildSection("Applicant's Address",
+                                      _formData["applicants_address"]!),
+                                  const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 16),
+                                    child: Divider(
+                                      thickness: 1,
+                                      color: Colors.black12,
+                                    ),
+                                  ),
+                                  _buildSection(
+                                      'Occupation', _formData["occupation"]!),
+                                  const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 16),
+                                    child: Divider(
+                                      thickness: 1,
+                                      color: Colors.black12,
+                                    ),
+                                  ),
+                                  _buildSection('Annual Income',
+                                      _formData["annual_income"]!),
+                                  const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 16),
+                                    child: Divider(
+                                      thickness: 1,
+                                      color: Colors.black12,
+                                    ),
+                                  ),
+                                  _buildSection(
+                                      'From Year', _formData["from_year"]!),
+                                  const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 16),
+                                    child: Divider(
+                                      thickness: 1,
+                                      color: Colors.black12,
+                                    ),
+                                  ),
+                                  _buildSection(
+                                      'From Year', _formData["from_year"]!),
+                                  const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 16),
+                                    child: Divider(
+                                      thickness: 1,
+                                      color: Colors.black12,
+                                    ),
+                                  ),
+                                  _buildSection(
+                                      'To Year', _formData["to_year"]!),
+                                  const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 16),
+                                    child: Divider(
+                                      thickness: 1,
+                                      color: Colors.black12,
+                                    ),
+                                  ),
+                                  _buildSection('Marital Status',
+                                      _formData["marital_status"]!),
+                                  const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 16),
+                                    child: Divider(
+                                      thickness: 1,
+                                      color: Colors.black12,
+                                    ),
+                                  ),
+                                  _buildSection('To produce at',
+                                      _formData["to_produce_at"]!),
+                                  const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 16),
+                                    child: Divider(
+                                      thickness: 1,
+                                      color: Colors.black12,
+                                    ),
+                                  ),
+                                  _buildSection(
+                                      'Purpose', _formData["purpose"]!),
+                                  const SizedBox(
+                                    height: 16,
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                          const SizedBox(
-                            height: 16.0,
                           ),
                           Padding(
-                            padding:
-                                const EdgeInsets.only(left: 25.0, right: 25.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Remark:",
-                                  style: TextStyle(
-                                    color: Color(0xffFF0000),
-                                    fontFamily: 'Poppins-Bold',
-                                    fontSize: 16,
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 16, horizontal: 24),
+                            child: Container(
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(10.0),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.6),
+                                    spreadRadius: 1,
+                                    blurRadius: 3,
+                                    offset: const Offset(0,
+                                        2), // changes the position of the shadow
                                   ),
-                                ),
-                                Expanded(
-                                  child: Text(
-                                    _applicationRemark,
+                                ],
+                              ),
+                              child: Column(
+                                children: [
+                                  const SizedBox(
+                                    height: 16,
+                                  ),
+                                  Text(
+                                    "Documents",
                                     style: TextStyle(
-                                      color: Color(0xffFF0000),
-                                      fontFamily: 'Poppins-Medium',
-                                      fontSize: 12,
+                                      fontFamily: 'Poppins-Bold',
+                                      fontSize: 16,
+                                      color: ColorConstants.lightBlackColor,
                                     ),
-                                    textAlign: TextAlign.center,
                                   ),
-                                ),
-                              ],
+
+                                  if (_fileMap["rationCard"] != null) ...[
+                                    _buildPDFListItem(
+                                        'Ration Card (Self Attested)',
+                                        _fileMap["rationCard"]!),
+                                    const Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(horizontal: 16),
+                                      child: Divider(
+                                        thickness: 1,
+                                        color: Colors.black12,
+                                      ),
+                                    ),
+                                  ],
+                                  if (_fileMap["aadharCard"] != null) ...[
+                                    _buildPDFListItem(
+                                        'Aadhar Card (Self Attested)',
+                                        _fileMap["aadharCard"]!),
+                                    const Padding(
+                                      padding:
+                                      EdgeInsets.symmetric(horizontal: 16),
+                                      child: Divider(
+                                        thickness: 1,
+                                        color: Colors.black12,
+                                      ),
+                                    ),
+                                  ],
+                                  if (_fileMap["form16"] != null) ...[
+                                    _buildPDFListItem(
+                                        'Form 16', _fileMap["form16"]!),
+                                    const Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(horizontal: 16),
+                                      child: Divider(
+                                        thickness: 1,
+                                        color: Colors.black12,
+                                      ),
+                                    ),
+                                  ],
+                                  if (_fileMap["bankPassbook"] != null) ...[
+                                    _buildPDFListItem(
+                                      'Bank PassBook(Pensioner)',
+                                      _fileMap["bankPassbook"]!,
+                                    ),
+                                    const Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(horizontal: 16),
+                                      child: Divider(
+                                        thickness: 1,
+                                        color: Colors.black12,
+                                      ),
+                                    ),
+                                  ],
+                                  if (_fileMap["salaryCertificate"] !=
+                                      null) ...[
+                                    _buildPDFListItem('Salary Certificate',
+                                        _fileMap["salaryCertificate"]!),
+                                    const Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(horizontal: 16),
+                                      child: Divider(
+                                        thickness: 1,
+                                        color: Colors.black12,
+                                      ),
+                                    ),
+                                  ],
+                                  if (_fileMap["selfDeclaration"] != null) ...[
+                                    _buildPDFListItem('Self Declaration',
+                                        _fileMap["selfDeclaration"]!),
+                                  ],
+                                ],
+                              ),
                             ),
                           ),
                           const SizedBox(
-                            height: 16.0,
-                          ),
-                          Container(
-                            width: double.infinity,
-                            padding:
-                                const EdgeInsets.only(left: 25.0, right: 25.0),
-                            child: ElevatedButton(
-                              onPressed: _applicationStatusActiveIndex ==
-                                      getStatusSteps().length - 1
-                                  ? () async {
-                                      Map<String, String> body = {
-                                        "application_id":
-                                            _incomeCertificateFormResponseModel
-                                                .data.applicationId!,
-                                      };
-                                      IncomeCertificateAPIService
-                                          .generateCertificatePDF(body);
-                                    }
-                                  : null,
-                              style: ButtonStyle(
-                                backgroundColor:
-                                    MaterialStateProperty.all<Color>(
-                                        _applicationStatusActiveIndex ==
-                                                getStatusSteps().length - 1
-                                            ? Color(0xff6CC51D)
-                                            : Colors.grey),
-                                shape: MaterialStateProperty.all<
-                                    RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20.0),
-                                    // side: BorderSide(
-                                    //     color: _applicationStatusActiveIndex ==
-                                    //             getDetailsSteps().length - 1
-                                    //         ? Color(0xff6CC51D)
-                                    //         : Colors.grey),
-                                  ),
-                                ),
-                                padding: MaterialStateProperty.all<EdgeInsets>(
-                                  EdgeInsets.only(top: 15.0, bottom: 15.0),
-                                ),
-                              ),
-                              child: const Text(
-                                'Download',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontFamily: 'Poppins-Bold',
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 16.0,
+                            height: 20,
                           ),
                         ],
                       ),
                     ),
+                  ],
+                  Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                    ),
+                    child: Center(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 16.0, right: 16.0),
+                              child: AnotherStepper(
+                                stepperDirection: Axis.vertical,
+                                verticalGap: 15,
+                                iconWidth: 60,
+                                iconHeight: 60,
+                                activeBarColor: Color(0xff28B446),
+                                inActiveBarColor: Colors.grey,
+                                activeIndex: _applicationStatusActiveIndex,
+                                barThickness: 2,
+                                stepperList: getStatusSteps(),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 16.0,
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.only(left: 25.0, right: 25.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Remark:",
+                                    style: TextStyle(
+                                      color: Color(0xffFF0000),
+                                      fontFamily: 'Poppins-Bold',
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                      _applicationRemark,
+                                      style: TextStyle(
+                                        color: Color(0xffFF0000),
+                                        fontFamily: 'Poppins-Medium',
+                                        fontSize: 12,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 16.0,
+                            ),
+                            Container(
+                              width: double.infinity,
+                              padding:
+                                  const EdgeInsets.only(left: 25.0, right: 25.0),
+                              child: ElevatedButton(
+                                onPressed: _applicationStatusActiveIndex ==
+                                        getStatusSteps().length - 1
+                                    ? () async {
+                                        Map<String, String> body = {
+                                          "application_id":
+                                              _incomeCertificateFormResponseModel
+                                                  .data.applicationId!,
+                                        };
+                                        IncomeCertificateAPIService
+                                            .generateCertificatePDF(body);
+                                      }
+                                    : null,
+                                style: ButtonStyle(
+                                  backgroundColor:
+                                      MaterialStateProperty.all<Color>(
+                                          _applicationStatusActiveIndex ==
+                                                  getStatusSteps().length - 1
+                                              ? Color(0xff6CC51D)
+                                              : Colors.grey),
+                                  shape: MaterialStateProperty.all<
+                                      RoundedRectangleBorder>(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20.0),
+                                      // side: BorderSide(
+                                      //     color: _applicationStatusActiveIndex ==
+                                      //             getDetailsSteps().length - 1
+                                      //         ? Color(0xff6CC51D)
+                                      //         : Colors.grey),
+                                    ),
+                                  ),
+                                  padding: MaterialStateProperty.all<EdgeInsets>(
+                                    EdgeInsets.only(top: 15.0, bottom: 15.0),
+                                  ),
+                                ),
+                                child: const Text(
+                                  'Download',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontFamily: 'Poppins-Bold',
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 16.0,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

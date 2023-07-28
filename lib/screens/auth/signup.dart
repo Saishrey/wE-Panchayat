@@ -14,6 +14,7 @@ import 'package:dob_input_field/dob_input_field.dart';
 import 'package:flutter/material.dart';
 
 import '../../constants.dart';
+import '../dialog_boxes.dart';
 import '../profile/profile_pic.dart';
 
 class SignUp extends StatefulWidget {
@@ -28,12 +29,15 @@ class SignUp extends StatefulWidget {
 }
 
 class _SignUpState extends State<SignUp> {
-  bool isAPIcallProcess = false;
+  bool _isAPIcallProcess = false;
 
   bool _obscureTextPass = true;
   bool _obscureTextConfirm = true;
 
   final _formKey = GlobalKey<FormState>();
+
+
+
 
   final Map<String, List<String>> _mappedTalukaAndVillages = {
     'Bardez': [
@@ -338,6 +342,11 @@ class _SignUpState extends State<SignUp> {
     'Other': 'O',
   };
 
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
   String? _firstName;
   String? _lastName;
   String? _address;
@@ -423,599 +432,629 @@ class _SignUpState extends State<SignUp> {
       child: Scaffold(
         resizeToAvoidBottomInset: true,
         backgroundColor: Colors.transparent,
-        body: Column(
+        body: Stack(
           children: [
-            Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Padding(
-                      padding: EdgeInsets.only(top: 15.0, bottom: 0),
-                      child: Image.asset(
-                        'assets/images/icon.png',
-                        height: 150.0,
-                        width: 150.0,
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 0, bottom: 15.0),
-                      child: Container(
-                        margin: EdgeInsets.fromLTRB(0, 10, 0, 5),
-                        child: Text(
-                          'wE-Panchayat',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 32,
-                            fontFamily: 'Poppins-Bold',
-                            fontWeight: FontWeight.w700,
-                            color: Color(0xff21205b),
+            Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Padding(
+                          padding: EdgeInsets.only(top: 15.0, bottom: 0),
+                          child: Image.asset(
+                            'assets/images/icon.png',
+                            height: 150.0,
+                            width: 150.0,
                           ),
                         ),
-                      ),
-                    ),
-                    Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(0),
-                        child: Form(
-                          key: _formKey,
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.only(right: 15.0, left: 15.0),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                SizedBox(height: 16),
-                                TextFormField(
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return "Required";
-                                    } else if (!RegExp(r"^[789]\d{9}$")
-                                        .hasMatch(value)) {
-                                      return "Invalid mobile no.";
-                                    }
-                                    _phone = value;
-                                    print("Phone : $_phone");
-                                    return null;
-                                  },
-                                  keyboardType: TextInputType.phone,
-                                  inputFormatters: [
-                                    new LengthLimitingTextInputFormatter(10),
-                                  ],
-                                  controller:
-                                      TextEditingController(text: widget.phone),
-                                  enabled: false,
-                                  style: AuthConstants.getTextStyle(),
-                                  decoration: InputDecoration(
-                                    labelText: 'Mobile No.',
-                                    labelStyle:
-                                        AuthConstants.getLabelAndHintStyle(),
-                                    filled: true,
-                                    fillColor: Colors.white,
-                                    disabledBorder:
-                                        AuthConstants.getEnabledBorder(),
-                                    border: AuthConstants.getEnabledBorder(),
-                                    enabledBorder:
-                                        AuthConstants.getEnabledBorder(),
-                                    focusedBorder:
-                                        AuthConstants.getFocusedBorder(),
-                                  ),
-                                ),
-                                SizedBox(height: 16),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: TextFormField(
-                                        validator: (value) {
-                                          if (value!.isEmpty) {
-                                            return "Required";
-                                          }
-                                          _firstName = value;
-                                          print("First Name : $_firstName");
-                                          return null;
-                                        },
-                                        style: AuthConstants.getTextStyle(),
-                                        decoration: InputDecoration(
-                                          labelText: 'First Name',
-                                          labelStyle: AuthConstants
-                                              .getLabelAndHintStyle(),
-                                          filled: true,
-                                          fillColor: Colors.white,
-                                          border:
-                                              AuthConstants.getEnabledBorder(),
-                                          enabledBorder:
-                                              AuthConstants.getEnabledBorder(),
-                                          focusedBorder:
-                                              AuthConstants.getFocusedBorder(),
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(width: 10.0),
-                                    Expanded(
-                                      child: TextFormField(
-                                        validator: (value) {
-                                          if (value!.isEmpty) {
-                                            return "Required";
-                                          }
-                                          _lastName = value;
-                                          print("Last Name : $_lastName");
-                                          return null;
-                                        },
-                                        style: AuthConstants.getTextStyle(),
-                                        decoration: InputDecoration(
-                                          labelText: 'Last Name',
-                                          labelStyle: AuthConstants
-                                              .getLabelAndHintStyle(),
-                                          filled: true,
-                                          fillColor: Colors.white,
-                                          border:
-                                              AuthConstants.getEnabledBorder(),
-                                          enabledBorder:
-                                              AuthConstants.getEnabledBorder(),
-                                          focusedBorder:
-                                              AuthConstants.getFocusedBorder(),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(height: 16),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: Container(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 10, vertical: 6),
-                                        decoration: AuthConstants
-                                            .getDropDownBoxDecoration(),
-                                        child: DropdownButtonFormField(
-                                          decoration: const InputDecoration(
-                                            border: InputBorder
-                                                .none, // Remove the bottom border
-                                          ),
-                                          menuMaxHeight: 200,
-                                          isExpanded: true,
-                                          icon: AuthConstants.getDropDownIcon(),
-                                          value: _selectedTaluka,
-                                          items: _mappedTalukaAndVillages.keys
-                                              .map((String option) {
-                                            return DropdownMenuItem<String>(
-                                              value: option,
-                                              child: Text(
-                                                option,
-                                                style: AuthConstants
-                                                    .getDropDownTextStyle(),
-                                              ),
-                                            );
-                                          }).toList(),
-                                          onChanged: (_value) =>
-                                              selected(_value),
-                                          hint: Text(
-                                            "Select Taluka",
-                                            style: AuthConstants
-                                                .getDropDownHintStyle(),
-                                          ),
-                                          validator: (value) {
-                                            if (value == null) {
-                                              // Add validation to check if a value is selected
-                                              return 'Required';
-                                            }
-                                            return null;
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(width: 10.0),
-                                    Expanded(
-                                      child: Container(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 10, vertical: 6),
-                                        decoration: AuthConstants
-                                            .getDropDownBoxDecoration(),
-                                        child: DropdownButtonFormField(
-                                          menuMaxHeight: 200,
-                                          isExpanded: true,
-                                          decoration: const InputDecoration(
-                                            border: InputBorder
-                                                .none, // Remove the bottom border
-                                          ),
-                                          icon: Icon(
-                                            Icons.arrow_drop_down_outlined,
-                                            color: Colors.black,
-                                          ),
-                                          value: _selectedVillage,
-                                          items: villageMenuItems,
-                                          onChanged: disabledVillageMenuItem
-                                              ? null
-                                              : (_value) =>
-                                                  secondselected(_value),
-                                          disabledHint: Text(
-                                            "Select Village",
-                                            style: AuthConstants
-                                                .getDropDownHintStyle(),
-                                          ),
-                                          validator: (value) {
-                                            if (value == null) {
-                                              // Add validation to check if a value is selected
-                                              return 'Required';
-                                            }
-                                            return null;
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(height: 16),
-                                TextFormField(
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return "Required";
-                                    }
-                                    _address = value;
-                                    print("Address : $_address");
-                                    return null;
-                                  },
-                                  style: AuthConstants.getTextStyle(),
-                                  decoration: InputDecoration(
-                                    labelText: 'Address',
-                                    labelStyle:
-                                        AuthConstants.getLabelAndHintStyle(),
-                                    filled: true,
-                                    fillColor: Colors.white,
-                                    border: AuthConstants.getEnabledBorder(),
-                                    enabledBorder:
-                                        AuthConstants.getEnabledBorder(),
-                                    focusedBorder:
-                                        AuthConstants.getFocusedBorder(),
-                                  ),
-                                ),
-                                SizedBox(height: 16),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: TextFormField(
-                                        validator: (value) {
-                                          if (value!.isEmpty) {
-                                            return "Required";
-                                          } else if (value.length < 6 ||
-                                              !_validPinCodes.contains(value)) {
-                                            return "Enter a valid Pin Code";
-                                          }
-                                          _pincode = value;
-                                          print("Pin Code : $_pincode");
-                                          return null;
-                                        },
-                                        keyboardType: TextInputType.number,
-                                        inputFormatters: [
-                                          new LengthLimitingTextInputFormatter(
-                                              6),
-                                        ],
-                                        style: AuthConstants.getTextStyle(),
-                                        decoration: InputDecoration(
-                                          labelText: 'Pin Code',
-                                          labelStyle: AuthConstants
-                                              .getLabelAndHintStyle(),
-                                          filled: true,
-                                          fillColor: Colors.white,
-                                          border:
-                                              AuthConstants.getEnabledBorder(),
-                                          enabledBorder:
-                                              AuthConstants.getEnabledBorder(),
-                                          focusedBorder:
-                                              AuthConstants.getFocusedBorder(),
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(width: 10.0),
-                                    Expanded(
-                                      child: Container(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 10, vertical: 6),
-                                        decoration: AuthConstants
-                                            .getDropDownBoxDecoration(),
-                                        child: DropdownButtonFormField(
-                                          decoration: const InputDecoration(
-                                            border: InputBorder
-                                                .none, // Remove the bottom border
-                                          ),
-                                          menuMaxHeight: 200,
-                                          isExpanded: true,
-                                          icon: AuthConstants.getDropDownIcon(),
-                                          value: _selectedGender,
-                                          items:
-                                              _genderMap.keys.map((String option) {
-                                            return DropdownMenuItem<String>(
-                                              value: option,
-                                              child: Text(
-                                                option,
-                                                style: AuthConstants
-                                                    .getDropDownTextStyle(),
-                                              ),
-                                            );
-                                          }).toList(),
-                                          onChanged: (_value) =>
-                                              selectedGender(_value),
-                                          hint: Text(
-                                            "Gender",
-                                            style: AuthConstants
-                                                .getDropDownHintStyle(),
-                                          ),
-                                          validator: (value) {
-                                            if (value == null) {
-                                              // Add validation to check if a value is selected
-                                              return 'Required';
-                                            }
-                                            return null;
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                SizedBox(height: 16),
-                                Container(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 10, vertical: 6),
-                                  decoration:
-                                      AuthConstants.getDropDownBoxDecoration(),
-                                  child: ListTile(
-                                    title: Text(
-                                      "Date Of Birth:    ${DateFormat('dd-MM-yyyy').format(_selectedDate)}",
-                                      style: AuthConstants.getTextStyle(),
-                                    ),
-                                    trailing: AuthConstants.getCalenderIcon(),
-                                    onTap: _pickDate,
-                                  ),
-                                ),
-                                SizedBox(height: 16),
-                                TextFormField(
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return "Required";
-                                    } else if (!RegExp(
-                                            r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                                        .hasMatch(value)) {
-                                      return "Invalid email";
-                                    }
-                                    _email = value;
-                                    print("Email : $_email");
-                                    return null;
-                                  },
-                                  style: AuthConstants.getTextStyle(),
-                                  decoration: InputDecoration(
-                                    labelText: 'Email',
-                                    labelStyle:
-                                        AuthConstants.getLabelAndHintStyle(),
-                                    filled: true,
-                                    fillColor: Colors.white,
-                                    border: AuthConstants.getEnabledBorder(),
-                                    enabledBorder:
-                                        AuthConstants.getEnabledBorder(),
-                                    focusedBorder:
-                                        AuthConstants.getFocusedBorder(),
-                                  ),
-                                ),
-                                SizedBox(height: 16),
-                                TextFormField(
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return "Required";
-                                    } else if (!isPasswordValid(value)) {
-                                      return "Password must have:\n"
-                                          "At least 8 characters long.\n"
-                                          "At least one uppercase letter.\n"
-                                          "At least one lowercase letter.\n"
-                                          "At least one number.\n"
-                                          "At least one special character.";
-                                    }
-                                    _password = value;
-                                    return null;
-                                  },
-                                  style: AuthConstants.getTextStyle(),
-                                  obscureText: _obscureTextPass,
-                                  decoration: InputDecoration(
-                                    labelText: 'Password',
-                                    suffixIcon: GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          _obscureTextPass = !_obscureTextPass;
-                                        });
-                                      },
-                                      child: Icon(
-                                        _obscureTextPass
-                                            ? Icons.visibility
-                                            : Icons.visibility_off,
-                                      ),
-                                    ),
-                                    suffixIconColor:
-                                        ColorConstants.formLabelTextColor,
-                                    labelStyle:
-                                        AuthConstants.getLabelAndHintStyle(),
-                                    filled: true,
-                                    fillColor: Colors.white,
-                                    border: AuthConstants.getEnabledBorder(),
-                                    enabledBorder:
-                                        AuthConstants.getEnabledBorder(),
-                                    focusedBorder:
-                                        AuthConstants.getFocusedBorder(),
-                                  ),
-                                ),
-                                SizedBox(height: 16),
-                                TextFormField(
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return "Required";
-                                    } else if (!isPasswordValid(value)) {
-                                      return "Password must have:\n"
-                                          "At least 8 characters long.\n"
-                                          "At least one uppercase letter.\n"
-                                          "At least one lowercase letter.\n"
-                                          "At least one number.\n"
-                                          "At least one special character.";
-                                    } else if (value != _password) {
-                                      return "Passwords do not match.";
-                                    }
-                                    return null;
-                                  },
-                                  style: AuthConstants.getTextStyle(),
-                                  obscureText: _obscureTextConfirm,
-                                  decoration: InputDecoration(
-                                    labelText: 'Confirm Password',
-                                    suffixIcon: GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          _obscureTextConfirm =
-                                              !_obscureTextConfirm;
-                                        });
-                                      },
-                                      child: Icon(
-                                        _obscureTextConfirm
-                                            ? Icons.visibility
-                                            : Icons.visibility_off,
-                                      ),
-                                    ),
-                                    suffixIconColor:
-                                        ColorConstants.formLabelTextColor,
-                                    labelStyle:
-                                        AuthConstants.getLabelAndHintStyle(),
-                                    filled: true,
-                                    fillColor: Colors.white,
-                                    border: AuthConstants.getEnabledBorder(),
-                                    enabledBorder:
-                                        AuthConstants.getEnabledBorder(),
-                                    focusedBorder:
-                                        AuthConstants.getFocusedBorder(),
-                                  ),
-                                ),
-                                SizedBox(height: 16),
-                              ],
+                        Padding(
+                          padding: EdgeInsets.only(top: 0, bottom: 15.0),
+                          child: Container(
+                            margin: EdgeInsets.fromLTRB(0, 10, 0, 5),
+                            child: Text(
+                              'wE-Panchayat',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 32,
+                                fontFamily: 'Poppins-Bold',
+                                fontWeight: FontWeight.w700,
+                                color: Color(0xff21205b),
+                              ),
                             ),
                           ),
                         ),
-                      ),
+                        Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(0),
+                            child: Form(
+                              key: _formKey,
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.only(right: 15.0, left: 15.0),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  children: [
+                                    SizedBox(height: 16),
+                                    TextFormField(
+                                      validator: (value) {
+                                        if (value!.isEmpty) {
+                                          return "Required";
+                                        } else if (!RegExp(r"^[789]\d{9}$")
+                                            .hasMatch(value)) {
+                                          return "Invalid mobile no.";
+                                        }
+                                        _phone = value;
+                                        print("Phone : $_phone");
+                                        return null;
+                                      },
+                                      keyboardType: TextInputType.phone,
+                                      inputFormatters: [
+                                        new LengthLimitingTextInputFormatter(10),
+                                      ],
+                                      controller:
+                                          TextEditingController(text: widget.phone),
+                                      enabled: false,
+                                      style: AuthConstants.getTextStyle(),
+                                      decoration: InputDecoration(
+                                        labelText: 'Mobile No.',
+                                        labelStyle:
+                                            AuthConstants.getLabelAndHintStyle(),
+                                        filled: true,
+                                        fillColor: Colors.white,
+                                        disabledBorder:
+                                            AuthConstants.getEnabledBorder(),
+                                        border: AuthConstants.getEnabledBorder(),
+                                        enabledBorder:
+                                            AuthConstants.getEnabledBorder(),
+                                        focusedBorder:
+                                            AuthConstants.getFocusedBorder(),
+                                      ),
+                                    ),
+                                    SizedBox(height: 16),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: TextFormField(
+                                            validator: (value) {
+                                              if (value!.isEmpty) {
+                                                return "Required";
+                                              }
+                                              _firstName = value;
+                                              print("First Name : $_firstName");
+                                              return null;
+                                            },
+                                            style: AuthConstants.getTextStyle(),
+                                            decoration: InputDecoration(
+                                              labelText: 'First Name',
+                                              labelStyle: AuthConstants
+                                                  .getLabelAndHintStyle(),
+                                              filled: true,
+                                              fillColor: Colors.white,
+                                              border:
+                                                  AuthConstants.getEnabledBorder(),
+                                              enabledBorder:
+                                                  AuthConstants.getEnabledBorder(),
+                                              focusedBorder:
+                                                  AuthConstants.getFocusedBorder(),
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(width: 10.0),
+                                        Expanded(
+                                          child: TextFormField(
+                                            validator: (value) {
+                                              if (value!.isEmpty) {
+                                                return "Required";
+                                              }
+                                              _lastName = value;
+                                              print("Last Name : $_lastName");
+                                              return null;
+                                            },
+                                            style: AuthConstants.getTextStyle(),
+                                            decoration: InputDecoration(
+                                              labelText: 'Last Name',
+                                              labelStyle: AuthConstants
+                                                  .getLabelAndHintStyle(),
+                                              filled: true,
+                                              fillColor: Colors.white,
+                                              border:
+                                                  AuthConstants.getEnabledBorder(),
+                                              enabledBorder:
+                                                  AuthConstants.getEnabledBorder(),
+                                              focusedBorder:
+                                                  AuthConstants.getFocusedBorder(),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 16),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: Container(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 10, vertical: 6),
+                                            decoration: AuthConstants
+                                                .getDropDownBoxDecoration(),
+                                            child: DropdownButtonFormField(
+                                              decoration: const InputDecoration(
+                                                border: InputBorder
+                                                    .none, // Remove the bottom border
+                                              ),
+                                              menuMaxHeight: 200,
+                                              isExpanded: true,
+                                              icon: AuthConstants.getDropDownIcon(),
+                                              value: _selectedTaluka,
+                                              items: _mappedTalukaAndVillages.keys
+                                                  .map((String option) {
+                                                return DropdownMenuItem<String>(
+                                                  value: option,
+                                                  child: Text(
+                                                    option,
+                                                    style: AuthConstants
+                                                        .getDropDownTextStyle(),
+                                                  ),
+                                                );
+                                              }).toList(),
+                                              onChanged: (_value) =>
+                                                  selected(_value),
+                                              hint: Text(
+                                                "Select Taluka",
+                                                style: AuthConstants
+                                                    .getDropDownHintStyle(),
+                                              ),
+                                              validator: (value) {
+                                                if (value == null) {
+                                                  // Add validation to check if a value is selected
+                                                  return 'Required';
+                                                }
+                                                return null;
+                                              },
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(width: 10.0),
+                                        Expanded(
+                                          child: Container(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 10, vertical: 6),
+                                            decoration: AuthConstants
+                                                .getDropDownBoxDecoration(),
+                                            child: DropdownButtonFormField(
+                                              menuMaxHeight: 200,
+                                              isExpanded: true,
+                                              decoration: const InputDecoration(
+                                                border: InputBorder
+                                                    .none, // Remove the bottom border
+                                              ),
+                                              icon: Icon(
+                                                Icons.arrow_drop_down_outlined,
+                                                color: Colors.black,
+                                              ),
+                                              value: _selectedVillage,
+                                              items: villageMenuItems,
+                                              onChanged: disabledVillageMenuItem
+                                                  ? null
+                                                  : (_value) =>
+                                                      secondselected(_value),
+                                              disabledHint: Text(
+                                                "Select Village",
+                                                style: AuthConstants
+                                                    .getDropDownHintStyle(),
+                                              ),
+                                              validator: (value) {
+                                                if (value == null) {
+                                                  // Add validation to check if a value is selected
+                                                  return 'Required';
+                                                }
+                                                return null;
+                                              },
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 16),
+                                    TextFormField(
+                                      validator: (value) {
+                                        if (value!.isEmpty) {
+                                          return "Required";
+                                        }
+                                        _address = value;
+                                        print("Address : $_address");
+                                        return null;
+                                      },
+                                      style: AuthConstants.getTextStyle(),
+                                      decoration: InputDecoration(
+                                        labelText: 'Address',
+                                        labelStyle:
+                                            AuthConstants.getLabelAndHintStyle(),
+                                        filled: true,
+                                        fillColor: Colors.white,
+                                        border: AuthConstants.getEnabledBorder(),
+                                        enabledBorder:
+                                            AuthConstants.getEnabledBorder(),
+                                        focusedBorder:
+                                            AuthConstants.getFocusedBorder(),
+                                      ),
+                                    ),
+                                    SizedBox(height: 16),
+                                    Row(
+                                      children: [
+                                        Expanded(
+                                          child: TextFormField(
+                                            validator: (value) {
+                                              if (value!.isEmpty) {
+                                                return "Required";
+                                              } else if (value.length < 6 ||
+                                                  !_validPinCodes.contains(value)) {
+                                                return "Enter a valid Pin Code";
+                                              }
+                                              _pincode = value;
+                                              print("Pin Code : $_pincode");
+                                              return null;
+                                            },
+                                            keyboardType: TextInputType.number,
+                                            inputFormatters: [
+                                              new LengthLimitingTextInputFormatter(
+                                                  6),
+                                            ],
+                                            style: AuthConstants.getTextStyle(),
+                                            decoration: InputDecoration(
+                                              labelText: 'Pin Code',
+                                              labelStyle: AuthConstants
+                                                  .getLabelAndHintStyle(),
+                                              filled: true,
+                                              fillColor: Colors.white,
+                                              border:
+                                                  AuthConstants.getEnabledBorder(),
+                                              enabledBorder:
+                                                  AuthConstants.getEnabledBorder(),
+                                              focusedBorder:
+                                                  AuthConstants.getFocusedBorder(),
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(width: 10.0),
+                                        Expanded(
+                                          child: Container(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 10, vertical: 6),
+                                            decoration: AuthConstants
+                                                .getDropDownBoxDecoration(),
+                                            child: DropdownButtonFormField(
+                                              decoration: const InputDecoration(
+                                                border: InputBorder
+                                                    .none, // Remove the bottom border
+                                              ),
+                                              menuMaxHeight: 200,
+                                              isExpanded: true,
+                                              icon: AuthConstants.getDropDownIcon(),
+                                              value: _selectedGender,
+                                              items: _genderMap.keys
+                                                  .map((String option) {
+                                                return DropdownMenuItem<String>(
+                                                  value: option,
+                                                  child: Text(
+                                                    option,
+                                                    style: AuthConstants
+                                                        .getDropDownTextStyle(),
+                                                  ),
+                                                );
+                                              }).toList(),
+                                              onChanged: (_value) =>
+                                                  selectedGender(_value),
+                                              hint: Text(
+                                                "Gender",
+                                                style: AuthConstants
+                                                    .getDropDownHintStyle(),
+                                              ),
+                                              validator: (value) {
+                                                if (value == null) {
+                                                  // Add validation to check if a value is selected
+                                                  return 'Required';
+                                                }
+                                                return null;
+                                              },
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    SizedBox(height: 16),
+                                    Container(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 10, vertical: 6),
+                                      decoration:
+                                          AuthConstants.getDropDownBoxDecoration(),
+                                      child: ListTile(
+                                        title: Text(
+                                          "Date Of Birth:    ${DateFormat('dd-MM-yyyy').format(_selectedDate)}",
+                                          style: AuthConstants.getTextStyle(),
+                                        ),
+                                        trailing: AuthConstants.getCalenderIcon(),
+                                        onTap: _pickDate,
+                                      ),
+                                    ),
+                                    SizedBox(height: 16),
+                                    TextFormField(
+                                      validator: (value) {
+                                        if (value!.isEmpty) {
+                                          return "Required";
+                                        } else if (!RegExp(
+                                                r"^[a-zA-Z0-9.]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                                            .hasMatch(value)) {
+                                          return "Invalid email";
+                                        }
+                                        _email = value;
+                                        print("Email : $_email");
+                                        return null;
+                                      },
+                                      style: AuthConstants.getTextStyle(),
+                                      decoration: InputDecoration(
+                                        labelText: 'Email',
+                                        labelStyle:
+                                            AuthConstants.getLabelAndHintStyle(),
+                                        filled: true,
+                                        fillColor: Colors.white,
+                                        border: AuthConstants.getEnabledBorder(),
+                                        enabledBorder:
+                                            AuthConstants.getEnabledBorder(),
+                                        focusedBorder:
+                                            AuthConstants.getFocusedBorder(),
+                                      ),
+                                    ),
+                                    SizedBox(height: 16),
+                                    TextFormField(
+                                      maxLength: 16,
+                                      validator: (value) {
+                                        if (value!.isEmpty) {
+                                          return "Required";
+                                        } else if (!isPasswordValid(value)) {
+                                          return "Password must have:\n"
+                                              "At least 8 characters long.\n"
+                                              "At least one uppercase letter.\n"
+                                              "At least one lowercase letter.\n"
+                                              "At least one number.\n"
+                                              "At least one special character.";
+                                        }
+                                        _password = value;
+                                        return null;
+                                      },
+                                      style: AuthConstants.getTextStyle(),
+                                      obscureText: _obscureTextPass,
+                                      decoration: InputDecoration(
+                                        labelText: 'Password',
+                                        suffixIcon: GestureDetector(
+                                          onTap: () {
+                                            setState(() {
+                                              _obscureTextPass = !_obscureTextPass;
+                                            });
+                                          },
+                                          child: Icon(
+                                            _obscureTextPass
+                                                ? Icons.visibility
+                                                : Icons.visibility_off,
+                                          ),
+                                        ),
+                                        suffixIconColor:
+                                            ColorConstants.formLabelTextColor,
+                                        labelStyle:
+                                            AuthConstants.getLabelAndHintStyle(),
+                                        filled: true,
+                                        fillColor: Colors.white,
+                                        border: AuthConstants.getEnabledBorder(),
+                                        enabledBorder:
+                                            AuthConstants.getEnabledBorder(),
+                                        focusedBorder:
+                                            AuthConstants.getFocusedBorder(),
+                                      ),
+                                    ),
+                                    SizedBox(height: 16),
+                                    TextFormField(
+                                      maxLength: 16,
+                                      validator: (value) {
+                                        if (value!.isEmpty) {
+                                          return "Required";
+                                        } else if (!isPasswordValid(value)) {
+                                          return "Password must have:\n"
+                                              "At least 8 characters long.\n"
+                                              "At least one uppercase letter.\n"
+                                              "At least one lowercase letter.\n"
+                                              "At least one number.\n"
+                                              "At least one special character.";
+                                        } else if (value != _password) {
+                                          return "Passwords do not match.";
+                                        }
+                                        return null;
+                                      },
+                                      style: AuthConstants.getTextStyle(),
+                                      obscureText: _obscureTextConfirm,
+                                      decoration: InputDecoration(
+                                        labelText: 'Confirm Password',
+                                        suffixIcon: GestureDetector(
+                                          onTap: () {
+                                            setState(() {
+                                              _obscureTextConfirm =
+                                                  !_obscureTextConfirm;
+                                            });
+                                          },
+                                          child: Icon(
+                                            _obscureTextConfirm
+                                                ? Icons.visibility
+                                                : Icons.visibility_off,
+                                          ),
+                                        ),
+                                        suffixIconColor:
+                                            ColorConstants.formLabelTextColor,
+                                        labelStyle:
+                                            AuthConstants.getLabelAndHintStyle(),
+                                        filled: true,
+                                        fillColor: Colors.white,
+                                        border: AuthConstants.getEnabledBorder(),
+                                        enabledBorder:
+                                            AuthConstants.getEnabledBorder(),
+                                        focusedBorder:
+                                            AuthConstants.getFocusedBorder(),
+                                      ),
+                                    ),
+                                    SizedBox(height: 16),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ),
-            ),
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(20.0),
-                    topRight: Radius.circular(20.0),
                   ),
                 ),
-                padding: EdgeInsets.all(20.0),
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
-                      // String _dob = "${_selectedDate.day}-${_selectedDate.month}-${_selectedDate.year}";
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20.0),
+                        topRight: Radius.circular(20.0),
+                      ),
+                    ),
+                    padding: EdgeInsets.all(20.0),
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate()) {
+                          // String _dob = "${_selectedDate.day}-${_selectedDate.month}-${_selectedDate.year}";
 
-                      String dob =
-                          DateFormat('dd-MM-yyyy').format(_selectedDate);
+                          String dob =
+                              DateFormat('dd-MM-yyyy').format(_selectedDate);
 
-                      print("DOB actual : ${_selectedDate}");
-                      print("DOB : $dob");
-                      print("Taluka : $_selectedTaluka");
-                      print("Village : $_selectedVillage");
-                      print("Gender : $_selectedGender");
-
-                      setState(() {
-                        isAPIcallProcess = true;
-                      });
-
-                      RegisterRequestModel model = RegisterRequestModel(
-                        email: _email,
-                        password: _password,
-                        fullname: '$_firstName $_lastName',
-                        address: _address,
-                        pincode: _pincode,
-                        phone: _phone,
-                        gender: _genderMap[_selectedGender],
-                        taluka: _selectedTaluka,
-                        village: _selectedVillage,
-                        dateofbirth: dob,
-                      );
-
-                      var response = await APIService.register(model);
-
-                      if(response.statusCode == 200) {
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                            content: Text(
-                                'Registered successfully. Welcome to wE-Panchayat.')));
+                          print("DOB actual : ${_selectedDate}");
+                          print("DOB : $dob");
+                          print("Taluka : $_selectedTaluka");
+                          print("Village : $_selectedVillage");
+                          print("Gender : $_selectedGender");
 
 
+                          RegisterRequestModel model = RegisterRequestModel(
+                            email: _email,
+                            password: _password,
+                            fullname: '$_firstName $_lastName',
+                            address: _address,
+                            pincode: _pincode,
+                            phone: _phone,
+                            gender: _genderMap[_selectedGender],
+                            taluka: _selectedTaluka,
+                            village: _selectedVillage,
+                            dateofbirth: dob,
+                          );
 
-                        var jsonResponse = jsonDecode(response.body);
+                          setState(() {
+                            _isAPIcallProcess = true;
+                          });
 
-                        int id = jsonResponse['id'];
+                          var response = await APIService.register(model);
 
-                        Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => ProfilePicturePage(userId: id, mongoId: "NA", isSignup: true,)),
-                              (route) => false,
-                        );
-                      }
-                      else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text('Failed to Register.')));
-                      }
-                    }
-                  },
-                  child: Text("Sign up",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontFamily: 'Poppins-Bold',
-                      )),
-                  // style: ElevatedButton.styleFrom(
-                  //   primary: Color(0xFF5386E4),
-                  //   onPrimary: Colors.white,
-                  //   shape: StadiumBorder(),
-                  //   padding: EdgeInsets.only(top: 15.0, bottom: 15.0),
-                  // ),
-                  style: AuthConstants.getSubmitButtonStyle(),
+                          setState(() {
+                            _isAPIcallProcess = false;
+                          });
+
+                          if (response != null) {
+                            if (response.statusCode == 200) {
+                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                                  content: Text(
+                                      'Registered successfully. Welcome to wE-Panchayat.')));
+
+                              var jsonResponse = jsonDecode(response.body);
+
+                              int id = jsonResponse['id'];
+
+                              Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ProfilePicturePage(
+                                          userId: id,
+                                          mongoId: "NA",
+                                          isSignup: true,
+                                        )),
+                                (route) => false,
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text('Failed to Register.')));
+                            }
+                          }
+                          else {
+                            DialogBoxes.showServerDownDialogBox(context);
+                          }
+                        }
+                      },
+                      child: Text("Sign up",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontFamily: 'Poppins-Bold',
+                          )),
+                      // style: ElevatedButton.styleFrom(
+                      //   primary: Color(0xFF5386E4),
+                      //   onPrimary: Colors.white,
+                      //   shape: StadiumBorder(),
+                      //   padding: EdgeInsets.only(top: 15.0, bottom: 15.0),
+                      // ),
+                      style: AuthConstants.getSubmitButtonStyle(),
+                    ),
+                  ),
+                ),
+                // Column(
+                //   mainAxisSize: MainAxisSize.min,
+                //   children: [
+                //     Divider(
+                //       height: 1,
+                //       thickness: 0.8,
+                //       color: Colors.black54,
+                //     ),
+                //     Padding(
+                //       padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
+                //       child: GestureDetector(
+                //         child: Text(
+                //           "Already have an account? Log in",
+                //           style: TextStyle(
+                //             color: Color(0xFF5386E4),
+                //             fontWeight: FontWeight.w700,
+                //             fontSize: 15,
+                //             fontFamily: 'Poppins-Bold',
+                //           ),
+                //           // Your bottom element goes here
+                //         ),
+                //         onTap: () {
+                //           Navigator.push(
+                //             context,
+                //             MaterialPageRoute(builder: (context) => Login()),
+                //           );
+                //         },
+                //       ),
+                //     )
+                //   ],
+                // ),
+              ],
+            ),
+            if (_isAPIcallProcess)
+              Opacity(
+                opacity: 0.3,
+                child: ModalBarrier(
+                  dismissible: false,
+                  color: Colors.black,
                 ),
               ),
-            ),
-            // Column(
-            //   mainAxisSize: MainAxisSize.min,
-            //   children: [
-            //     Divider(
-            //       height: 1,
-            //       thickness: 0.8,
-            //       color: Colors.black54,
-            //     ),
-            //     Padding(
-            //       padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
-            //       child: GestureDetector(
-            //         child: Text(
-            //           "Already have an account? Log in",
-            //           style: TextStyle(
-            //             color: Color(0xFF5386E4),
-            //             fontWeight: FontWeight.w700,
-            //             fontSize: 15,
-            //             fontFamily: 'Poppins-Bold',
-            //           ),
-            //           // Your bottom element goes here
-            //         ),
-            //         onTap: () {
-            //           Navigator.push(
-            //             context,
-            //             MaterialPageRoute(builder: (context) => Login()),
-            //           );
-            //         },
-            //       ),
-            //     )
-            //   ],
-            // ),
+            if (_isAPIcallProcess)
+              Center(
+                child: CircularProgressIndicator(color: Colors.white,
+                  strokeWidth: 6,),
+              ),
           ],
         ),
       ),

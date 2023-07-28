@@ -17,130 +17,152 @@ class ProfilePicAPIService {
   static var client = http.Client();
 
   static Future<bool> uploadProfilePic(File profilePic, int userid) async {
+    // try {
+      Map<String, String> requestHeaders = {
+        // "Content-Type": "application/json",
+      };
 
-    Map<String, String> requestHeaders = {
-      // "Content-Type": "application/json",
-    };
+      final url = Uri.http(Config.apiURL, ProfilePicAPI.uploadPictureAPI);
+      print(url);
 
-    final url = Uri.http(Config.apiURL, ProfilePicAPI.uploadPictureAPI);
-    print(url);
+      var request = http.MultipartRequest('POST', url);
+      print("COOKIE DETAILS Profile pic upload");
+      Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
 
-    var request = http.MultipartRequest('POST', url);
-    print("COOKIE DETAILS Profile pic upload");
-    Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
-
-    request.headers["Content-Type"] = "multipart/form-data";
-    request.headers['cookie'] = cookieHeaders!['cookie']!;
+      request.headers["Content-Type"] = "multipart/form-data";
+      request.headers['cookie'] = cookieHeaders!['cookie']!;
 
 
-    request.files.add(
-      http.MultipartFile(
-        "profilePic",
-        profilePic.readAsBytes().asStream(),
-        profilePic.lengthSync(),
-        filename: path.basename(profilePic.path),
-        contentType: MediaType('image', 'jpeg'),
-      ),
-    );
+      request.files.add(
+        http.MultipartFile(
+          "profilePic",
+          profilePic.readAsBytes().asStream(),
+          profilePic.lengthSync(),
+          filename: path.basename(profilePic.path),
+          contentType: MediaType('image', 'jpeg'),
+        ),
+      );
 
-    request.fields['totalFilesCount'] = "1";
-    request.fields['applicationId'] = "$userid";
-    print(request.files);
-    print(request.fields);
+      request.fields['totalFilesCount'] = "1";
+      request.fields['applicationId'] = "$userid";
+      print(request.files);
+      print(request.fields);
 
-    //send request
-    var response = await request.send();
-    print(response.statusCode);
-    print(response.reasonPhrase);
+      //send request
+      var response = await request.send().timeout(const Duration(seconds: 5));
+      print(response.statusCode);
+      print(response.reasonPhrase);
 
-    if (response.statusCode == 200) {
-      print("Profile pic uploaded successfully.");
-      String responseBody = await response.stream.bytesToString();
-      print(responseBody);
-      await SharedService.updateLoginDetails(loginResponseJson(responseBody));
-      return true;
-    }
-    print("Failed to upload profile pic.");
-    return false;
+      if (response.statusCode == 200) {
+        print("Profile pic uploaded successfully.");
+        String responseBody = await response.stream.bytesToString();
+        print(responseBody);
+        await SharedService.updateLoginDetails(loginResponseJson(responseBody));
+        return true;
+      }
+      print("Failed to upload profile pic.");
+      return false;
+    // }
+    // catch (e) {
+    //   print('Error : $e');
+    //   return false;
+    // }
+
   }
 
-  static Future<http.Response> retrieveProfilePic(Map<String, String?> body) async {
+  static Future<http.Response> retrieveProfilePic(String mongoId) async {
 
-    Map<String, String> requestHeaders = {
-      // "Content-Type": "application/json",
-    };
+    // try {
+      Map<String, String> requestHeaders = {
+        // "Content-Type": "application/json",
+      };
 
-    final url = Uri.http(Config.apiURL, ProfilePicAPI.retrievePictureAPI);
-    print(url);
+      String query = "${ProfilePicAPI.retrievePictureAPI}/$mongoId";
 
-    print("COOKIE DETAILS retrieve profile picture");
-    Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
-    requestHeaders['cookie'] = cookieHeaders!['cookie']!;
+      final url = Uri.http(Config.apiURL, query);
+      print(url);
+
+      print("COOKIE DETAILS retrieve profile picture");
+      Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
+      requestHeaders['cookie'] = cookieHeaders!['cookie']!;
+      requestHeaders['Device-Info'] = cookieHeaders['Device-Info']!;
 
 
-    // var response = await client.get(url);
-    // print(response.body);
+      // var response = await client.get(url);
+      // print(response.body);
 
-    print(requestHeaders);
-    print(body);
+      print(requestHeaders);
 
-    var response = await client.post(url, body: body, headers: requestHeaders);
+      var response = await client.get(url, headers: requestHeaders).timeout(const Duration(seconds: 5));
 
-    // print("${response.body}");
+      // print("${response.body}");
 
-    return response;
+      return response;
+    // }
+    // catch (e) {
+    //   print('Error : $e');
+    //   return null;
+    // }
+
+
 
   }
 
   static Future<bool> updateProfilePic(File profilePic, String mongoId) async {
+    // try {
+      Map<String, String> requestHeaders = {
+        // "Content-Type": "application/json",
+      };
 
-    Map<String, String> requestHeaders = {
-      // "Content-Type": "application/json",
-    };
+      final url = Uri.http(Config.apiURL, ProfilePicAPI.updatePictureAPI);
+      print(url);
 
-    final url = Uri.http(Config.apiURL, ProfilePicAPI.updatePictureAPI);
-    print(url);
+      var request = http.MultipartRequest('PATCH', url);
+      print("COOKIE DETAILS Profile pic update");
+      Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
 
-    var request = http.MultipartRequest('POST', url);
-    print("COOKIE DETAILS Profile pic update");
-    Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
-
-    request.headers["Content-Type"] = "multipart/form-data";
-    request.headers['cookie'] = cookieHeaders!['cookie']!;
+      request.headers["Content-Type"] = "multipart/form-data";
+      request.headers['cookie'] = cookieHeaders!['cookie']!;
 
 
-    request.files.add(
-      http.MultipartFile(
-        "profilePic",
-        profilePic.readAsBytes().asStream(),
-        profilePic.lengthSync(),
-        filename: path.basename(profilePic.path),
-        contentType: MediaType('image', 'jpeg'),
-      ),
-    );
+      request.files.add(
+        http.MultipartFile(
+          "profilePic",
+          profilePic.readAsBytes().asStream(),
+          profilePic.lengthSync(),
+          filename: path.basename(profilePic.path),
+          contentType: MediaType('image', 'jpeg'),
+        ),
+      );
 
-    request.fields['totalFilesCount'] = "1";
-    request.fields['mongoId'] = "$mongoId";
-    print(request.files);
-    print(request.fields);
+      request.fields['totalFilesCount'] = "1";
+      request.fields['mongoId'] = "$mongoId";
+      print(request.files);
+      print(request.fields);
 
-    //send request
-    var response = await request.send();
-    print(response.statusCode);
-    print(response.reasonPhrase);
+      //send request
+      var response = await request.send().timeout(const Duration(seconds: 5));
+      print(response.statusCode);
+      print(response.reasonPhrase);
 
-    if (response.statusCode == 200) {
-      print("Profile pic uploaded successfully.");
-      String responseBody = await response.stream.bytesToString();
-      print(responseBody);
-      return true;
-    }
-    print("Failed to upload profile pic.");
-    return false;
+      if (response.statusCode == 200) {
+        print("Profile pic uploaded successfully.");
+        String responseBody = await response.stream.bytesToString();
+        print(responseBody);
+        return true;
+      }
+      print("Failed to upload profile pic.");
+      return false;
+    // }
+    // catch (e) {
+    //   print('Error : $e');
+    //   return false;
+    // }
+
   }
 
   static Future<bool> deleteProfilePic(int userId, String mongoId) async {
-    try {
+    // try {
       final url = Uri.http(Config.apiURL, ProfilePicAPI.deletePictureAPI);
       print(url);
 
@@ -155,7 +177,7 @@ class ProfilePicAPIService {
       Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
       print(cookieHeaders);
 
-      var response = await client.post(url, headers: cookieHeaders, body: body);
+      var response = await client.delete(url, headers: cookieHeaders, body: body).timeout(const Duration(seconds: 5));
       print(response.body);
 
       if (response.statusCode == 200) {
@@ -166,11 +188,11 @@ class ProfilePicAPIService {
 
       print("Error deleting profile pic");
       return false;
-
-    } catch (e) {
-      print("CONNECTION FAILED");
-      return false;
-    }
+    //
+    // } catch (e) {
+    //   print("CONNECTION FAILED");
+    //   return false;
+    // }
   }
 
 }

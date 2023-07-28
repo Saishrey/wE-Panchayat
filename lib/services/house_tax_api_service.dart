@@ -15,33 +15,36 @@ import 'package:we_panchayat_dev/services/shared_service.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 
-
 class HouseTaxAPIService {
   static var client = http.Client();
 
   static Future<http.Response> getTaxDetails(Map<String, String> body) async {
+    // try {
+      Map<String, String> requestHeaders = {
+        // "Content-Type": "application/json",
+      };
 
-    Map<String, String> requestHeaders = {
-      // "Content-Type": "application/json",
-    };
+      final url = Uri.http(Config.apiURL, HouseTaxAPI.houseTaxAPI);
+      print(url);
 
-    final url = Uri.http(Config.apiURL, HouseTaxAPI.houseTaxAPI);
-    print(url);
+      print("COOKIE DETAILS House tax");
+      Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
+      requestHeaders['cookie'] = cookieHeaders!['cookie']!;
+      requestHeaders['Device-Info'] = cookieHeaders['Device-Info']!;
 
-    print("COOKIE DETAILS House tax");
-    Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
-    requestHeaders['cookie'] = cookieHeaders!['cookie']!;
+      print(requestHeaders);
 
-    print(requestHeaders);
+      print(body);
 
-    print(body);
+      var response =
+          await client.post(url, body: body, headers: requestHeaders).timeout(const Duration(seconds: 5));
 
+      print("${response.body}");
 
-    var response = await client.post(url,
-        body: body, headers: requestHeaders);
-
-    print("${response.body}");
-
-    return response;
+      return response;
+    // } catch (e) {
+    //   print('Error : $e');
+    //   return null;
+    // }
   }
 }

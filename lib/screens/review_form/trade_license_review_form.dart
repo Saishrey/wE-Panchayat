@@ -18,8 +18,7 @@ class TradeLicenseReviewForm extends StatefulWidget {
   const TradeLicenseReviewForm({super.key, required this.license});
 
   @override
-  _TradeLicenseReviewFormState createState() =>
-      _TradeLicenseReviewFormState();
+  _TradeLicenseReviewFormState createState() => _TradeLicenseReviewFormState();
 }
 
 class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
@@ -207,29 +206,10 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
     _tabController = TabController(vsync: this, length: myTabs.length);
   }
 
-  Future<void> deleteTempFiles() async {
-    Directory tempDir = await getTemporaryDirectory();
-    if (tempDir.existsSync()) {
-      List<FileSystemEntity> entities = tempDir.listSync();
-      entities.forEach((entity) {
-        if (entity is File) {
-          entity.deleteSync();
-        } else if (entity is Directory) {
-          entity.deleteSync(recursive: true);
-        }
-      });
-      tempDir.deleteSync();
-    }
-    print("TEMP FILES DELETED");
-  }
-
   @override
   void dispose() {
-    _tabController?.dispose();
-
-    deleteTempFiles();
-
     super.dispose();
+    _tabController?.dispose();
   }
 
   Future<File?> binaryToTempFile(String filename, List<int>? binaryData) async {
@@ -251,6 +231,21 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
     }
   }
 
+  Future<bool> _handleBackPressed() async {
+    // Delete files from the file map
+    _fileMap.values.forEach((file) {
+      // file.deleteSync();
+      if (file != null) {
+        file.deleteSync();
+        print('File deleted');
+      } else {
+        print('File not found');
+      }
+    });
+
+    return true; // Allow the app to be closed
+  }
+
   @override
   Widget build(BuildContext context) {
     // if(_licenseFormResponseModel == null) {
@@ -262,352 +257,110 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
     // print(_fileMap);
     // print(_formData);
 
-    return Scaffold(
-      appBar: AppBar(
+    return WillPopScope(
+      onWillPop: _handleBackPressed,
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: ColorConstants.backgroundClipperColor,
+          foregroundColor: ColorConstants.darkBlueThemeColor,
+          title: Text(
+            'Trade License & Signboard - Review',
+            style: TextStyle(
+                fontFamily: 'Poppins-Medium',
+                color: ColorConstants.darkBlueThemeColor,
+                fontSize: 18),
+          ),
+          elevation: 0,
+          actions: <Widget>[
+            Visibility(
+              visible: _isEdit,
+              child: IconButton(
+                icon: const Icon(Icons.edit_document),
+                onPressed: () {
+                  // do something
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => TradeLicense(
+                            fileMap: {..._fileMap},
+                            formData: {..._formData},
+                            isEdit: true)),
+                  );
+                },
+              ),
+            ),
+          ],
+          actionsIconTheme: IconThemeData(
+            color: ColorConstants.darkBlueThemeColor,
+            size: 28,
+          ),
+        ),
         backgroundColor: ColorConstants.backgroundClipperColor,
-        foregroundColor: ColorConstants.darkBlueThemeColor,
-        title: Text(
-          'Trade License & Signboard - Review',
-          style: TextStyle(
-              fontFamily: 'Poppins-Medium',
-              color: ColorConstants.darkBlueThemeColor,
-              fontSize: 18),
-        ),
-        elevation: 0,
-        actions: <Widget>[
-          Visibility(
-            visible: _isEdit,
-            child: IconButton(
-              icon: const Icon(Icons.edit_document),
-              onPressed: () {
-                // do something
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => TradeLicense(
-                          fileMap: {..._fileMap},
-                          formData: {..._formData},
-                          isEdit: true)),
-                );
-              },
-            ),
-          ),
-        ],
-        actionsIconTheme: IconThemeData(
-          color: ColorConstants.darkBlueThemeColor,
-          size: 28,
-        ),
-      ),
-      backgroundColor: ColorConstants.backgroundClipperColor,
-      body: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.only(top: 16.0, bottom: 8.0),
-            decoration: BoxDecoration(
-              color: Theme.of(context).scaffoldBackgroundColor,
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(30.0),
-                topRight: Radius.circular(30.0),
+        body: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.only(top: 16.0, bottom: 8.0),
+              decoration: BoxDecoration(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(30.0),
+                  topRight: Radius.circular(30.0),
+                ),
               ),
-            ),
-            child: TabBar(
-              labelColor: Colors.white,
-              unselectedLabelColor: Colors.grey,
-              indicatorSize: TabBarIndicatorSize.label,
-              indicator: BoxDecoration(
-                borderRadius: BorderRadius.circular(30),
-                color: _darkBlueButton,
-              ),
-              controller: _tabController,
-              tabs: [
-                Tab(
-                  child: Container(
-                    alignment: Alignment.center,
-                    child: Text(
-                      'Details',
-                      style: TextStyle(fontFamily: 'Poppins-Medium'),
-                    ),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(30),
-                      border: Border.all(color: _darkBlueButton),
+              child: TabBar(
+                labelColor: Colors.white,
+                unselectedLabelColor: Colors.grey,
+                indicatorSize: TabBarIndicatorSize.label,
+                indicator: BoxDecoration(
+                  borderRadius: BorderRadius.circular(30),
+                  color: _darkBlueButton,
+                ),
+                controller: _tabController,
+                tabs: [
+                  Tab(
+                    child: Container(
+                      alignment: Alignment.center,
+                      child: Text(
+                        'Details',
+                        style: TextStyle(fontFamily: 'Poppins-Medium'),
+                      ),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(30),
+                        border: Border.all(color: _darkBlueButton),
+                      ),
                     ),
                   ),
-                ),
-                Tab(
-                  child: Container(
-                    alignment: Alignment.center,
-                    child: Text(
-                      'Status',
-                      style: TextStyle(fontFamily: 'Poppins-Medium'),
-                    ),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(30),
-                      border: Border.all(color: _darkBlueButton),
+                  Tab(
+                    child: Container(
+                      alignment: Alignment.center,
+                      child: Text(
+                        'Status',
+                        style: TextStyle(fontFamily: 'Poppins-Medium'),
+                      ),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(30),
+                        border: Border.all(color: _darkBlueButton),
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                if (_formData.isEmpty || _fileMap.isEmpty) ...[
-                  const Center(
-                    child: CircularProgressIndicator(),
-                  )
-                ] else ...[
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).scaffoldBackgroundColor,
-                    ),
-                    child: ListView(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 16, horizontal: 24),
-                          child: Container(
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10.0),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.6),
-                                  spreadRadius: 1,
-                                  blurRadius: 3,
-                                  offset: const Offset(0,
-                                      2), // changes the position of the shadow
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 16,
-                                ),
-                                Text(
-                                  "Applicant Details",
-                                  style: TextStyle(
-                                    fontFamily: 'Poppins-Bold',
-                                    fontSize: 16,
-                                    color: ColorConstants.lightBlackColor,
-                                  ),
-                                ),
-                                const SizedBox(
-                                  height: 16,
-                                ),
-                                _buildSection('Taluka', _formData["taluka"]!),
-                                const Padding(
-                                  padding:
-                                  EdgeInsets.symmetric(horizontal: 16),
-                                  child: Divider(
-                                    thickness: 1,
-                                    color: Colors.black12,
-                                  ),
-                                ),
-                                _buildSection(
-                                    'Panchayat', _formData["panchayat"]!),
-                                const Padding(
-                                  padding:
-                                  EdgeInsets.symmetric(horizontal: 16),
-                                  child: Divider(
-                                    thickness: 1,
-                                    color: Colors.black12,
-                                  ),
-                                ),
-                                _buildSection("Applicant's Name",
-                                    _formData["applicants_name"]!),
-                                const Padding(
-                                  padding:
-                                  EdgeInsets.symmetric(horizontal: 16),
-                                  child: Divider(
-                                    thickness: 1,
-                                    color: Colors.black12,
-                                  ),
-                                ),
-                                _buildSection('Mobile No.', _formData["phone"]!),
-                                const Padding(
-                                  padding:
-                                  EdgeInsets.symmetric(horizontal: 16),
-                                  child: Divider(
-                                    thickness: 1,
-                                    color: Colors.black12,
-                                  ),
-                                ),
-                                _buildSection(
-                                    'Ward No.', _formData["ward_no"]!),
-                                const Padding(
-                                  padding:
-                                  EdgeInsets.symmetric(horizontal: 16),
-                                  child: Divider(
-                                    thickness: 1,
-                                    color: Colors.black12,
-                                  ),
-                                ),
-                                _buildSection('Shop No.',
-                                    _formData["shop_no"]!),
-                                const SizedBox(
-                                  height: 16,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 16, horizontal: 24),
-                          child: Container(
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10.0),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.6),
-                                  spreadRadius: 1,
-                                  blurRadius: 3,
-                                  offset: const Offset(0,
-                                      2), // changes the position of the shadow
-                                ),
-                              ],
-                            ),
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 16,
-                                ),
-                                Text(
-                                  "Trade Details",
-                                  style: TextStyle(
-                                    fontFamily: 'Poppins-Bold',
-                                    fontSize: 16,
-                                    color: ColorConstants.lightBlackColor,
-                                  ),
-                                ),
-                                const SizedBox(
-                                  height: 16,
-                                ),
-                                _buildSection(
-                                    'Name of Owner', _formData["owner_name"]!),
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 16),
-                                  child: Divider(
-                                    thickness: 1,
-                                    color: Colors.black12,
-                                  ),
-                                ),
-                                _buildSection(
-                                    'Name of Trade', _formData["trade_name"]!),
-                                // const Divider(
-                                //   thickness: 1,
-                                // ),
-                                // _buildSection('Title', _formData["title"]!),
-                                // const Divider(
-                                //   thickness: 1,
-                                // ),
-                                // _buildSection("Applicant's Name",
-                                //     _formData["applicants_name"]!),
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 16),
-                                  child: Divider(
-                                    thickness: 1,
-                                    color: Colors.black12,
-                                  ),
-                                ),
-                                _buildSection("Trade Address",
-                                    _formData["trade_address"]!),
-                                // const Divider(
-                                //   thickness: 1,
-                                // ),
-                                // _buildSection(
-                                //     'Mobile No.', _formData["phone"]!),
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 16),
-                                  child: Divider(
-                                    thickness: 1,
-                                    color: Colors.black12,
-                                  ),
-                                ),
-                                _buildSection("Applicant's Relation",
-                                    _formData["applicants_relation"]!),
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 16),
-                                  child: Divider(
-                                    thickness: 1,
-                                    color: Colors.black12,
-                                  ),
-                                ),
-                                _buildSection(
-                                    'Type of Trade', _formData["trade_type"]!),
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 16),
-                                  child: Divider(
-                                    thickness: 1,
-                                    color: Colors.black12,
-                                  ),
-                                ),
-                                _buildSection('Nature of Business',
-                                    _formData["business_nature"]!),
-                                // const Divider(
-                                //   thickness: 1,
-                                // ),
-                                // _buildSection('Date Of Birth',
-                                //     formatDate(_formData["date_of_birth"]!)),
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 16),
-                                  child: Divider(
-                                    thickness: 1,
-                                    color: Colors.black12,
-                                  ),
-                                ),
-                                _buildSection('Waste Management-facility',
-                                    _formData["waste_management_facility"]!),
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 16),
-                                  child: Divider(
-                                    thickness: 1,
-                                    color: Colors.black12,
-                                  ),
-                                ),
-                                _buildSection("Applicant's Relation",
-                                    _formData["applicants_relation"]!),
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 16),
-                                  child: Divider(
-                                    thickness: 1,
-                                    color: Colors.black12,
-                                  ),
-                                ),
-                                _buildSection(
-                                    "Lease Pay", _formData["lease_pay"]!),
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 16),
-                                  child: Divider(
-                                    thickness: 1,
-                                    color: Colors.black12,
-                                  ),
-                                ),
-                                _buildSection('Trade Area (sq.Mts)',
-                                    _formData["trade_area"]!),
-                                const Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 16),
-                                  child: Divider(
-                                    thickness: 1,
-                                    color: Colors.black12,
-                                  ),
-                                ),
-                                _buildSection('No. of Employees',
-                                    _formData["no_of_employee"]!),
-                                const SizedBox(
-                                  height: 16,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        if (_formData["signboard_details"] == "true") ...[
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  if (_formData.isEmpty || _fileMap.isEmpty) ...[
+                    const Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  ] else ...[
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).scaffoldBackgroundColor,
+                      ),
+                      child: ListView(
+                        children: [
                           Padding(
                             padding: const EdgeInsets.symmetric(
                                 vertical: 16, horizontal: 24),
@@ -632,7 +385,7 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
                                     height: 16,
                                   ),
                                   Text(
-                                    "Signboard Details",
+                                    "Applicant Details",
                                     style: TextStyle(
                                       fontFamily: 'Poppins-Bold',
                                       fontSize: 16,
@@ -642,324 +395,588 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
                                   const SizedBox(
                                     height: 16,
                                   ),
-                                  _buildSection(
-                                      'Signboard Location', _formData["signboard_location"]!),
+                                  _buildSection('Taluka', _formData["taluka"]!),
                                   const Padding(
-                                    padding: EdgeInsets.symmetric(horizontal: 16),
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 16),
                                     child: Divider(
                                       thickness: 1,
                                       color: Colors.black12,
                                     ),
                                   ),
                                   _buildSection(
-                                      'Signboard Type', _formData["signboard_type"]!),
+                                      'Panchayat', _formData["panchayat"]!),
                                   const Padding(
-                                    padding: EdgeInsets.symmetric(horizontal: 16),
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 16),
                                     child: Divider(
                                       thickness: 1,
                                       color: Colors.black12,
                                     ),
                                   ),
-                                  _buildSection("Content on Board",
-                                      _formData["signboard_content"]!),
+                                  _buildSection("Applicant's Name",
+                                      _formData["applicants_name"]!),
                                   const Padding(
-                                    padding: EdgeInsets.symmetric(horizontal: 16),
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 16),
                                     child: Divider(
                                       thickness: 1,
                                       color: Colors.black12,
                                     ),
                                   ),
-                                  _buildSection("Area(sq.Ft)",
-                                      _formData["signboard_area"]!),
-                                                                    const SizedBox(
+                                  _buildSection(
+                                      'Mobile No.', _formData["phone"]!),
+                                  const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 16),
+                                    child: Divider(
+                                      thickness: 1,
+                                      color: Colors.black12,
+                                    ),
+                                  ),
+                                  _buildSection(
+                                      'Ward No.', _formData["ward_no"]!),
+                                  const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 16),
+                                    child: Divider(
+                                      thickness: 1,
+                                      color: Colors.black12,
+                                    ),
+                                  ),
+                                  _buildSection(
+                                      'Shop No.', _formData["shop_no"]!),
+                                  const SizedBox(
                                     height: 16,
                                   ),
                                 ],
                               ),
                             ),
                           ),
-                        ],
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 16, horizontal: 24),
-                          child: Container(
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10.0),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.6),
-                                  spreadRadius: 1,
-                                  blurRadius: 3,
-                                  offset: const Offset(0,
-                                      2), // changes the position of the shadow
-                                ),
-                              ],
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 16, horizontal: 24),
+                            child: Container(
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(10.0),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.6),
+                                    spreadRadius: 1,
+                                    blurRadius: 3,
+                                    offset: const Offset(0,
+                                        2), // changes the position of the shadow
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                children: [
+                                  const SizedBox(
+                                    height: 16,
+                                  ),
+                                  Text(
+                                    "Trade Details",
+                                    style: TextStyle(
+                                      fontFamily: 'Poppins-Bold',
+                                      fontSize: 16,
+                                      color: ColorConstants.lightBlackColor,
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 16,
+                                  ),
+                                  _buildSection('Name of Owner',
+                                      _formData["owner_name"]!),
+                                  const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 16),
+                                    child: Divider(
+                                      thickness: 1,
+                                      color: Colors.black12,
+                                    ),
+                                  ),
+                                  _buildSection('Name of Trade',
+                                      _formData["trade_name"]!),
+                                  // const Divider(
+                                  //   thickness: 1,
+                                  // ),
+                                  // _buildSection('Title', _formData["title"]!),
+                                  // const Divider(
+                                  //   thickness: 1,
+                                  // ),
+                                  // _buildSection("Applicant's Name",
+                                  //     _formData["applicants_name"]!),
+                                  const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 16),
+                                    child: Divider(
+                                      thickness: 1,
+                                      color: Colors.black12,
+                                    ),
+                                  ),
+                                  _buildSection("Trade Address",
+                                      _formData["trade_address"]!),
+                                  // const Divider(
+                                  //   thickness: 1,
+                                  // ),
+                                  // _buildSection(
+                                  //     'Mobile No.', _formData["phone"]!),
+                                  const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 16),
+                                    child: Divider(
+                                      thickness: 1,
+                                      color: Colors.black12,
+                                    ),
+                                  ),
+                                  _buildSection("Applicant's Relation",
+                                      _formData["applicants_relation"]!),
+                                  const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 16),
+                                    child: Divider(
+                                      thickness: 1,
+                                      color: Colors.black12,
+                                    ),
+                                  ),
+                                  _buildSection('Type of Trade',
+                                      _formData["trade_type"]!),
+                                  const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 16),
+                                    child: Divider(
+                                      thickness: 1,
+                                      color: Colors.black12,
+                                    ),
+                                  ),
+                                  _buildSection('Nature of Business',
+                                      _formData["business_nature"]!),
+                                  // const Divider(
+                                  //   thickness: 1,
+                                  // ),
+                                  // _buildSection('Date Of Birth',
+                                  //     formatDate(_formData["date_of_birth"]!)),
+                                  const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 16),
+                                    child: Divider(
+                                      thickness: 1,
+                                      color: Colors.black12,
+                                    ),
+                                  ),
+                                  _buildSection('Waste Management-facility',
+                                      _formData["waste_management_facility"]!),
+                                  const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 16),
+                                    child: Divider(
+                                      thickness: 1,
+                                      color: Colors.black12,
+                                    ),
+                                  ),
+                                  _buildSection("Applicant's Relation",
+                                      _formData["applicants_relation"]!),
+                                  const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 16),
+                                    child: Divider(
+                                      thickness: 1,
+                                      color: Colors.black12,
+                                    ),
+                                  ),
+                                  _buildSection(
+                                      "Lease Pay", _formData["lease_pay"]!),
+                                  const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 16),
+                                    child: Divider(
+                                      thickness: 1,
+                                      color: Colors.black12,
+                                    ),
+                                  ),
+                                  _buildSection('Trade Area (sq.Mts)',
+                                      _formData["trade_area"]!),
+                                  const Padding(
+                                    padding:
+                                        EdgeInsets.symmetric(horizontal: 16),
+                                    child: Divider(
+                                      thickness: 1,
+                                      color: Colors.black12,
+                                    ),
+                                  ),
+                                  _buildSection('No. of Employees',
+                                      _formData["no_of_employee"]!),
+                                  const SizedBox(
+                                    height: 16,
+                                  ),
+                                ],
+                              ),
                             ),
-                            child: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 16,
-                                ),
-                                Text(
-                                  "Documents",
-                                  style: TextStyle(
-                                    fontFamily: 'Poppins-Bold',
-                                    fontSize: 16,
-                                    color: ColorConstants.lightBlackColor,
-                                  ),
-                                ),
-                                if (_fileMap["identityProof"] != null) ...[
-                                  _buildPDFListItem('Identity Proof',
-                                      _fileMap["identityProof"]!),
-                                  const Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 16),
-                                    child: Divider(
-                                      thickness: 1,
-                                      color: Colors.black12,
+                          ),
+                          if (_formData["signboard_details"] == "true") ...[
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 16, horizontal: 24),
+                              child: Container(
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.6),
+                                      spreadRadius: 1,
+                                      blurRadius: 3,
+                                      offset: const Offset(0,
+                                          2), // changes the position of the shadow
                                     ),
-                                  ),
-                                ],
-                                if (_fileMap["houseTax"] != null) ...[
-                                  _buildPDFListItem('Housetax Receipt',
-                                      _fileMap["houseTax"]!),
-                                  const Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 16),
-                                    child: Divider(
-                                      thickness: 1,
-                                      color: Colors.black12,
-                                    ),
-                                  ),
-                                ],
-                                if (_fileMap["ownershipDocument"] != null) ...[
-                                  _buildPDFListItem(
-                                      'No Objection Certificate/ Lease agreement/ Ownership document',
-                                      _fileMap["ownershipDocument"]!),
-                                  const Padding(
-                                    padding:
-                                        EdgeInsets.symmetric(horizontal: 16),
-                                    child: Divider(
-                                      thickness: 1,
-                                      color: Colors.black12,
-                                    ),
-                                  ),
-                                ],
-                                const SizedBox(
-                                  height: 40,
+                                  ],
                                 ),
-                                if (_fileMap.length > 3) ...[
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 24),
-                                    child: Text(
-                                      "Permissions granted by the Authorities as per requirement",
+                                child: Column(
+                                  children: [
+                                    const SizedBox(
+                                      height: 16,
+                                    ),
+                                    Text(
+                                      "Signboard Details",
                                       style: TextStyle(
                                         fontFamily: 'Poppins-Bold',
-                                        fontSize: 12,
+                                        fontSize: 16,
                                         color: ColorConstants.lightBlackColor,
                                       ),
                                     ),
-                                  ),
-                                  if (_fileMap[
-                                          "permissionsGranted.foodAndDrugs"] !=
-                                      null) ...[
-                                    _buildPDFListItem(
-                                      'Foods & Drugs',
-                                      _fileMap[
-                                          "permissionsGranted.foodAndDrugs"]!,
+                                    const SizedBox(
+                                      height: 16,
+                                    ),
+                                    _buildSection('Signboard Location',
+                                        _formData["signboard_location"]!),
+                                    const Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(horizontal: 16),
+                                      child: Divider(
+                                        thickness: 1,
+                                        color: Colors.black12,
+                                      ),
+                                    ),
+                                    _buildSection('Signboard Type',
+                                        _formData["signboard_type"]!),
+                                    const Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(horizontal: 16),
+                                      child: Divider(
+                                        thickness: 1,
+                                        color: Colors.black12,
+                                      ),
+                                    ),
+                                    _buildSection("Content on Board",
+                                        _formData["signboard_content"]!),
+                                    const Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(horizontal: 16),
+                                      child: Divider(
+                                        thickness: 1,
+                                        color: Colors.black12,
+                                      ),
+                                    ),
+                                    _buildSection("Area(sq.Ft)",
+                                        _formData["signboard_area"]!),
+                                    const SizedBox(
+                                      height: 16,
                                     ),
                                   ],
-                                  if (_fileMap["permissionsGranted.excise"] !=
-                                      null) ...[
-                                    _buildPDFListItem('Excise',
-                                        _fileMap["permissionsGranted.excise"]!),
+                                ),
+                              ),
+                            ),
+                          ],
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 16, horizontal: 24),
+                            child: Container(
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(10.0),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.6),
+                                    spreadRadius: 1,
+                                    blurRadius: 3,
+                                    offset: const Offset(0,
+                                        2), // changes the position of the shadow
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                children: [
+                                  const SizedBox(
+                                    height: 16,
+                                  ),
+                                  Text(
+                                    "Documents",
+                                    style: TextStyle(
+                                      fontFamily: 'Poppins-Bold',
+                                      fontSize: 16,
+                                      color: ColorConstants.lightBlackColor,
+                                    ),
+                                  ),
+                                  if (_fileMap["identityProof"] != null) ...[
+                                    _buildPDFListItem('Identity Proof',
+                                        _fileMap["identityProof"]!),
+                                    const Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(horizontal: 16),
+                                      child: Divider(
+                                        thickness: 1,
+                                        color: Colors.black12,
+                                      ),
+                                    ),
                                   ],
-                                  if (_fileMap[
-                                          "permissionsGranted.policeDepartment"] !=
+                                  if (_fileMap["houseTax"] != null) ...[
+                                    _buildPDFListItem('Housetax Receipt',
+                                        _fileMap["houseTax"]!),
+                                    const Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(horizontal: 16),
+                                      child: Divider(
+                                        thickness: 1,
+                                        color: Colors.black12,
+                                      ),
+                                    ),
+                                  ],
+                                  if (_fileMap["ownershipDocument"] !=
                                       null) ...[
                                     _buildPDFListItem(
-                                        'Police Dept.',
-                                        _fileMap[
-                                            "permissionsGranted.policeDepartment"]!),
+                                        'No Objection Certificate/ Lease agreement/ Ownership document',
+                                        _fileMap["ownershipDocument"]!),
+                                    const Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(horizontal: 16),
+                                      child: Divider(
+                                        thickness: 1,
+                                        color: Colors.black12,
+                                      ),
+                                    ),
                                   ],
-                                  if (_fileMap["permissionsGranted.crz"] !=
-                                      null) ...[
-                                    _buildPDFListItem('CRZ',
-                                        _fileMap["permissionsGranted.crz"]!),
-                                  ],
-                                  if (_fileMap["permissionsGranted.tourism"] !=
-                                      null) ...[
-                                    _buildPDFListItem(
-                                        'Tourism',
+                                  const SizedBox(
+                                    height: 40,
+                                  ),
+                                  if (_fileMap.length > 3) ...[
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 24),
+                                      child: Text(
+                                        "Permissions granted by the Authorities as per requirement",
+                                        style: TextStyle(
+                                          fontFamily: 'Poppins-Bold',
+                                          fontSize: 12,
+                                          color: ColorConstants.lightBlackColor,
+                                        ),
+                                      ),
+                                    ),
+                                    if (_fileMap[
+                                            "permissionsGranted.foodAndDrugs"] !=
+                                        null) ...[
+                                      _buildPDFListItem(
+                                        'Foods & Drugs',
                                         _fileMap[
-                                            "permissionsGranted.tourism"]!),
-                                  ],
-                                  if (_fileMap[
-                                          "permissionsGranted.fireAndBridge"] !=
-                                      null) ...[
-                                    _buildPDFListItem(
-                                        'Fire Brigade',
-                                        _fileMap[
-                                            "permissionsGranted.fireAndBridge"]!),
-                                  ],
-                                  if (_fileMap[
-                                          "permissionsGranted.factoriesAndBoilers"] !=
-                                      null) ...[
-                                    _buildPDFListItem(
-                                        'Factories & Boilers',
-                                        _fileMap[
-                                            "permissionsGranted.factoriesAndBoilers"]!),
-                                  ],
-                                  if (_fileMap[
-                                          "permissionsGranted.healthServices"] !=
-                                      null) ...[
-                                    _buildPDFListItem(
-                                        'Health Services',
-                                        _fileMap[
-                                            "permissionsGranted.healthServices"]!),
-                                  ],
-                                  if (_fileMap[
-                                          "permissionsGranted.others.file"] !=
-                                      null) ...[
-                                    _buildPDFListItem(
-                                        'Others',
-                                        _fileMap[
-                                            "permissionsGranted.others.file"]!),
+                                            "permissionsGranted.foodAndDrugs"]!,
+                                      ),
+                                    ],
+                                    if (_fileMap["permissionsGranted.excise"] !=
+                                        null) ...[
+                                      _buildPDFListItem(
+                                          'Excise',
+                                          _fileMap[
+                                              "permissionsGranted.excise"]!),
+                                    ],
+                                    if (_fileMap[
+                                            "permissionsGranted.policeDepartment"] !=
+                                        null) ...[
+                                      _buildPDFListItem(
+                                          'Police Dept.',
+                                          _fileMap[
+                                              "permissionsGranted.policeDepartment"]!),
+                                    ],
+                                    if (_fileMap["permissionsGranted.crz"] !=
+                                        null) ...[
+                                      _buildPDFListItem('CRZ',
+                                          _fileMap["permissionsGranted.crz"]!),
+                                    ],
+                                    if (_fileMap[
+                                            "permissionsGranted.tourism"] !=
+                                        null) ...[
+                                      _buildPDFListItem(
+                                          'Tourism',
+                                          _fileMap[
+                                              "permissionsGranted.tourism"]!),
+                                    ],
+                                    if (_fileMap[
+                                            "permissionsGranted.fireAndBridge"] !=
+                                        null) ...[
+                                      _buildPDFListItem(
+                                          'Fire Brigade',
+                                          _fileMap[
+                                              "permissionsGranted.fireAndBridge"]!),
+                                    ],
+                                    if (_fileMap[
+                                            "permissionsGranted.factoriesAndBoilers"] !=
+                                        null) ...[
+                                      _buildPDFListItem(
+                                          'Factories & Boilers',
+                                          _fileMap[
+                                              "permissionsGranted.factoriesAndBoilers"]!),
+                                    ],
+                                    if (_fileMap[
+                                            "permissionsGranted.healthServices"] !=
+                                        null) ...[
+                                      _buildPDFListItem(
+                                          'Health Services',
+                                          _fileMap[
+                                              "permissionsGranted.healthServices"]!),
+                                    ],
+                                    if (_fileMap[
+                                            "permissionsGranted.others.file"] !=
+                                        null) ...[
+                                      _buildPDFListItem(
+                                          'Others',
+                                          _fileMap[
+                                              "permissionsGranted.others.file"]!),
+                                    ],
                                   ],
                                 ],
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 20,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-                Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                  ),
-                  child: Center(
-                    child: SingleChildScrollView(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Padding(
-                            padding:
-                                const EdgeInsets.only(left: 16.0, right: 16.0),
-                            child: AnotherStepper(
-                              stepperDirection: Axis.vertical,
-                              verticalGap: 15,
-                              iconWidth: 60,
-                              iconHeight: 60,
-                              activeBarColor: Color(0xff28B446),
-                              inActiveBarColor: Colors.grey,
-                              activeIndex: _applicationStatusActiveIndex,
-                              barThickness: 2,
-                              stepperList: getStatusSteps(),
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 16.0,
-                          ),
-                          Padding(
-                            padding:
-                                const EdgeInsets.only(left: 25.0, right: 25.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Remark:",
-                                  style: TextStyle(
-                                    color: Color(0xffFF0000),
-                                    fontFamily: 'Poppins-Bold',
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Text(
-                                    _applicationRemark,
-                                    style: TextStyle(
-                                      color: Color(0xffFF0000),
-                                      fontFamily: 'Poppins-Medium',
-                                      fontSize: 12,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 16.0,
-                          ),
-                          Container(
-                            width: double.infinity,
-                            padding:
-                                const EdgeInsets.only(left: 25.0, right: 25.0),
-                            child: ElevatedButton(
-                              onPressed: _applicationStatusActiveIndex ==
-                                      getStatusSteps().length - 1
-                                  ? () async {
-                                      Map<String, String> body = {
-                                        "application_id":
-                                            _licenseFormResponseModel
-                                                .data.applicationId!,
-                                      };
-                                      TradeLicenseAPIService.generateLicensePDF(
-                                          body);
-                                    }
-                                  : null,
-                              style: ButtonStyle(
-                                backgroundColor:
-                                    MaterialStateProperty.all<Color>(
-                                        _applicationStatusActiveIndex ==
-                                                getStatusSteps().length - 1
-                                            ? Color(0xff6CC51D)
-                                            : Colors.grey),
-                                shape: MaterialStateProperty.all<
-                                    RoundedRectangleBorder>(
-                                  RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(20.0),
-                                    // side: BorderSide(
-                                    //     color: _applicationStatusActiveIndex ==
-                                    //             getDetailsSteps().length - 1
-                                    //         ? Color(0xff6CC51D)
-                                    //         : Colors.grey),
-                                  ),
-                                ),
-                                padding: MaterialStateProperty.all<EdgeInsets>(
-                                  EdgeInsets.only(top: 15.0, bottom: 15.0),
-                                ),
-                              ),
-                              child: const Text(
-                                'Download',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontFamily: 'Poppins-Bold',
-                                  color: Colors.white,
-                                ),
                               ),
                             ),
                           ),
                           const SizedBox(
-                            height: 16.0,
+                            height: 20,
                           ),
                         ],
                       ),
                     ),
+                  ],
+                  Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                    ),
+                    child: Center(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 16.0, right: 16.0),
+                              child: AnotherStepper(
+                                stepperDirection: Axis.vertical,
+                                verticalGap: 15,
+                                iconWidth: 60,
+                                iconHeight: 60,
+                                activeBarColor: Color(0xff28B446),
+                                inActiveBarColor: Colors.grey,
+                                activeIndex: _applicationStatusActiveIndex,
+                                barThickness: 2,
+                                stepperList: getStatusSteps(),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 16.0,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  left: 25.0, right: 25.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Remark:",
+                                    style: TextStyle(
+                                      color: Color(0xffFF0000),
+                                      fontFamily: 'Poppins-Bold',
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: Text(
+                                      _applicationRemark,
+                                      style: TextStyle(
+                                        color: Color(0xffFF0000),
+                                        fontFamily: 'Poppins-Medium',
+                                        fontSize: 12,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 16.0,
+                            ),
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.only(
+                                  left: 25.0, right: 25.0),
+                              child: ElevatedButton(
+                                onPressed: _applicationStatusActiveIndex ==
+                                        getStatusSteps().length - 1
+                                    ? () async {
+                                        Map<String, String> body = {
+                                          "application_id":
+                                              _licenseFormResponseModel
+                                                  .data.applicationId!,
+                                        };
+                                        TradeLicenseAPIService
+                                            .generateLicensePDF(body);
+                                      }
+                                    : null,
+                                style: ButtonStyle(
+                                  backgroundColor:
+                                      MaterialStateProperty.all<Color>(
+                                          _applicationStatusActiveIndex ==
+                                                  getStatusSteps().length - 1
+                                              ? Color(0xff6CC51D)
+                                              : Colors.grey),
+                                  shape: MaterialStateProperty.all<
+                                      RoundedRectangleBorder>(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20.0),
+                                      // side: BorderSide(
+                                      //     color: _applicationStatusActiveIndex ==
+                                      //             getDetailsSteps().length - 1
+                                      //         ? Color(0xff6CC51D)
+                                      //         : Colors.grey),
+                                    ),
+                                  ),
+                                  padding:
+                                      MaterialStateProperty.all<EdgeInsets>(
+                                    EdgeInsets.only(top: 15.0, bottom: 15.0),
+                                  ),
+                                ),
+                                child: const Text(
+                                  'Download',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontFamily: 'Poppins-Bold',
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 16.0,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

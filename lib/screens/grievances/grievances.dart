@@ -10,6 +10,7 @@ import 'package:we_panchayat_dev/services/grievance_api_service.dart';
 import '../../models/login_response_model.dart';
 import '../../services/shared_service.dart';
 import '../application_submitted.dart';
+import '../dialog_boxes.dart';
 
 class Grievances extends StatefulWidget {
   const Grievances({super.key});
@@ -22,6 +23,13 @@ class GrievancesState extends State<Grievances> {
   Map<String, File> _fileMap = {};
 
   final int _maxFileSize = 2 * 1024 * 1024;
+
+  bool _isAPIcallProcess = false;
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
   final List<String> _imageNames = [
     "img-1",
@@ -49,208 +57,243 @@ class GrievancesState extends State<Grievances> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: <Widget>[
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.only(bottom: 20.0),
-          child: Text(
-            "Grievance Portal",
-            style: TextStyle(
-              fontFamily: 'Poppins-Bold',
-              color: ColorConstants.darkBlueThemeColor,
-              fontSize: 30,
+    return Stack(
+      children: [
+        ListView(
+          children: <Widget>[
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.only(bottom: 20.0),
+              child: Text(
+                "Grievance Portal",
+                style: TextStyle(
+                  fontFamily: 'Poppins-Bold',
+                  color: ColorConstants.darkBlueThemeColor,
+                  fontSize: 30,
+                ),
+                textAlign: TextAlign.center,
+              ),
             ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-        Container(
-          padding: EdgeInsets.symmetric(horizontal: 20),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                TextFormField(
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Required';
-                    }
-                    return null;
-                  },
-                  controller: _grievanceTitleController,
-                  style: FormConstants.getTextStyle(),
-                  decoration: InputDecoration(
-                    labelText: 'Title',
-                    labelStyle: FormConstants.getLabelAndHintStyle(),
-                    filled: true,
-                    fillColor: Colors.white,
-                    border: FormConstants.getEnabledBorder(),
-                    enabledBorder: FormConstants.getEnabledBorder(),
-                    focusedBorder: FormConstants.getFocusedBorder(),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Container(
-                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                  decoration: FormConstants.getDropDownBoxDecoration(),
-                  child: DropdownButtonFormField(
-                    menuMaxHeight: 200,
-                    decoration: const InputDecoration(
-                      border: InputBorder.none, // Remove the bottom border
-                    ),
-                    isExpanded: true,
-                    icon: FormConstants.getDropDownIcon(),
-                    value: _selectedGrievanceType,
-                    items: _grievanceTypes.map((String option) {
-                      return DropdownMenuItem<String>(
-                        value: option,
-                        child: Text(
-                          option,
-                          style: FormConstants.getDropDownTextStyle(),
-                        ),
-                      );
-                    }).toList(),
-                    onChanged: (_value) => selected(_value),
-                    hint: Text(
-                      "Type",
-                      style: FormConstants.getDropDownHintStyle(),
-                    ),
-                    validator: (value) {
-                      if (value == null) {
-                        // Add validation to check if a value is selected
-                        return 'Required';
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  keyboardType: TextInputType.multiline,
-                  minLines: 6,
-                  maxLines: 6,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Required';
-                    }
-                    return null;
-                  },
-                  controller: _grievanceBodyController,
-                  style: FormConstants.getTextStyle(),
-                  decoration: InputDecoration(
-                    labelText: 'Type your grievance',
-                    labelStyle: FormConstants.getLabelAndHintStyle(),
-                    filled: true,
-                    fillColor: Colors.white,
-                    border: FormConstants.getEnabledBorder(),
-                    enabledBorder: FormConstants.getEnabledBorder(),
-                    focusedBorder: FormConstants.getFocusedBorder(),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Container(
-                  alignment: Alignment.centerLeft,
-                  padding: EdgeInsets.all(16.0),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
-                      color: ColorConstants.formBorderColor,
-                      width: 2,
-                    ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Attach images(JPEG format, Max 3 files)',
-                        style: TextStyle(
-                          fontFamily: 'Poppins-Medium',
-                          fontSize: 14,
-                          color: ColorConstants.formLabelTextColor,
-                        ),
-                        textAlign: TextAlign.left,
-                      ),
-                      const SizedBox(height: 10),
-                      if (_fileMap[_imageNames[0]] != null) ...[
-                        _buildImageItem(_fileMap[_imageNames[0]]!),
-                        const SizedBox(height: 10),
-                      ],
-                      if (_fileMap[_imageNames[1]] != null) ...[
-                        _buildImageItem(_fileMap[_imageNames[1]]!),
-                        const SizedBox(height: 10),
-                      ],
-                      if (_fileMap[_imageNames[2]] != null) ...[
-                        _buildImageItem(_fileMap[_imageNames[2]]!),
-                        const SizedBox(height: 10),
-                      ],
-                      if (_fileMap.length < 3) ...[
-                        chooseFileButton(),
-                      ],
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Container(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () async {
-                      if (_formKey.currentState!.validate()) {
-
-                        LoginResponseModel? model = await getUserDetails();
-
-
-
-                        Map<String, String?> body = {
-                          "taluka": model?.taluka,
-                          "village": model?.village,
-                          "phone": model?.phone,
-                          "title": _grievanceTitleController.text,
-                          "type": _selectedGrievanceType!,
-                          "body": _grievanceBodyController.text,
-                        };
-
-                        var response = await GrievanceAPIService.submitGrievance(body, _fileMap);
-
-                        if (response.statusCode == 200) {
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ApplicationSubmitted()),
-                                (route) => false,
-                          );
-                        } else {
-                          print("Failed to upload documents INCOME CERTIFICATE");
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    TextFormField(
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Required';
                         }
-
-                      }
-                    },
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all<Color>(
-                          ColorConstants.submitGreenColor),
-                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20.0),
+                        return null;
+                      },
+                      controller: _grievanceTitleController,
+                      style: FormConstants.getTextStyle(),
+                      decoration: InputDecoration(
+                        labelText: 'Title',
+                        labelStyle: FormConstants.getLabelAndHintStyle(),
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: FormConstants.getEnabledBorder(),
+                        enabledBorder: FormConstants.getEnabledBorder(),
+                        focusedBorder: FormConstants.getFocusedBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      decoration: FormConstants.getDropDownBoxDecoration(),
+                      child: DropdownButtonFormField(
+                        menuMaxHeight: 200,
+                        decoration: const InputDecoration(
+                          border: InputBorder.none, // Remove the bottom border
+                        ),
+                        isExpanded: true,
+                        icon: FormConstants.getDropDownIcon(),
+                        value: _selectedGrievanceType,
+                        items: _grievanceTypes.map((String option) {
+                          return DropdownMenuItem<String>(
+                            value: option,
+                            child: Text(
+                              option,
+                              style: FormConstants.getDropDownTextStyle(),
+                            ),
+                          );
+                        }).toList(),
+                        onChanged: (_value) => selected(_value),
+                        hint: Text(
+                          "Type",
+                          style: FormConstants.getDropDownHintStyle(),
+                        ),
+                        validator: (value) {
+                          if (value == null) {
+                            // Add validation to check if a value is selected
+                            return 'Required';
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      keyboardType: TextInputType.multiline,
+                      minLines: 6,
+                      maxLines: 6,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Required';
+                        }
+                        return null;
+                      },
+                      controller: _grievanceBodyController,
+                      style: FormConstants.getTextStyle(),
+                      decoration: InputDecoration(
+                        labelText: 'Type your grievance',
+                        labelStyle: FormConstants.getLabelAndHintStyle(),
+                        filled: true,
+                        fillColor: Colors.white,
+                        border: FormConstants.getEnabledBorder(),
+                        enabledBorder: FormConstants.getEnabledBorder(),
+                        focusedBorder: FormConstants.getFocusedBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Container(
+                      alignment: Alignment.centerLeft,
+                      padding: EdgeInsets.all(16.0),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: ColorConstants.formBorderColor,
+                          width: 2,
                         ),
                       ),
-                      padding: MaterialStateProperty.all<EdgeInsets>(
-                        EdgeInsets.only(top: 15.0, bottom: 15.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Attach images(JPEG format, Max 3 files)',
+                            style: TextStyle(
+                              fontFamily: 'Poppins-Medium',
+                              fontSize: 14,
+                              color: ColorConstants.formLabelTextColor,
+                            ),
+                            textAlign: TextAlign.left,
+                          ),
+                          const SizedBox(height: 10),
+                          if (_fileMap[_imageNames[0]] != null) ...[
+                            _buildImageItem(_fileMap[_imageNames[0]]!),
+                            const SizedBox(height: 10),
+                          ],
+                          if (_fileMap[_imageNames[1]] != null) ...[
+                            _buildImageItem(_fileMap[_imageNames[1]]!),
+                            const SizedBox(height: 10),
+                          ],
+                          if (_fileMap[_imageNames[2]] != null) ...[
+                            _buildImageItem(_fileMap[_imageNames[2]]!),
+                            const SizedBox(height: 10),
+                          ],
+                          if (_fileMap.length < 3) ...[
+                            chooseFileButton(),
+                          ],
+                        ],
                       ),
                     ),
-                    child: const Text(
-                      'Submit',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontFamily: 'Poppins-Bold',
+                    const SizedBox(height: 16),
+                    Container(
+                      width: double.infinity,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          if (_formKey.currentState!.validate()) {
+
+                            LoginResponseModel? model = await getUserDetails();
+
+
+
+                            Map<String, String?> body = {
+                              "taluka": model?.taluka,
+                              "village": model?.village,
+                              "phone": model?.phone,
+                              "title": _grievanceTitleController.text,
+                              "type": _selectedGrievanceType!,
+                              "body": _grievanceBodyController.text,
+                            };
+
+                            setState(() {
+                              _isAPIcallProcess = true;
+                            });
+
+                            var response = await GrievanceAPIService.submitGrievance(context, body, _fileMap);
+
+                            setState(() {
+                              _isAPIcallProcess = false;
+                            });
+
+                            if(response != null) {
+                              if (response.statusCode == 200) {
+                                Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => ApplicationSubmitted()),
+                                      (route) => false,
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(
+                                  SnackBar(
+                                    content: Text("Error: Failed to submit grievance"),
+                                  ),
+                                );
+                                print("Failed to submit Grievance");
+                              }
+                            } else {
+                              DialogBoxes.showServerDownDialogBox(context);
+                            }
+
+                          }
+                        },
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                              ColorConstants.submitGreenColor),
+                          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20.0),
+                            ),
+                          ),
+                          padding: MaterialStateProperty.all<EdgeInsets>(
+                            EdgeInsets.only(top: 15.0, bottom: 15.0),
+                          ),
+                        ),
+                        child: const Text(
+                          'Submit',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontFamily: 'Poppins-Bold',
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                    const SizedBox(height: 20),
+                  ],
                 ),
-                const SizedBox(height: 20),
-              ],
+              ),
+            ),
+          ],
+        ),
+        if (_isAPIcallProcess)
+          Opacity(
+            opacity: 0.3,
+            child: ModalBarrier(
+              dismissible: false,
+              color: Colors.black,
             ),
           ),
-        ),
+        if (_isAPIcallProcess)
+          Center(
+            child: CircularProgressIndicator(color: Colors.white,
+              strokeWidth: 6,),
+          ),
       ],
     );
   }

@@ -22,148 +22,181 @@ import '../models/login_response_model.dart';
 class GrievanceAPIService {
   static var client = http.Client();
 
-  static Future<http.Response> submitGrievance(Map<String, String?> body, Map<String, File> fileMap) async {
+  static Future<http.Response> submitGrievance(BuildContext context,
+      Map<String, String?> body, Map<String, File> fileMap) async {
+    // try {
+      Map<String, String> requestHeaders = {
+        // "Content-Type": "application/json",
+      };
 
-    Map<String, String> requestHeaders = {
-      // "Content-Type": "application/json",
-    };
+      final url = Uri.http(Config.apiURL, GrievanceAPI.submitGrievanceAPI);
+      print(url);
 
-    final url = Uri.http(Config.apiURL, GrievanceAPI.submitGrievanceAPI);
-    print(url);
+      print("COOKIE DETAILS Submit Grievance");
+      Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
+      requestHeaders['cookie'] = cookieHeaders!['cookie']!;
+      requestHeaders['Device-Info'] = cookieHeaders['Device-Info']!;
 
-    print("COOKIE DETAILS Submit Grievance");
-    Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
-    requestHeaders['cookie'] = cookieHeaders!['cookie']!;
+      print(requestHeaders);
 
-    print(requestHeaders);
+      print(body);
 
-    print(body);
+      var response =
+          await client.post(url, body: body, headers: requestHeaders).timeout(const Duration(seconds: 5));
 
+      print("${response.body}");
 
-    var response = await client.post(url,
-        body: body, headers: requestHeaders);
+      if (response.statusCode == 200) {
+        final responseBody = jsonDecode(response.body);
+        final gid = responseBody["gid"].toString();
 
-    print("${response.body}");
+        var imagesResponse =
+            await GrievanceAPIService.uploadGrievanceImages(fileMap, gid);
 
-    if(response.statusCode == 200) {
-      final responseBody = jsonDecode(response.body);
-      final gid = responseBody["gid"].toString();
+        if(imagesResponse != null ) {
+          if (!imagesResponse) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text("Error: Failed to upload images"),
+              ),
+            );
+          }
+        }
+      }
 
-      var imagesResponse = await GrievanceAPIService.uploadGrievanceImages(fileMap, gid);
-    }
-
-    return response;
+      return response;
+    // } catch (e) {
+    //   print('Error : $e');
+    //   return null;
+    // }
   }
 
+  static Future<bool> uploadGrievanceImages(
+      Map<String, File> fileMap, String grievanceId) async {
+    // try {
+      Map<String, String> requestHeaders = {
+        // "Content-Type": "application/json",
+      };
 
-  static Future<bool> uploadGrievanceImages(Map<String, File> fileMap, String grievanceId) async {
+      final url =
+          Uri.http(Config.apiURL, GrievanceAPI.uploadGrievanceImagesAPI);
+      print(url);
 
-    Map<String, String> requestHeaders = {
-      // "Content-Type": "application/json",
-    };
+      var request = http.MultipartRequest('POST', url);
+      print("COOKIE DETAILS Upload Grievance Images");
+      Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
 
-    final url = Uri.http(Config.apiURL, GrievanceAPI.uploadGrievanceImagesAPI);
-    print(url);
+      request.headers["Content-Type"] = "multipart/form-data";
+      request.headers['cookie'] = cookieHeaders!['cookie']!;
 
-    var request = http.MultipartRequest('POST', url);
-    print("COOKIE DETAILS Upload Grievance Images");
-    Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
+      int count = 0;
 
-    request.headers["Content-Type"] = "multipart/form-data";
-    request.headers['cookie'] = cookieHeaders!['cookie']!;
+      for (var entry in fileMap.entries) {
+        count++;
+        request.files.add(
+          http.MultipartFile(
+            entry.key,
+            fileMap[entry.key]!.readAsBytes().asStream(),
+            fileMap[entry.key]!.lengthSync(),
+            filename: path.basename(fileMap[entry.key]!.path),
+            contentType: MediaType('image', 'jpeg'),
+          ),
+        );
+      }
+      request.fields['totalFilesCount'] = "$count";
+      request.fields['gid'] = grievanceId;
+      print(request.files);
+      print(request.fields);
 
-    int count = 0;
+      //send request
+      var response = await request.send().timeout(const Duration(seconds: 5));
+      print(response.statusCode);
+      print(response.reasonPhrase);
 
-    for(var entry in fileMap.entries) {
-      count++;
-      request.files.add(
-        http.MultipartFile(
-          entry.key,
-          fileMap[entry.key]!.readAsBytes().asStream(),
-          fileMap[entry.key]!.lengthSync(),
-          filename: path.basename(fileMap[entry.key]!.path),
-          contentType: MediaType('image', 'jpeg'),
-        ),
-      );
-    }
-    request.fields['totalFilesCount'] = "$count";
-    request.fields['gid'] = grievanceId;
-    print(request.files);
-    print(request.fields);
-
-    //send request
-    var response = await request.send();
-    print(response.statusCode);
-    print(response.reasonPhrase);
-
-    if (response.statusCode == 200) {
-      print("Grievance Images Successfully Submitted.");
-      String responseBody = await response.stream.bytesToString();
-      print(responseBody);
-      return true;
-    }
-    print("Failed to Submit Grievance Images.");
-    return false;
+      if (response.statusCode == 200) {
+        print("Grievance Images Successfully Submitted.");
+        String responseBody = await response.stream.bytesToString();
+        print(responseBody);
+        return true;
+      }
+      print("Failed to Submit Grievance Images.");
+      return false;
+    // } catch (e) {
+    //   print('Error : $e');
+    //   return null;
+    // }
   }
 
-  static Future<http.Response> retrieveGrievance(Map<String, String?> body) async {
+  static Future<http.Response> retrieveGrievance(String gId) async {
+    // try {
+      Map<String, String> requestHeaders = {
+        // "Content-Type": "application/json",
+      };
 
-    Map<String, String> requestHeaders = {
-      // "Content-Type": "application/json",
-    };
+      String query = "${GrievanceAPI.retrieveGrievanceAPI}/$gId";
 
-    final url = Uri.http(Config.apiURL, GrievanceAPI.retrieveGrievanceAPI);
-    print(url);
+      final url = Uri.http(Config.apiURL, query);
+      print(url);
 
-    print("COOKIE DETAILS retrieve all grievances");
-    Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
-    requestHeaders['cookie'] = cookieHeaders!['cookie']!;
+      print("COOKIE DETAILS retrieve all grievances");
+      Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
+      requestHeaders['cookie'] = cookieHeaders!['cookie']!;
+      requestHeaders['Device-Info'] = cookieHeaders['Device-Info']!;
 
+      // var response = await client.get(url);
+      // print(response.body);
 
-    // var response = await client.get(url);
-    // print(response.body);
+      print(requestHeaders);
 
-    print(requestHeaders);
-    print(body);
+      var response = await client.get(url, headers: requestHeaders);
 
-    var response = await client.post(url, body: body, headers: requestHeaders);
+      // print("${response.body}");
 
-    // print("${response.body}");
-
-    return response;
-
+      return response;
+    // } catch (e) {
+    //   print('Error : $e');
+    //   return null;
+    // }
   }
 
-  static Future<GrievanceRetrieveAllResponseModel> retrieveAllGrievances() async {
+  static Future<GrievanceRetrieveAllResponseModel>
+      retrieveAllGrievances() async {
+    // try {
+      String? phone = await getPhone();
+      print(phone);
+      // Map<String, String> body = {
+      //   "phone": phone!,
+      // };
 
-    String? phone = await getPhone();
-    print(phone);
-    Map<String, String> body = {
-      "phone": phone!,
-    };
+      Map<String, String> requestHeaders = {
+        // "Content-Type": "application/json",
+      };
 
-    Map<String, String> requestHeaders = {
-      // "Content-Type": "application/json",
-    };
+      String query = "${GrievanceAPI.retrieveAllGrievanceAPI}/$phone";
 
-    final url = Uri.http(Config.apiURL, GrievanceAPI.retrieveAllGrievanceAPI);
-    print(url);
+      final url = Uri.http(Config.apiURL, query);
+      print(url);
 
-    print("COOKIE DETAILS retrieve all grievances");
-    Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
-    requestHeaders['cookie'] = cookieHeaders!['cookie']!;
+      print("COOKIE DETAILS retrieve all grievances");
+      Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
+      requestHeaders['cookie'] = cookieHeaders!['cookie']!;
+      requestHeaders['Device-Info'] = cookieHeaders['Device-Info']!;
 
-    // var response = await client.get(url);
-    // print(response.body);
+      // var response = await client.get(url);
+      // print(response.body);
 
-    print(requestHeaders);
-    print(body);
+      print(requestHeaders);
 
-    var response = await client.post(url, body: body, headers: requestHeaders);
+      var response = await client.get(url, headers: requestHeaders).timeout(const Duration(seconds: 5));
 
-    // print("${response.body}");
+      // print("${response.body}");
 
-    return grievanceRetrieveAllResponseModelJson(response.body);
+      return grievanceRetrieveAllResponseModelJson(response.body);
+    // } catch (e) {
+    //   print('Error : $e');
+    //   return null;
+    // }
+
   }
 
   static Future<String?> getPhone() async {
@@ -171,5 +204,4 @@ class GrievanceAPIService {
 
     return loginResponseModel?.phone;
   }
-
 }

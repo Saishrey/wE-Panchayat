@@ -92,7 +92,9 @@ class _ProfilePicturePageState extends State<ProfilePicturePage> {
   @override
   void initState() {
     super.initState();
-    _initProfilePic();
+    if(!widget.isSignup) {
+      _initProfilePic();
+    }
   }
 
   void _initProfilePic() async {
@@ -106,6 +108,7 @@ class _ProfilePicturePageState extends State<ProfilePicturePage> {
 
   @override
   Widget build(BuildContext context) {
+    print("IMAGE: $_image");
     if (widget.isSignup) {
       return Container(
         padding: EdgeInsets.only(top: 60.0),
@@ -326,7 +329,7 @@ class _ProfilePicturePageState extends State<ProfilePicturePage> {
                                 await ProfilePicAPIService.uploadProfilePic(
                                     _image!, widget.userId);
                             if (response) {
-                              await SharedService.setProfilePicture(_image);
+                              await SharedService.setProfilePicture(_image, false);
 
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
@@ -607,7 +610,7 @@ class _ProfilePicturePageState extends State<ProfilePicturePage> {
                             await ProfilePicAPIService.uploadProfilePic(
                                 _image!, widget.userId);
                             if (response) {
-                              await SharedService.setProfilePicture(_image);
+                              await SharedService.setProfilePicture(_image, false);
 
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
@@ -664,7 +667,7 @@ class _ProfilePicturePageState extends State<ProfilePicturePage> {
                             await ProfilePicAPIService.updateProfilePic(
                                 _image!, widget.mongoId);
                             if (response) {
-                              await SharedService.setProfilePicture(_image);
+                              await SharedService.updateProfilePicture(_image);
 
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(

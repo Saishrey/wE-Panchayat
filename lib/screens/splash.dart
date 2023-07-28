@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,6 +10,7 @@ import 'package:local_auth/local_auth.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:we_panchayat_dev/screens/auth/login.dart';
+import 'package:we_panchayat_dev/screens/dialog_boxes.dart';
 import 'package:we_panchayat_dev/screens/security/mpin_enter.dart';
 import '../constants.dart';
 import '../services/auth_api_service.dart';
@@ -77,6 +80,68 @@ class _SplashState extends State<Splash> {
     return isEnabled;
   }
 
+  void getDeviceInfo() async {
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    AndroidDeviceInfo? androidInfo = await deviceInfo.androidInfo;
+
+    try {
+      androidInfo = await deviceInfo.androidInfo;
+    } catch (e) {
+      print('Error retrieving Android device info: $e');
+    }
+
+    if(androidInfo != null) {
+      // print('Device ID: ${androidInfo.id}');
+      // print('Manufacturer: ${androidInfo.manufacturer}');
+      print('Model: ${androidInfo.model}');
+      // print('Device: ${androidInfo.device}');
+      // print('Brand: ${androidInfo.brand}');
+      // print('Host: ${androidInfo.host}');
+      // print('Manufacturer: ${androidInfo.manufacturer}');
+      // print('Product: ${androidInfo.product}');
+      // print('Version: ${androidInfo.version.baseOS}');
+
+      Map<String, String> androidInfoJson = {
+      // 'id': androidInfo.id,
+      // 'manufacturer': androidInfo.manufacturer,
+      'Device-Info': androidInfo.model,
+      // 'device': androidInfo.device,
+      // 'brand': androidInfo.brand,
+      // 'host': androidInfo.host,
+      // 'product': androidInfo.product,
+      // 'version': androidInfo.version.baseOS,
+      };
+
+      String jsonStr = json.encode(androidInfoJson);
+      print(jsonStr);
+
+      await SharedService.setDeviceHeader(androidInfoJson);
+    }
+
+
+
+    IosDeviceInfo? iosInfo;
+
+    try {
+      iosInfo = await deviceInfo.iosInfo;
+    } catch (e) {
+      print('Error retrieving iOS device info: $e');
+    }
+
+    if(iosInfo != null) {
+      print('Running on ${iosInfo.utsname.machine}');
+
+      Map<String, String> iosInfoJson = {
+        'Device-Info': iosInfo.utsname.machine,
+      };
+
+      String jsonStr = json.encode(iosInfoJson);
+      print(jsonStr);
+
+      await SharedService.setDeviceHeader(iosInfoJson);
+    }
+  }
+
   void checkLoginSession() async {
     bool result = await SharedService.isLoggedIn();
 
@@ -88,7 +153,7 @@ class _SplashState extends State<Splash> {
       await Future.delayed(Duration(seconds: 1));
 
       if (isSessionActive == 0) {
-        showSessionExpiryDialogBox();
+        DialogBoxes.showSessionExpiryDialogBox(context);
       } else if (isSessionActive == 1) {
         bool isAppLockEnabled = await getAppLockState();
 
@@ -165,6 +230,8 @@ class _SplashState extends State<Splash> {
     // deviceCapability();
     // _getAvailableBiometrics();
 
+    getDeviceInfo();
+
     checkInternet();
 
     requestPermission();
@@ -185,7 +252,7 @@ class _SplashState extends State<Splash> {
         (ConnectivityResult result) async {
           isDeviceConnected = await InternetConnectionChecker().hasConnection;
           if (!isDeviceConnected && isAlertSet == false) {
-            showConnectivityDialogBox();
+            DialogBoxes.showConnectivityDialogBox(context);
             setState(() => isAlertSet = true);
           }
         },
@@ -198,68 +265,11 @@ class _SplashState extends State<Splash> {
       setState(() {
         _isConnectedToInternet = false;
       });
-      showConnectivityDialogBox();
+      DialogBoxes.showConnectivityDialogBox(context);
     } else {
       await Future.delayed(Duration(seconds: 1));
     }
   }
-
-  showConnectivityDialogBox() => showCupertinoDialog<String>(
-        context: context,
-        builder: (BuildContext context) => CupertinoAlertDialog(
-          title: Text(
-            'No Internet Connection',
-            style: AlertDialogBoxConstants.getTitleTextStyle(),
-          ),
-          content: Text(
-            'Please check your internet connection and try again.',
-            style: AlertDialogBoxConstants.getContentTextStyle(),
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () async {
-                SystemNavigator.pop();
-              },
-              child: Text(
-                'OK',
-                style: AlertDialogBoxConstants.getButtonTextStyle(),
-              ),
-            ),
-          ],
-        ),
-      );
-
-  showSessionExpiryDialogBox() => showCupertinoDialog<String>(
-        context: context,
-        builder: (BuildContext context) => CupertinoAlertDialog(
-          title: Text(
-            'Session Expired',
-            style: AlertDialogBoxConstants.getTitleTextStyle(),
-          ),
-          content: Text(
-            'Please log in again.',
-            style: AlertDialogBoxConstants.getContentTextStyle(),
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () async {
-                SharedService.logout(context);
-                Navigator.of(context).pop();
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => Login(),
-                  ),
-                );
-              },
-              child: Text(
-                'OK',
-                style: AlertDialogBoxConstants.getButtonTextStyle(),
-              ),
-            ),
-          ],
-        ),
-      );
 
   @override
   Widget build(BuildContext context) {

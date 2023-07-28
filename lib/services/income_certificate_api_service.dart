@@ -19,275 +19,344 @@ class IncomeCertificateAPIService {
   static var client = http.Client();
 
   static Future<http.Response> saveForm(Map<String, String> body) async {
-    Map<String, String> requestHeaders = {
-      // "Content-Type": "application/json",
-    };
+    // try {
+      Map<String, String> requestHeaders = {
+        // "Content-Type": "application/json",
+      };
 
-    final url = Uri.http(Config.apiURL, IncomeCertificateAPI.saveFormAPI);
-    print(url);
+      final url = Uri.http(Config.apiURL, IncomeCertificateAPI.saveFormAPI);
+      print(url);
 
-    print("COOKIE DETAILS Income Certificate SAVE FORM");
-    Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
-    requestHeaders['cookie'] = cookieHeaders!['cookie']!;
+      print("COOKIE DETAILS Income Certificate SAVE FORM");
+      Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
+      requestHeaders['cookie'] = cookieHeaders!['cookie']!;
+      requestHeaders['Device-Info'] = cookieHeaders['Device-Info']!;
 
-    // var response = await client.get(url);
-    // print(response.body);
+      // var response = await client.get(url);
+      // print(response.body);
 
-    print(requestHeaders);
+      print(requestHeaders);
 
-    print(body);
+      print(body);
 
-    var response = await client.post(url, body: body, headers: requestHeaders);
+      var response = await client.post(url, body: body, headers: requestHeaders).timeout(const Duration(seconds: 5));
 
-    print("${response.body}");
+      print("${response.body}");
 
-    return response;
-    // print("${response.runtimeType}");
-    //
-    // if (response.statusCode == 200) {
-    //   print("Trade License Form Data Successfully Submitted.");
-    //
-    //   return true;
+      return response;
     // }
-    //
-    // print("Failed to Submit Trade License Form.");
-    // return false;
+    // catch (e) {
+    //   print('Error : $e');
+    //   return null;
+    // }
+
   }
 
   static Future<bool> uploadFiles(
       Map<String, File> fileMap, String keyFile3, String applicationId) async {
-    fileMap[keyFile3] = fileMap["file3"]!;
-    fileMap.remove("file3");
+    // try {
+      fileMap[keyFile3] = fileMap["file3"]!;
+      fileMap.remove("file3");
 
-    final url =
-        Uri.http(Config.apiURL, IncomeCertificateAPI.uploadDocumentsAPI);
-    print(url);
-    var request = http.MultipartRequest('POST', url);
-    print("COOKIE DETAILS Income Certificate Upload Documents");
-    Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
+      final url =
+      Uri.http(Config.apiURL, IncomeCertificateAPI.uploadDocumentsAPI);
+      print(url);
+      var request = http.MultipartRequest('POST', url);
+      print("COOKIE DETAILS Income Certificate Upload Documents");
+      Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
 
-    request.headers["Content-Type"] = "multipart/form-data";
-    request.headers['cookie'] = cookieHeaders!['cookie']!;
+      request.headers["Content-Type"] = "multipart/form-data";
+      request.headers['cookie'] = cookieHeaders!['cookie']!;
 
-    //add files to request
-    int count = 1;
-    //add photo file to request with explicit MIME type
-    request.files.add(
-      http.MultipartFile(
+      //add files to request
+      int count = 1;
+      //add photo file to request with explicit MIME type
+      request.files.add(
+        http.MultipartFile(
+          "photo",
+          fileMap["photo"]!.readAsBytes().asStream(),
+          fileMap["photo"]!.lengthSync(),
+          filename: path.basename(fileMap["photo"]!.path),
+          contentType: MediaType('image', 'jpeg'),
+        ),
+      );
+
+      for (var entry in fileMap.entries) {
+        print(entry);
+        if (entry.key != "photo") {
+          count++;
+          request.files.add(
+              await http.MultipartFile.fromPath(entry.key, entry.value.path));
+        }
+      }
+      request.fields['totalFilesCount'] = "$count";
+      request.fields['applicationId'] = applicationId;
+      print(request.files);
+      print(request.fields);
+
+      //send request
+      var response = await request.send().timeout(const Duration(seconds: 5));
+      print(response.statusCode);
+      print(response.reasonPhrase);
+
+      if (response.statusCode == 200) {
+        print("Income Certificate Form Data Successfully Submitted.");
+        String responseBody = await response.stream.bytesToString();
+        print(responseBody);
+        return true;
+      }
+      print("Failed to Submit Income Certificate Form.");
+      return false;
+    // }
+    // catch (e) {
+    //   print('Error : $e');
+    //   return false;
+    // }
+
+  }
+
+  static Future<bool> updateFiles(
+      Map<String, File> fileMap, String keyFile3, String applicationId) async {
+    // try {
+      fileMap[keyFile3] = fileMap["file3"]!;
+      fileMap.remove("file3");
+
+      final url =
+      Uri.http(Config.apiURL, IncomeCertificateAPI.updateDocumentsAPI);
+      print(url);
+      var request = http.MultipartRequest('PATCH', url);
+      print("COOKIE DETAILS Income Certificate UPDATE Documents");
+      Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
+
+      request.headers["Content-Type"] = "multipart/form-data";
+      request.headers['cookie'] = cookieHeaders!['cookie']!;
+
+      //add files to request
+      int count = 1;
+      //add photo file to request with explicit MIME type
+      request.files.add(http.MultipartFile(
         "photo",
         fileMap["photo"]!.readAsBytes().asStream(),
         fileMap["photo"]!.lengthSync(),
         filename: path.basename(fileMap["photo"]!.path),
         contentType: MediaType('image', 'jpeg'),
-      ),
-    );
+      ));
 
-    for (var entry in fileMap.entries) {
-      print(entry);
-      if (entry.key != "photo") {
-        count++;
-        request.files.add(
-            await http.MultipartFile.fromPath(entry.key, entry.value.path));
+      for (var entry in fileMap.entries) {
+        print(entry);
+        if (entry.key != "photo") {
+          count++;
+          request.files.add(
+              await http.MultipartFile.fromPath(entry.key, entry.value.path));
+        }
       }
-    }
-    request.fields['totalFilesCount'] = "$count";
-    request.fields['applicationId'] = applicationId;
-    print(request.files);
-    print(request.fields);
+      request.fields['totalFilesCount'] = "$count";
+      request.fields['mongoId'] = applicationId;
+      print(request.files);
+      print(request.fields);
 
-    //send request
-    var response = await request.send();
-    print(response.statusCode);
-    print(response.reasonPhrase);
+      //send request
+      var response = await request.send().timeout(const Duration(seconds: 5));
+      print(response.statusCode);
+      print(response.reasonPhrase);
 
-    if (response.statusCode == 200) {
-      print("Income Certificate Form Data Successfully Submitted.");
-      String responseBody = await response.stream.bytesToString();
-      print(responseBody);
-      return true;
-    }
-    print("Failed to Submit Income Certificate Form.");
-    return false;
-  }
-
-  static Future<bool> updateFiles(
-      Map<String, File> fileMap, String keyFile3, String applicationId) async {
-    fileMap[keyFile3] = fileMap["file3"]!;
-    fileMap.remove("file3");
-
-    final url =
-        Uri.http(Config.apiURL, IncomeCertificateAPI.updateDocumentsAPI);
-    print(url);
-    var request = http.MultipartRequest('POST', url);
-    print("COOKIE DETAILS Income Certificate UPDATE Documents");
-    Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
-
-    request.headers["Content-Type"] = "multipart/form-data";
-    request.headers['cookie'] = cookieHeaders!['cookie']!;
-
-    //add files to request
-    int count = 1;
-    //add photo file to request with explicit MIME type
-    request.files.add(http.MultipartFile(
-      "photo",
-      fileMap["photo"]!.readAsBytes().asStream(),
-      fileMap["photo"]!.lengthSync(),
-      filename: path.basename(fileMap["photo"]!.path),
-      contentType: MediaType('image', 'jpeg'),
-    ));
-
-    for (var entry in fileMap.entries) {
-      print(entry);
-      if (entry.key != "photo") {
-        count++;
-        request.files.add(
-            await http.MultipartFile.fromPath(entry.key, entry.value.path));
+      if (response.statusCode == 200) {
+        print("Income Certificate Form Data Successfully Submitted.");
+        String responseBody = await response.stream.bytesToString();
+        print(responseBody);
+        return true;
       }
-    }
-    request.fields['totalFilesCount'] = "$count";
-    request.fields['mongoId'] = applicationId;
-    print(request.files);
-    print(request.fields);
+      print("Failed to Submit Income Certificate Form.");
+      return false;
+    // }
+    // catch (e) {
+    //   print('Error : $e');
+    //   return false;
+    // }
 
-    //send request
-    var response = await request.send();
-    print(response.statusCode);
-    print(response.reasonPhrase);
-
-    if (response.statusCode == 200) {
-      print("Income Certificate Form Data Successfully Submitted.");
-      String responseBody = await response.stream.bytesToString();
-      print(responseBody);
-      return true;
-    }
-    print("Failed to Submit Income Certificate Form.");
-    return false;
   }
 
   static Future<http.Response> updateForm(Map<String, String> body) async {
-    Map<String, String> requestHeaders = {
-      // "Content-Type": "application/json",
-    };
+    // try {
+      Map<String, String> requestHeaders = {
+        // "Content-Type": "application/json",
+      };
 
-    final url = Uri.http(Config.apiURL, IncomeCertificateAPI.updateFormAPI);
-    print(url);
+      final url = Uri.http(Config.apiURL, IncomeCertificateAPI.updateFormAPI);
+      print(url);
 
-    print("COOKIE DETAILS Income Certificate UPDATE FORM");
-    Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
-    requestHeaders['cookie'] = cookieHeaders!['cookie']!;
+      print("COOKIE DETAILS Income Certificate UPDATE FORM");
+      Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
+      requestHeaders['cookie'] = cookieHeaders!['cookie']!;
+      requestHeaders['Device-Info'] = cookieHeaders['Device-Info']!;
 
-    // var response = await client.get(url);
-    // print(response.body);
+      // var response = await client.get(url);
+      // print(response.body);
 
-    print(requestHeaders);
+      print(requestHeaders);
 
-    print(body);
+      print(body);
 
-    var response = await client.post(url, body: body, headers: requestHeaders);
+      var response = await client.patch(url, body: body, headers: requestHeaders).timeout(const Duration(seconds: 5));
 
-    print("${response.body}");
+      print("${response.body}");
 
-    return response;
+      return response;
+    // }
+    // catch (e) {
+    //   print('Error : $e');
+    //   return null;
+    // }
   }
 
-  static Future<http.Response> retrieveForm(Map<String, String> body) async {
-    Map<String, String> requestHeaders = {
-      // "Content-Type": "application/json",
-    };
+  static Future<http.Response> retrieveForm(String applicationId) async {
+    // try {
+      Map<String, String> requestHeaders = {
+        // "Content-Type": "application/json",
+      };
 
-    final url = Uri.http(Config.apiURL, IncomeCertificateAPI.retrieveFormAPI);
-    print(url);
+      String query = "${IncomeCertificateAPI.retrieveFormAPI}/$applicationId";
 
-    print("COOKIE DETAILS Income Certificate RETRIEVE FORM");
-    Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
-    requestHeaders['cookie'] = cookieHeaders!['cookie']!;
+      final url = Uri.http(Config.apiURL, query);
+      print(url);
 
-    // var response = await client.get(url);
-    // print(response.body);
+      print("COOKIE DETAILS Income Certificate RETRIEVE FORM");
+      Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
+      requestHeaders['cookie'] = cookieHeaders!['cookie']!;
+      requestHeaders['Device-Info'] = cookieHeaders['Device-Info']!;
 
-    print(requestHeaders);
+      // var response = await client.get(url);
+      // print(response.body);
 
-    print(body);
+      print(requestHeaders);
 
-    var response = await client.post(url, body: body, headers: requestHeaders);
 
-    print("${jsonDecode(response.body)['data']}");
+      var response = await client.get(url, headers: requestHeaders);
 
-    // print(tradeLicenseFormResponseJson(response.body));
+      print("${jsonDecode(response.body)['data']}");
 
-    return response;
+
+      return response;
+    // }
+    // catch (e) {
+    //   print('Error : $e');
+    //   return null;
+    // }
+
   }
 
   static Future<http.Response> generateCertificatePDF(
       Map<String, String> body) async {
-    Map<String, String> requestHeaders = {
-      // "Content-Type": "application/json",
-    };
+    // try {
+      Map<String, String> requestHeaders = {
+        // "Content-Type": "application/json",
+      };
 
-    final url =
-        Uri.http(Config.apiURL, IncomeCertificateAPI.generateCertificatePDFAPI);
-    print(url);
+      final url =
+      Uri.http(Config.apiURL, IncomeCertificateAPI.generateCertificatePDFAPI);
+      print(url);
 
-    print("COOKIE DETAILS Income Certificate GENERATE FORM PDF");
-    Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
-    requestHeaders['cookie'] = cookieHeaders!['cookie']!;
+      print("COOKIE DETAILS Income Certificate GENERATE FORM PDF");
+      Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
+      requestHeaders['cookie'] = cookieHeaders!['cookie']!;
+      requestHeaders['Device-Info'] = cookieHeaders['Device-Info']!;
 
-    // var response = await client.get(url);
-    // print(response.body);
+      // var response = await client.get(url);
+      // print(response.body);
 
-    print(requestHeaders);
+      print(requestHeaders);
 
-    print(body);
+      print(body);
 
-    var response = await client.post(url, body: body, headers: requestHeaders);
+      var response = await client.post(url, body: body, headers: requestHeaders).timeout(const Duration(seconds: 5));
 
-    print(response.body);
+      print(response.body);
 
-    if (response.statusCode == 200) {
-      print("Generated Income Certificate pdf successfully.");
+      if (response.statusCode == 200) {
+        print("Generated Income Certificate pdf successfully.");
 
-      var pdfResponse = await retrieveCertificatePDF(body);
-    } else {
-      print("Failed to generate Income Certificate pdf.");
-    }
+        var pdfResponse = await retrieveCertificatePDF(body);
+      } else {
+        print("Failed to generate Income Certificate pdf.");
+      }
 
-    // print(tradeLicenseFormResponseJson(response.body));
+      // print(tradeLicenseFormResponseJson(response.body));
 
-    return response;
+      return response;
+    // }
+    // catch (e) {
+    //   print('Error : $e');
+    //   return null;
+    // }
+
+  }
+
+  static Future<bool> deleteForm(String applicationId) async {
+    // try {
+
+      String query = "${IncomeCertificateAPI.deleteFormAPI}/$applicationId";
+
+      final url = Uri.http(Config.apiURL, query);
+
+      print(url);
+
+      print("COOKIE DETAILS Trade License DELETE FORM");
+      Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
+
+
+      var response = await client.delete(url, headers: cookieHeaders).timeout(const Duration(seconds: 5));
+
+      print("${response.body}");
+
+      return response.statusCode == 200;
+    // }
+    // catch (e) {
+    //   print('Error : $e');
+    //   return false;
+    // }
   }
 
   static Future<http.Response> retrieveCertificatePDF(
       Map<String, String> body) async {
-    Map<String, String> requestHeaders = {
-      // "Content-Type": "application/json",
-    };
+    // try {
+      Map<String, String> requestHeaders = {
+        // "Content-Type": "application/json",
+      };
 
-    final url =
-        Uri.http(Config.apiURL, IncomeCertificateAPI.retrieveCertificatePDFAPI);
-    print(url);
+      String query = "${IncomeCertificateAPI.retrieveCertificatePDFAPI}/${body["application_id"]}";
 
-    print("COOKIE DETAILS Income Certificate RETRIEVE FORM PDF");
-    Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
-    requestHeaders['cookie'] = cookieHeaders!['cookie']!;
+      final url =
+      Uri.http(Config.apiURL, query);
+      print(url);
 
-    // var response = await client.get(url);
-    // print(response.body);
+      print("COOKIE DETAILS Income Certificate RETRIEVE FORM PDF");
+      Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
+      requestHeaders['cookie'] = cookieHeaders!['cookie']!;
+      requestHeaders['Device-Info'] = cookieHeaders['Device-Info']!;
 
-    print(requestHeaders);
+      // var response = await client.get(url);
+      // print(response.body);
 
-    print(body);
+      print(requestHeaders);
 
-    var response = await client.post(url, body: body, headers: requestHeaders);
 
-    // print(response.body);
+      var response = await client.get(url, headers: requestHeaders).timeout(const Duration(seconds: 5));
 
-    if (response.statusCode == 200) {
-      IncomeCertificatePDFResponseModel model =
-          incomeCertificatePDFResponseJson(response.body);
+      // print(response.body);
 
-      displayPDF(body['application_id']!, model.certificate?.data);
-    }
-    return response;
+      if (response.statusCode == 200) {
+        IncomeCertificatePDFResponseModel model =
+        incomeCertificatePDFResponseJson(response.body);
+
+        displayPDF(body['application_id']!, model.certificate?.data);
+      }
+      return response;
+    // }
+    // catch (e) {
+    //   print('Error : $e');
+    //   return null;
+    // }
+
   }
 
   static void displayPDF(String applicationId, List<int>? data) async {

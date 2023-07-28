@@ -6,10 +6,12 @@ import 'package:api_cache_manager/models/cache_db_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:we_panchayat_dev/models/profile_picture_retrieve.dart';
 import '../models/login_response_model.dart';
 import '../screens/auth/login.dart';
+import 'package:path_provider/path_provider.dart';
 
 class SharedService {
   static Future<void> setMPIN(String mpin) async {
@@ -43,7 +45,6 @@ class SharedService {
     //
     // return isKeyExist;
 
-
     final storage = FlutterSecureStorage();
     // Check if a key exists
     bool containsKey = await storage.containsKey(key: "login_details");
@@ -67,22 +68,9 @@ class SharedService {
       String? cacheData = await storage.read(key: "login_details");
       return loginResponseJson(cacheData!);
     }
-
   }
 
   static Future<Map<String, String>?> cookieDetails() async {
-    // var isKeyExist =
-    // await APICacheManager().isAPICacheKeyExist("cookie_headers");
-    //
-    // if (isKeyExist) {
-    //   var cacheData = await APICacheManager().getCacheData("cookie_headers");
-    //
-    //   Map<String, dynamic>? dynamicMap = jsonDecode(cacheData.syncData);
-    //
-    //   Map<String, String>? stringMap = dynamicMap?.map((key, value) => MapEntry(key, value.toString()));
-    //
-    //   return stringMap;
-    // }
 
     final storage = FlutterSecureStorage();
     // Check if a key exists
@@ -91,26 +79,112 @@ class SharedService {
     if (containsKey) {
       String? cacheData = await storage.read(key: "cookie_headers");
       Map<String, dynamic>? dynamicMap = jsonDecode(cacheData!);
-      Map<String, String>? stringMap = dynamicMap?.map((key, value) => MapEntry(key, value.toString()));
+      Map<String, String>? stringMap =
+          dynamicMap?.map((key, value) => MapEntry(key, value.toString()));
+
+      print("Device DETAILS");
+      Map<String, String>? deviceHeaders = await SharedService.getDeviceDetails();
+      print(deviceHeaders);
+
+      if(deviceHeaders != null && deviceHeaders.containsKey('Device-Info')) {
+        stringMap!['Device-Info'] = deviceHeaders['Device-Info']!;
+      }
+
       return stringMap;
     }
-
   }
 
-  static Future<void> setProfilePicture(File? profilePic) async {
+  static Future<Map<String, String>?> getDeviceDetails() async {
 
     final storage = FlutterSecureStorage();
-    await storage.write(key: "profile_picture", value: profilePic?.path);
+    // Check if a key exists
+    bool containsKey = await storage.containsKey(key: "device_headers");
 
+    if (containsKey) {
+      String? cacheData = await storage.read(key: "device_headers");
+      Map<String, dynamic>? dynamicMap = jsonDecode(cacheData!);
+      Map<String, String>? stringMap =
+      dynamicMap?.map((key, value) => MapEntry(key, value.toString()));
+      return stringMap;
+    }
+  }
+
+  static Future<void> setProfilePicture(
+      File? originalImage, bool isLogin) async {
+    print("SET PROFILE PIC");
+
+    try {
+      if (isLogin) {
+        // Store the new file path securely
+        final storage = FlutterSecureStorage();
+        print("DOWNLOADED PROFILE PIC PATH : ${originalImage?.path})");
+        await storage.write(key: "profile_picture", value: originalImage?.path);
+      } else {
+        Directory? tempDir = await getExternalStorageDirectory();
+
+        // Get the current time
+        DateTime now = DateTime.now();
+
+        // Format the time as a string using DateFormat class from intl package
+        String formattedTime = DateFormat('HH:mm:ss').format(now);
+
+        // Create a new file path with the desired file name
+        final newFilePath = "${tempDir?.path}/PROFILE_PIC_$formattedTime.jpeg";
+
+        print("NEW PROFILE UPLOAD PIC PATH : $newFilePath");
+        // Copy the original image to the new file path
+        await originalImage?.copy(newFilePath);
+
+        // Store the new file path securely
+        final storage = FlutterSecureStorage();
+        await storage.write(key: "profile_picture", value: newFilePath);
+
+        print("Image copied, renamed, and stored securely.");
+      }
+    } catch (e) {
+      print("Error: $e");
+    }
+  }
+
+  static Future<void> updateProfilePicture(File? originalImage) async {
+    print("UPDATE PROFILE PIC");
+    Directory? tempDir = await getExternalStorageDirectory();
+
+    // Get the current time
+    DateTime now = DateTime.now();
+
+    // Format the time as a string using DateFormat class from intl package
+    String formattedTime = DateFormat('HH:mm:ss').format(now);
+
+    // Create a new file path with the desired file name
+    final newFilePath = "${tempDir?.path}/PROFILE_PIC_$formattedTime.jpeg";
+    print("NEW PROFILE UPDATE PIC PATH : $newFilePath");
+
+    try {
+      final storage = FlutterSecureStorage();
+
+      if (await storage.containsKey(key: "profile_picture")) {
+        await deleteProfilePicture();
+
+        await originalImage?.copy(newFilePath);
+        await storage.write(key: "profile_picture", value: newFilePath);
+        print("Image copied, renamed, and stored securely.");
+      }
+    } catch (e) {
+      print("Error: $e");
+    }
   }
 
   static Future<File?> getProfilePicture() async {
-        try {
+    try {
+      print("GET PROFILE PIC");
       // Get the secure storage instance
       final secureStorage = FlutterSecureStorage();
 
       // Retrieve the file path from secure storage
       final filePath = await secureStorage.read(key: 'profile_picture');
+
+      print("PROFILE PIC PATH : $filePath");
 
       if (filePath != null) {
         return File(filePath);
@@ -122,19 +196,23 @@ class SharedService {
       print('Error while retrieving the file: $e');
       return null;
     }
-
   }
 
   static Future<void> deleteProfilePicture() async {
     try {
+      print("DELETE PROFILE PIC");
       // Get the secure storage instance
       final secureStorage = FlutterSecureStorage();
 
       // Retrieve the file path from secure storage
       final filePath = await secureStorage.read(key: 'profile_picture');
 
+      print("PROFILE PIC PATH : $filePath");
+
       if (filePath != null) {
-        await deleteFile(filePath);
+        // await deleteFile(filePath);
+        File file = File(filePath);
+        file.deleteSync();
         await secureStorage.delete(key: "profile_picture");
         print('File deleted successfully.');
       } else {
@@ -146,17 +224,6 @@ class SharedService {
     }
   }
 
-  static Future<void> deleteFile(String filePath) async {
-    try {
-      final file = File(filePath);
-      if (await file.exists()) {
-        await file.delete();
-      }
-    } catch (e) {
-      throw Exception('Error deleting file: $e');
-    }
-  }
-
   static Future<void> setLoginDetails(LoginResponseModel model) async {
     // APICacheDBModel cacheDBModel = APICacheDBModel(
     //     key: "login_details", syncData: jsonEncode(model.toJson()));
@@ -164,10 +231,9 @@ class SharedService {
     //
     // await APICacheManager().addCacheData(cacheDBModel);
 
-
     final storage = FlutterSecureStorage();
-    await storage.write(key: "login_details", value: jsonEncode(model.toJson()));
-
+    await storage.write(
+        key: "login_details", value: jsonEncode(model.toJson()));
   }
 
   static Future<void> updateLoginDetails(LoginResponseModel model) async {
@@ -177,11 +243,10 @@ class SharedService {
     //
     // await APICacheManager().addCacheData(cacheDBModel);
 
-
     final storage = FlutterSecureStorage();
     await storage.delete(key: "login_details");
-    await storage.write(key: "login_details", value: jsonEncode(model.toJson()));
-
+    await storage.write(
+        key: "login_details", value: jsonEncode(model.toJson()));
   }
 
   static Future<void> setCookie(Map<String, String> cookieHeaders) async {
@@ -191,7 +256,14 @@ class SharedService {
     // await APICacheManager().addCacheData(cacheDBModel);
 
     final storage = FlutterSecureStorage();
-    await storage.write(key: "cookie_headers", value: jsonEncode(cookieHeaders));
+    await storage.write(
+        key: "cookie_headers", value: jsonEncode(cookieHeaders));
+  }
+
+  static Future<void> setDeviceHeader(Map<String, String> deviceHeaders) async {
+    final storage = FlutterSecureStorage();
+    await storage.write(
+        key: "device_headers", value: jsonEncode(deviceHeaders));
   }
 
   // Function to delete all shared preferences data
@@ -206,8 +278,8 @@ class SharedService {
 
     final storage = FlutterSecureStorage();
     await clearSharedPreferences();
+    await deleteProfilePicture();
     await storage.deleteAll();
-
 
     Navigator.pushAndRemoveUntil(
       context,

@@ -16,6 +16,7 @@ import 'package:open_file/open_file.dart';
 
 import '../../constants.dart';
 import '../application_submitted.dart';
+import '../dialog_boxes.dart';
 
 enum SignboardDetails { enabled, disabled }
 
@@ -625,7 +626,7 @@ class _TradeLicenseState extends State<TradeLicense> {
                     "signboard_area": applicantSignAreaController.text,
                   };
 
-                  http.Response response;
+                  var response;
 
                   if (widget.isEdit) {
                     print(
@@ -641,37 +642,59 @@ class _TradeLicenseState extends State<TradeLicense> {
                     response = await TradeLicenseAPIService.saveForm(body);
                   }
 
-                  if (response.statusCode == 200) {
-                    print("Trade License Form Data Successfully Submitted.");
+                  if(response != null) {
+                    if (response.statusCode == 200) {
+                      print("Trade License Form Data Successfully Submitted.");
 
-                    bool isSuccessful;
+                      bool isSuccessful = false;
+                      String applicationId = '';
 
-                    if (widget.isEdit) {
-                      //update files
-                      isSuccessful = await TradeLicenseAPIService.updateFiles(
-                          {..._fileMap}, widget.formData!["mongo_id"]!);
+                      if (widget.isEdit) {
+                        //update files
+                        isSuccessful = await TradeLicenseAPIService.updateFiles(
+                            {..._fileMap}, widget.formData!["mongo_id"]!);
+                      } else {
+                        //upload files
+                        Map<String, dynamic> map = jsonDecode(response.body);
+                        applicationId = map['applicationId'];
+                        print(applicationId);
+                        isSuccessful = await TradeLicenseAPIService.uploadFiles(
+                            {..._fileMap}, applicationId);
+                      }
+
+                      if (isSuccessful) {
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ApplicationSubmitted()),
+                              (route) => false,
+                        );
+                      } else {
+
+                        await TradeLicenseAPIService.deleteForm(applicationId);
+
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(
+                          SnackBar(
+                            content: Text("Error: Failed to upload documents"),
+                          ),
+                        );
+                        print("Failed to upload documents TRADE LICENSE");
+                      }
                     } else {
-                      //upload files
-                      Map<String, dynamic> map = jsonDecode(response.body);
-                      String applicationId = map['applicationId'];
-                      print(applicationId);
-                      isSuccessful = await TradeLicenseAPIService.uploadFiles(
-                          {..._fileMap}, applicationId);
-                    }
-
-                    if (isSuccessful) {
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ApplicationSubmitted()),
-                        (route) => false,
+                      ScaffoldMessenger.of(context)
+                          .showSnackBar(
+                        SnackBar(
+                          content: Text("Error: Failed to Submit Trade License Form"),
+                        ),
                       );
-                    } else {
-                      print("Failed to upload documents TRADE LICENSE");
+                      print("Failed to Submit Trade License Form.");
                     }
                   } else {
-                    print("Failed to Submit Trade License Form.");
+                    DialogBoxes.showServerDownDialogBox(context);
                   }
+
+
                 }
               } else if (_validateStep(_currentStep)) {
                 setState(() {

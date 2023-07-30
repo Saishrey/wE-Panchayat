@@ -38,16 +38,6 @@ class _SplashState extends State<Splash> {
 
   bool _isConnectedToInternet = true;
 
-  Future<void> localAuth(BuildContext context) async {
-    final localAuth = LocalAuthentication();
-    final didAuthenticate = await localAuth.authenticate(
-      localizedReason: 'Please authenticate',
-      options: const AuthenticationOptions(biometricOnly: true),
-    );
-    if (didAuthenticate) {
-      Navigator.pop(context);
-    }
-  }
 
   showPinDialogue(BuildContext context, String mpin) => showDialog<void>(
         context: context,
@@ -81,6 +71,8 @@ class _SplashState extends State<Splash> {
   }
 
   void getDeviceInfo() async {
+    await Future.delayed(Duration(seconds: 1));
+
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     AndroidDeviceInfo? androidInfo = await deviceInfo.androidInfo;
 
@@ -143,14 +135,14 @@ class _SplashState extends State<Splash> {
   }
 
   void checkLoginSession() async {
+    await Future.delayed(Duration(seconds: 1));
+
     bool result = await SharedService.isLoggedIn();
 
     if (result) {
       print("User ALREADY logged in.");
 
       int isSessionActive = await APIService.checkSession(context);
-
-      await Future.delayed(Duration(seconds: 1));
 
       if (isSessionActive == 0) {
         DialogBoxes.showSessionExpiryDialogBox(context);
@@ -240,6 +232,9 @@ class _SplashState extends State<Splash> {
   }
 
   Future<void> requestPermission() async {
+    await Future.delayed(Duration(seconds: 1));
+
+
     var status = await Permission.manageExternalStorage.status;
     if (status.isDenied) {
       // Request permission
@@ -247,19 +242,20 @@ class _SplashState extends State<Splash> {
     }
   }
 
-  getConnectivity() =>
-      subscription = Connectivity().onConnectivityChanged.listen(
-        (ConnectivityResult result) async {
-          isDeviceConnected = await InternetConnectionChecker().hasConnection;
-          if (!isDeviceConnected && isAlertSet == false) {
-            DialogBoxes.showConnectivityDialogBox(context);
-            setState(() => isAlertSet = true);
-          }
-        },
-      );
+  // getConnectivity() =>
+  //     subscription = Connectivity().onConnectivityChanged.listen(
+  //       (ConnectivityResult result) async {
+  //         isDeviceConnected = await InternetConnectionChecker().hasConnection;
+  //         if (!isDeviceConnected && isAlertSet == false) {
+  //           DialogBoxes.showConnectivityDialogBox(context);
+  //           setState(() => isAlertSet = true);
+  //         }
+  //       },
+  //     );
 
   Future<void> checkInternet() async {
     await Future.delayed(Duration(seconds: 1));
+
     connectivityResult = await Connectivity().checkConnectivity();
     if (connectivityResult == ConnectivityResult.none) {
       setState(() {
@@ -271,9 +267,10 @@ class _SplashState extends State<Splash> {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return  Scaffold(
       body: Container(
         width: double.infinity,
         height: double.infinity,
@@ -331,55 +328,4 @@ class _SplashState extends State<Splash> {
     );
   }
 
-// Future<void> _getAvailableBiometrics() async {
-//   try {
-//     availableBiometrics = await auth?.getAvailableBiometrics();
-//     print("bioMetric: $availableBiometrics");
-//
-//     if (availableBiometrics!.contains(BiometricType.strong) || availableBiometrics!.contains(BiometricType.fingerprint)) {
-//       final bool didAuthenticate = await auth!.authenticate(
-//           localizedReason: 'Unlock your screen   face  or fingerprint',
-//           options: const AuthenticationOptions(biometricOnly: true, stickyAuth: true),
-//           authMessages: const <AuthMessages>[
-//             AndroidAuthMessages(
-//               signInTitle: 'wepanchayat',
-//               cancelButton: 'No thanks',
-//             ),
-//             IOSAuthMessages(
-//               cancelButton: 'No thanks',
-//             ),
-//           ]);
-//       if (!didAuthenticate) {
-//         exit(0);
-//       }
-//     } else if (availableBiometrics!.contains(BiometricType.weak) || availableBiometrics!.contains(BiometricType.face)) {
-//       final bool didAuthenticate = await auth!.authenticate(
-//           localizedReason: 'Unlock your screen with  face  or fingerprint',
-//           options: const AuthenticationOptions(stickyAuth: true),
-//           authMessages: const <AuthMessages>[
-//             AndroidAuthMessages(
-//               signInTitle: 'wepanchayat',
-//               cancelButton: 'No thanks',
-//             ),
-//             IOSAuthMessages(
-//               cancelButton: 'No thanks',
-//             ),
-//           ]);
-//       if (!didAuthenticate) {
-//         exit(0);
-//       }
-//     }
-//   } on PlatformException catch (e) {
-//     // availableBiometrics = <BiometricType>[];
-//     if (e.code == error_code.passcodeNotSet) {
-//       exit(0);
-//     }
-//     print("error: $e");
-//   }
-// }
-//
-// void deviceCapability() async {
-//   final bool isCapable = await auth!.canCheckBiometrics;
-//   isDeviceSupport = isCapable || await auth!.isDeviceSupported();
-// }
 }

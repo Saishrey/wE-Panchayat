@@ -1,19 +1,15 @@
 import 'dart:async';
 
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-
 import 'package:we_panchayat_dev/screens/splash.dart';
-
+import 'package:privacy_screen/privacy_screen.dart';
 import 'package:device_info_plus/device_info_plus.dart';
-
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   runApp(const MyApp());
 }
 
@@ -27,26 +23,39 @@ class MyApp extends StatefulWidget {
   }
 }
 
-
 class _MyAppState extends State<MyApp> {
+
+  Future<void> _enablePrivacyScreen() async {
+    await PrivacyScreen.instance.enable(
+      iosOptions: const PrivacyIosOptions(
+        enablePrivacy: true,
+        privacyImageName: "LaunchImage",
+        autoLockAfterSeconds: 5,
+        lockTrigger: IosLockTrigger.didEnterBackground,
+      ),
+      androidOptions: const PrivacyAndroidOptions(
+        enableSecure: true,
+        autoLockAfterSeconds: 5,
+      ),
+      backgroundColor: Colors.red.withOpacity(0.4),
+      blurEffect: PrivacyBlurEffect.dark,
+    );
+  }
 
   @override
   void initState() {
     super.initState();
+    _enablePrivacyScreen();
   }
 
-
-
-
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
       DeviceOrientation.portraitDown,
     ]);
-
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -60,6 +69,14 @@ class _MyAppState extends State<MyApp> {
         primarySwatch: Colors.blue,
         accentColor: Colors.lightBlueAccent.shade200,
       ),
+      navigatorKey: navigatorKey,
+      builder: (_, child) {
+        return PrivacyGate(
+          navigatorKey: navigatorKey,
+          onLifeCycleChanged: (value) => print(value),
+          child: child,
+        );
+      },
       home: const Splash(),
       // routes: {
       //   '/' : (context) => const Splash(),
@@ -69,4 +86,3 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
-

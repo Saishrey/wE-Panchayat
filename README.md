@@ -1,4 +1,5 @@
 # Getting started
+This repository contains the wE-Panchayat Flutter application. Follow these steps to get it up and running.
 - Clone the repository
 ```
 git clone https://github.com/Saishrey/wE-Panchayat.git

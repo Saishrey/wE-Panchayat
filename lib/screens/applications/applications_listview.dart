@@ -99,7 +99,7 @@ class ApplicationsListView extends StatelessWidget {
                   ),
                 ),
                 subtitle: Text(
-                  "ID: ${entries[index].applicationId!}",
+                  "Reference ID: ${entries[index].applicationRefId ?? "NA"}",
                   style: TextStyle(
                     fontSize: 10,
                     fontFamily: 'Poppins-Medium',

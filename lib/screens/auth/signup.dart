@@ -347,6 +347,8 @@ class _SignUpState extends State<SignUp> {
     super.dispose();
   }
 
+  DateTime _now = DateTime.now();
+
   String? _firstName;
   String? _lastName;
   String? _address;
@@ -354,8 +356,15 @@ class _SignUpState extends State<SignUp> {
   String? _selectedGender;
   String? _selectedTaluka;
   String? _selectedVillage;
-  DateTime _selectedDate = DateTime.now();
+  DateTime? _selectedDate;
   String? _phone;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedDate =  DateTime(_now.year - 18, _now.month, _now.day);
+  }
+
   String? _email;
   String _password = "";
 
@@ -774,7 +783,7 @@ class _SignUpState extends State<SignUp> {
                                           AuthConstants.getDropDownBoxDecoration(),
                                       child: ListTile(
                                         title: Text(
-                                          "Date Of Birth:    ${DateFormat('dd-MM-yyyy').format(_selectedDate)}",
+                                          "Date Of Birth:    ${DateFormat('dd-MM-yyyy').format(_selectedDate!)}",
                                           style: AuthConstants.getTextStyle(),
                                         ),
                                         trailing: AuthConstants.getCalenderIcon(),
@@ -931,7 +940,7 @@ class _SignUpState extends State<SignUp> {
                           // String _dob = "${_selectedDate.day}-${_selectedDate.month}-${_selectedDate.year}";
 
                           String dob =
-                              DateFormat('dd-MM-yyyy').format(_selectedDate);
+                              DateFormat('dd-MM-yyyy').format(_selectedDate!);
 
                           print("DOB actual : ${_selectedDate}");
                           print("DOB : $dob");
@@ -984,9 +993,16 @@ class _SignUpState extends State<SignUp> {
                                 (route) => false,
                               );
                             } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                      content: Text('Failed to Register.')));
+                              // ScaffoldMessenger.of(context).showSnackBar(
+                              //     const SnackBar(
+                              //         content: Text('Failed to Register.')));
+
+                              final jsonData =
+                              json.decode(response.body);
+                              String message = jsonData['message'];
+                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                  content: Text(
+                                      message)));
                             }
                           }
                           else {
@@ -1061,12 +1077,28 @@ class _SignUpState extends State<SignUp> {
     );
   }
 
+  // _pickDate() async {
+  //   DateTime? date = await showDatePicker(
+  //     context: context,
+  //     firstDate: DateTime(DateTime(1950).year),
+  //     lastDate: DateTime(DateTime.now().year + 1),
+  //     initialDate: _selectedDate,
+  //   );
+  //
+  //   if (date != null) {
+  //     setState(() {
+  //       _selectedDate = date;
+  //     });
+  //   }
+  // }
+
   _pickDate() async {
+
     DateTime? date = await showDatePicker(
       context: context,
       firstDate: DateTime(DateTime(1950).year),
-      lastDate: DateTime(DateTime.now().year + 1),
-      initialDate: _selectedDate,
+      lastDate: DateTime(_now.year - 18, _now.month, _now.day),
+      initialDate: _selectedDate!,
     );
 
     if (date != null) {
@@ -1075,6 +1107,8 @@ class _SignUpState extends State<SignUp> {
       });
     }
   }
+
+
 
   bool isPasswordValid(String password) {
     // Check if password is at least 8 characters long

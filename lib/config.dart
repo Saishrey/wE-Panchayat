@@ -2,7 +2,7 @@ class Config {
   static const String appName = "wE-Panchayat";
   static const String apiURL = "10.0.2.2:3001";  // emulator
   // static const String apiURL = "192.168.1.5:3001";  // from phone
-  // static const String apiURL = "e894-14-139-113-18.ngrok-free.app";
+  // static const String apiURL = "d39d-59-94-62-168.ngrok.io";
 
   static const String loginAPI = "/auth/login";
   static const String signupAPI = "/auth/signup";

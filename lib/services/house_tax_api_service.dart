@@ -37,7 +37,7 @@ class HouseTaxAPIService {
       print(body);
 
       var response =
-          await client.post(url, body: body, headers: requestHeaders).timeout(const Duration(seconds: 5));
+          await client.post(url, body: body, headers: requestHeaders);
 
       print("${response.body}");
 

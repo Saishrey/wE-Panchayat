@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:we_panchayat_dev/models/login_request_model.dart';
@@ -186,29 +188,48 @@ class _SignUpMobileInputState extends State<SignUpMobileInput> {
                                           });
 
                                           if(response != null) {
-                                            if (response == 200) {
+                                            if (response.statusCode == 200) {
                                               Navigator.push(
                                                   context,
                                                   MaterialPageRoute(
                                                       builder: (context) =>
                                                       SignUpOtp(phone: _phone!,)));
-                                            } else if(response == 409) {
+                                            } else if(response == 500) {
                                               ScaffoldMessenger.of(context)
                                                   .showSnackBar(
                                                 const SnackBar(
                                                   content:
-                                                  Text('User already exist.'),
-                                                ),
-                                              );
-                                            }else {
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(
-                                                const SnackBar(
-                                                  content:
-                                                  Text('Invalid username.'),
+                                                  Text(
+                                                      'Internal Server Error while checking username.'),
                                                 ),
                                               );
                                             }
+                                            else {
+                                              final jsonData =
+                                              json.decode(response.body);
+                                              String message = jsonData['message'];
+                                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                                  content: Text(
+                                                      message)));
+                                        }
+                                            //  else if(response == 409) {
+                                            //   ScaffoldMessenger.of(context)
+                                            //       .showSnackBar(
+                                            //     const SnackBar(
+                                            //       content:
+                                            //       Text('User already exist.'),
+                                            //     ),
+                                            //   );
+                                            // }else {
+                                            //   ScaffoldMessenger.of(context)
+                                            //       .showSnackBar(
+                                            //     const SnackBar(
+                                            //       content:
+                                            //       Text('Invalid username.'),
+                                            //     ),
+                                            //   );
+                                            // }
+
                                           } else {
                                             DialogBoxes.showServerDownDialogBox(context);
                                           }

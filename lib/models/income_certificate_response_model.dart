@@ -41,6 +41,7 @@ class IncomeCertificateFormResponseModel {
 }
 
 class Data {
+  String? _refId;
   String? _applicationId;
   String? _mongoId;
   String? _taluka;
@@ -69,7 +70,8 @@ class Data {
   Documents? _documents;
 
   Data(
-      {required String applicationId,
+      {required String refId,
+        required String applicationId,
         required String mongoId,
         required String taluka,
         required String panchayat,
@@ -95,6 +97,7 @@ class Data {
         required String remark,
         required bool canUpdate,
         required Documents documents}) {
+    this._refId = refId;
     this._applicationId = applicationId;
     this._mongoId = mongoId;
     this._taluka = taluka;
@@ -123,6 +126,8 @@ class Data {
     this._documents = documents;
   }
 
+  String? get refId => _refId;
+  set refId(String? refId) => _refId = refId;
   String? get applicationId => _applicationId;
   set applicationId(String? applicationId) => _applicationId = applicationId;
   String? get mongoId => _mongoId;

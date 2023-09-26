@@ -308,10 +308,12 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
     "Bank Passbook": "bankPassbook",
   };
 
+  DateTime _now = DateTime.now();
+
   String? _selectedIdProof;
   String? _selectedApplicantRelation;
   String? _selectedTitle;
-  DateTime _selectedDate = DateTime.now();
+  DateTime? _selectedDate;
   String? _selectedTaluka;
   String? _selectedVillage;
   String? _selectedMaritalStatus = "Unmarried";
@@ -389,6 +391,8 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
 
   @override
   void initState() {
+    super.initState();
+    _selectedDate =  DateTime(_now.year - 18, _now.month, _now.day);
     if (widget.isEdit) {
       // Dropdown details
       _selectedTaluka = widget.formData!["taluka"];
@@ -578,7 +582,7 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
                       "id_proof": _selectedIdProof!,
                       "id_proof_no": applicantIdProofNumberController.text,
                       "date_of_birth":
-                          DateFormat('dd-MM-yyyy').format(_selectedDate),
+                          DateFormat('dd-MM-yyyy').format(_selectedDate!),
                       "place_of_birth": applicantPlaceOfBirthController.text,
                       "applicants_relation": _selectedApplicantRelation!,
                       "occupation": applicantOccupationController.text,
@@ -1120,7 +1124,7 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
                     decoration: FormConstants.getDropDownBoxDecoration(),
                     child: ListTile(
                       title: Text(
-                        "Date Of Birth:    ${DateFormat('dd-MM-yyyy').format(_selectedDate)}",
+                        "Date Of Birth:    ${DateFormat('dd-MM-yyyy').format(_selectedDate!)}",
                         style: FormConstants.getTextStyle(),
                       ),
                       trailing: FormConstants.getCalenderIcon(),
@@ -1733,11 +1737,12 @@ class _IncomeCertificateState extends State<IncomeCertificate> {
       ];
 
   _pickDate() async {
+
     DateTime? date = await showDatePicker(
       context: context,
       firstDate: DateTime(DateTime(1950).year),
-      lastDate: DateTime(DateTime.now().year + 1),
-      initialDate: _selectedDate,
+      lastDate: DateTime(_now.year - 18, _now.month, _now.day),
+      initialDate: _selectedDate!,
     );
 
     if (date != null) {

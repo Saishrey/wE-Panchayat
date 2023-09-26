@@ -43,6 +43,7 @@ class TradeLicenseFormResponseModel {
 }
 
 class Data {
+  String? _refId;
   String? _applicationId;
   String? _mongoId;
   String? _signboardId;
@@ -76,7 +77,8 @@ class Data {
   Documents? _documents;
 
   Data(
-      {required String applicationId,
+      {required String refId,
+        required String applicationId,
         required String mongoId,
         required String signboardId,
         required String taluka,
@@ -107,6 +109,7 @@ class Data {
         required bool signboardDetails,
         required bool canUpdate,
         required Documents documents}) {
+    this._refId = refId;
     this._applicationId = applicationId;
     this._mongoId = mongoId;
     this._signboardId = signboardId;
@@ -140,6 +143,8 @@ class Data {
     this._documents = documents;
   }
 
+  String? get refId => _refId;
+  set refId(String? refId) => _refId = refId;
   String? get applicationId => _applicationId;
   set applicationId(String? applicationId) => _applicationId = applicationId;
   String? get mongoId => _mongoId;

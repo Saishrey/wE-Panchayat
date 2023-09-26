@@ -88,6 +88,7 @@ class _IncomeCertificateReviewFormState
       }
 
       _formData = {
+        "ref_id": _incomeCertificateFormResponseModel.data.refId ?? 'NA',
         "application_id":
             _incomeCertificateFormResponseModel.data.applicationId ?? 'null',
         "mongo_id": _incomeCertificateFormResponseModel.data.mongoId ?? 'null',
@@ -482,6 +483,15 @@ class _IncomeCertificateReviewFormState
                                       ),
                                     ],
                                   ),
+                                  const Padding(
+                                    padding:
+                                    EdgeInsets.symmetric(horizontal: 16),
+                                    child: Divider(
+                                      thickness: 1,
+                                      color: Colors.black12,
+                                    ),
+                                  ),
+                                  _buildSection('Reference ID', _formData["ref_id"]!),
                                   const Padding(
                                     padding:
                                         EdgeInsets.symmetric(horizontal: 16),

@@ -46,6 +46,7 @@ class ApplicationsResponseModel {
 class ApplicationsListItem {
   String? _applicationType;
   String? _applicationId;
+  String? _applicationRefId;
   String? _applicantsName;
   String? _status;
   String? _date;
@@ -54,9 +55,11 @@ class ApplicationsListItem {
       {required String applicationType,
         required String applicationId,
         required String applicantsName,
+        required String applicationRefId,
         required String status,
         required String date}) {
     this._applicationType = applicationType;
+    this._applicationId = applicationId;
     this._applicationId = applicationId;
     this._applicantsName = applicantsName;
     this._status = status;
@@ -68,6 +71,8 @@ class ApplicationsListItem {
       _applicationType = applicationType;
   String? get applicationId => _applicationId;
   set applicationId(String? applicationId) => _applicationId = applicationId;
+  String? get applicationRefId => _applicationRefId;
+  set applicationRefId(String? applicationRefId) => _applicationRefId = applicationRefId;
   String? get applicantsName => _applicantsName;
   set applicantsName(String? applicantsName) => _applicantsName = applicantsName;
   String? get status => _status;
@@ -78,6 +83,7 @@ class ApplicationsListItem {
   ApplicationsListItem.fromJson(Map<String, dynamic> json) {
     _applicationType = json['application_type'];
     _applicationId = json['application_id'];
+    _applicationRefId = json['ref_id'];
     _applicantsName = json['applicants_name'];
     _status = json['status'];
     _date = json['date'];
@@ -87,6 +93,7 @@ class ApplicationsListItem {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['application_type'] = this._applicationType;
     data['application_id'] = this._applicationId;
+    data['ref_id'] = this._applicationRefId;
     data['applicants_name'] = this._applicantsName;
     data['status'] = this._status;
     data['date'] = this._date;

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:we_panchayat_dev/constants.dart';
@@ -126,8 +128,7 @@ class _UsernameInputState extends State<UsernameInput> {
                                   validator: (value) {
                                     if (value!.isEmpty) {
                                       return "Required";
-                                    }
-                                    else if (!RegExp(r"^[789]\d{9}$")
+                                    } else if (!RegExp(r"^[789]\d{9}$")
                                         .hasMatch(value)) {
                                       return "Invalid mobile no.";
                                     }
@@ -144,19 +145,19 @@ class _UsernameInputState extends State<UsernameInput> {
                                   decoration: InputDecoration(
                                     labelText: 'Mobile No.',
                                     labelStyle:
-                                    AuthConstants.getLabelAndHintStyle(),
+                                        AuthConstants.getLabelAndHintStyle(),
                                     filled: true,
                                     fillColor: Colors.white,
                                     border: AuthConstants.getEnabledBorder(),
                                     enabledBorder:
-                                    AuthConstants.getEnabledBorder(),
+                                        AuthConstants.getEnabledBorder(),
                                     focusedBorder:
-                                    AuthConstants.getFocusedBorder(),
+                                        AuthConstants.getFocusedBorder(),
                                   ),
                                 ),
                                 SizedBox(height: 16),
                                 ElevatedButton(
-                                  onPressed: () {
+                                  onPressed: () async {
                                     if (_formKey.currentState!.validate()) {
                                       setState(() {
                                         isAPIcallProcess = true;
@@ -165,47 +166,53 @@ class _UsernameInputState extends State<UsernameInput> {
                                       Map<String, String> body = {
                                         "phone": _phone!,
                                         "password": "password",
-                                        "isSignUp" : "false",
+                                        "isSignUp": "false",
                                       };
 
-                                      APIService.forgotPassword(body)
-                                          .then((response) {
-                                        setState(() {
-                                          isAPIcallProcess = false;
-                                        });
-                                        if (response == 200) {
+                                      var response =
+                                          await APIService.forgotPassword(body);
+
+                                      if (response != null) {
+                                        if (response.statusCode == 200) {
                                           Navigator.push(
                                               context,
                                               MaterialPageRoute(
                                                   builder: (context) =>
                                                       const OtpResetPassword()));
-                                        }
-                                        else if(response == 404) {
+                                        } else if (response.statusCode == 404) {
                                           ScaffoldMessenger.of(context)
                                               .showSnackBar(
                                             const SnackBar(
                                               content:
-                                              Text('User does not exist.'),
+                                                  Text('User does not exist.'),
                                             ),
                                           );
                                         } else {
+                                          final jsonData =
+                                              json.decode(response.body);
+                                          String message = jsonData['message'];
                                           ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            const SnackBar(
-                                              content:
-                                                  Text('Invalid mobile number.'),
-                                            ),
-                                          );
+                                              .showSnackBar(SnackBar(
+                                                  content: Text(message)));
                                         }
-                                      });
+                                      }
+                                      // else {
+                                      //   ScaffoldMessenger.of(context)
+                                      //       .showSnackBar(
+                                      //     const SnackBar(
+                                      //       content:
+                                      //           Text('Invalid mobile number.'),
+                                      //     ),
+                                      //   );
+                                      // }
                                     }
-                                  // if (_formKey.currentState!.validate()) {
-                                  //   Navigator.push(
-                                  //       context,
-                                  //       MaterialPageRoute(
-                                  //           builder: (context) =>
-                                  //           const OtpResetPassword()));
-                                  // }
+                                    // if (_formKey.currentState!.validate()) {
+                                    //   Navigator.push(
+                                    //       context,
+                                    //       MaterialPageRoute(
+                                    //           builder: (context) =>
+                                    //           const OtpResetPassword()));
+                                    // }
                                   },
                                   child: Text("Submit",
                                       style: TextStyle(

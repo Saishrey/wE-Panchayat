@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:api_cache_manager/api_cache_manager.dart';
 import 'package:api_cache_manager/models/cache_db_model.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -71,7 +72,6 @@ class SharedService {
   }
 
   static Future<Map<String, String>?> cookieDetails() async {
-
     final storage = FlutterSecureStorage();
     // Check if a key exists
     bool containsKey = await storage.containsKey(key: "cookie_headers");
@@ -88,6 +88,7 @@ class SharedService {
 
       if(deviceHeaders != null && deviceHeaders.containsKey('Device-Info')) {
         stringMap!['Device-Info'] = deviceHeaders['Device-Info']!;
+        // stringMap!['Device-Info'] = 'nokia';
       }
 
       return stringMap;
@@ -262,8 +263,12 @@ class SharedService {
 
   static Future<void> setDeviceHeader(Map<String, String> deviceHeaders) async {
     final storage = FlutterSecureStorage();
-    await storage.write(
-        key: "device_headers", value: jsonEncode(deviceHeaders));
+
+
+    if(!(await storage.containsKey(key: "device_headers"))) {
+      await storage.write(
+          key: "device_headers", value: jsonEncode(deviceHeaders));
+    }
   }
 
   // Function to delete all shared preferences data
@@ -281,10 +286,75 @@ class SharedService {
     await deleteProfilePicture();
     await storage.deleteAll();
 
+    // await getDeviceDetails();
+
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => const Login()),
       (route) => false,
     );
+  }
+
+  static void getDeviceInfo() async {
+
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    AndroidDeviceInfo? androidInfo = await deviceInfo.androidInfo;
+
+    try {
+      androidInfo = await deviceInfo.androidInfo;
+    } catch (e) {
+      print('Error retrieving Android device info: $e');
+    }
+
+    if(androidInfo != null) {
+      // print('Device ID: ${androidInfo.id}');
+      // print('Manufacturer: ${androidInfo.manufacturer}');
+      print('Model: ${androidInfo.model}');
+      // print('Device: ${androidInfo.device}');
+      // print('Brand: ${androidInfo.brand}');
+      // print('Host: ${androidInfo.host}');
+      // print('Manufacturer: ${androidInfo.manufacturer}');
+      // print('Product: ${androidInfo.product}');
+      // print('Version: ${androidInfo.version.baseOS}');
+
+      Map<String, String> androidInfoJson = {
+        // 'id': androidInfo.id,
+        // 'manufacturer': androidInfo.manufacturer,
+        'Device-Info': androidInfo.model,
+        // 'device': androidInfo.device,
+        // 'brand': androidInfo.brand,
+        // 'host': androidInfo.host,
+        // 'product': androidInfo.product,
+        // 'version': androidInfo.version.baseOS,
+      };
+
+      String jsonStr = json.encode(androidInfoJson);
+      print(jsonStr);
+
+      await setDeviceHeader(androidInfoJson);
+    }
+
+
+
+    IosDeviceInfo? iosInfo;
+
+    try {
+      iosInfo = await deviceInfo.iosInfo;
+    } catch (e) {
+      print('Error retrieving iOS device info: $e');
+    }
+
+    if(iosInfo != null) {
+      print('Running on ${iosInfo.utsname.machine}');
+
+      Map<String, String> iosInfoJson = {
+        'Device-Info': iosInfo.utsname.machine,
+      };
+
+      String jsonStr = json.encode(iosInfoJson);
+      print(jsonStr);
+
+      await setDeviceHeader(iosInfoJson);
+    }
   }
 }

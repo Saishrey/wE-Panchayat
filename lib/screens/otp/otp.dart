@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:we_panchayat_dev/constants.dart';
@@ -13,7 +15,6 @@ class Otp extends StatefulWidget {
 }
 
 class OtpState extends State<Otp> {
-
   TextEditingController _otpController = TextEditingController();
 
   @override
@@ -113,29 +114,44 @@ class OtpState extends State<Otp> {
                                   fieldWidth: 40,
                                   activeFillColor: Colors.white,
                                   inactiveColor: Colors.black54,
-                                  selectedColor: ColorConstants.lightBlueThemeColor,
+                                  selectedColor:
+                                      ColorConstants.lightBlueThemeColor,
                                 ),
-                                onCompleted: (value) {
+                                onCompleted: (value) async {
                                   // Handle the completed OTP code
-                                  if (_otpController.text.isNotEmpty && _otpController.text.length == 6) {
+                                  if (_otpController.text.isNotEmpty &&
+                                      _otpController.text.length == 6) {
                                     Map body = {"otp": _otpController.text};
 
-                                    APIService.verifyOtp(body).then((response) {
-                                      if (response) {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                            const SnackBar(
-                                                content: Text('Logged in successfully.')));
-                                        Navigator.pushAndRemoveUntil(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) => const Home()),
-                                              (route) => false,
-                                        );
-                                      } else {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                            const SnackBar(content: Text('Incorrect OTP.')));
-                                      }
-                                    });
+                                    var response =
+                                        await APIService.verifyOtp(body);
+
+                                    if (response.statusCode == 200) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(const SnackBar(
+                                              content: Text(
+                                                  'Logged in successfully.')));
+                                      Navigator.pushAndRemoveUntil(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => const Home()),
+                                        (route) => false,
+                                      );
+                                    }
+                                    // } else {
+                                    //   ScaffoldMessenger.of(context)
+                                    //       .showSnackBar(
+                                    //       const SnackBar(
+                                    //           content: Text('Incorrect OTP.')));
+                                    // }
+                                    else {
+                                      final jsonData =
+                                          json.decode(response.body);
+                                      String message = jsonData['message'];
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                              SnackBar(content: Text(message)));
+                                    }
                                   }
                                 },
                                 appContext: context,
@@ -150,9 +166,11 @@ class OtpState extends State<Otp> {
                                   child: Text(
                                     "Didn't receive OTP?",
                                     style: TextStyle(
-                                      color: ColorConstants.formLabelTextColor,
-                                      fontFamily: 'Poppins-Light'// or any other color you want
-                                    ),
+                                        color:
+                                            ColorConstants.formLabelTextColor,
+                                        fontFamily:
+                                            'Poppins-Light' // or any other color you want
+                                        ),
                                     textAlign: TextAlign.right,
                                   ),
                                 ),
@@ -168,9 +186,11 @@ class OtpState extends State<Otp> {
                                       child: Text(
                                         "Resend",
                                         style: TextStyle(
-                                          color: ColorConstants.colorHuntCode2,
-                                          fontFamily: 'Poppins-Medium'// or any other color you want
-                                        ),
+                                            color:
+                                                ColorConstants.colorHuntCode2,
+                                            fontFamily:
+                                                'Poppins-Medium' // or any other color you want
+                                            ),
                                         textAlign: TextAlign.center,
                                       ),
                                     ),
@@ -192,26 +212,40 @@ class OtpState extends State<Otp> {
                 padding: EdgeInsets.all(20.0),
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
-                    if (_otpController.text.isNotEmpty && _otpController.text.length == 6) {
+                  onPressed: () async {
+                    if (_otpController.text.isNotEmpty &&
+                        _otpController.text.length == 6) {
                       Map body = {"otp": _otpController.text};
 
-                      APIService.verifyOtp(body).then((response) {
-                        if (response) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text('Logged in successfully.')));
-                          Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const Home()),
-                            (route) => false,
-                          );
-                        } else {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Incorrect OTP.')));
-                        }
-                      });
+                      var response =
+                          await APIService.verifyOtp(body);
+
+                      if (response.statusCode == 200) {
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(const SnackBar(
+                            content: Text(
+                                'Logged in successfully.')));
+                        Navigator.pushAndRemoveUntil(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const Home()),
+                              (route) => false,
+                        );
+                      }
+                      // } else {
+                      //   ScaffoldMessenger.of(context)
+                      //       .showSnackBar(
+                      //       const SnackBar(
+                      //           content: Text('Incorrect OTP.')));
+                      // }
+                      else {
+                        final jsonData =
+                        json.decode(response.body);
+                        String message = jsonData['message'];
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(
+                            SnackBar(content: Text(message)));
+                      }
                     }
                   },
                   child: Text("Verify",

@@ -40,7 +40,7 @@ class BirthAndDeathCertificateAPIService {
       print(body);
 
       var response =
-          await client.post(url, body: body, headers: requestHeaders).timeout(const Duration(seconds: 5));
+          await client.post(url, body: body, headers: requestHeaders);
 
       // print("${response.body}");
 
@@ -71,7 +71,7 @@ class BirthAndDeathCertificateAPIService {
 
       print(body);
 
-      var response = await client.post(url, body: body, headers: requestHeaders).timeout(const Duration(seconds: 5));
+      var response = await client.post(url, body: body, headers: requestHeaders);
 
       // print("${response.body}");
 

@@ -90,6 +90,7 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
       }
 
       _formData = {
+        "ref_id": _licenseFormResponseModel.data.refId ?? 'NA',
         "application_id":
             _licenseFormResponseModel.data.applicationId ?? 'null',
         "signboard_id": _licenseFormResponseModel.data.signboardId ?? 'null',
@@ -394,6 +395,15 @@ class _TradeLicenseReviewFormState extends State<TradeLicenseReviewForm>
                                   ),
                                   const SizedBox(
                                     height: 16,
+                                  ),
+                                  _buildSection('Reference ID', _formData["ref_id"]!),
+                                  const Padding(
+                                    padding:
+                                    EdgeInsets.symmetric(horizontal: 16),
+                                    child: Divider(
+                                      thickness: 1,
+                                      color: Colors.black12,
+                                    ),
                                   ),
                                   _buildSection('Taluka', _formData["taluka"]!),
                                   const Padding(

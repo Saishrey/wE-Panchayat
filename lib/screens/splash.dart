@@ -70,69 +70,69 @@ class _SplashState extends State<Splash> {
     return isEnabled;
   }
 
-  void getDeviceInfo() async {
-    await Future.delayed(Duration(seconds: 1));
-
-    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-    AndroidDeviceInfo? androidInfo = await deviceInfo.androidInfo;
-
-    try {
-      androidInfo = await deviceInfo.androidInfo;
-    } catch (e) {
-      print('Error retrieving Android device info: $e');
-    }
-
-    if(androidInfo != null) {
-      // print('Device ID: ${androidInfo.id}');
-      // print('Manufacturer: ${androidInfo.manufacturer}');
-      print('Model: ${androidInfo.model}');
-      // print('Device: ${androidInfo.device}');
-      // print('Brand: ${androidInfo.brand}');
-      // print('Host: ${androidInfo.host}');
-      // print('Manufacturer: ${androidInfo.manufacturer}');
-      // print('Product: ${androidInfo.product}');
-      // print('Version: ${androidInfo.version.baseOS}');
-
-      Map<String, String> androidInfoJson = {
-      // 'id': androidInfo.id,
-      // 'manufacturer': androidInfo.manufacturer,
-      'Device-Info': androidInfo.model,
-      // 'device': androidInfo.device,
-      // 'brand': androidInfo.brand,
-      // 'host': androidInfo.host,
-      // 'product': androidInfo.product,
-      // 'version': androidInfo.version.baseOS,
-      };
-
-      String jsonStr = json.encode(androidInfoJson);
-      print(jsonStr);
-
-      await SharedService.setDeviceHeader(androidInfoJson);
-    }
-
-
-
-    IosDeviceInfo? iosInfo;
-
-    try {
-      iosInfo = await deviceInfo.iosInfo;
-    } catch (e) {
-      print('Error retrieving iOS device info: $e');
-    }
-
-    if(iosInfo != null) {
-      print('Running on ${iosInfo.utsname.machine}');
-
-      Map<String, String> iosInfoJson = {
-        'Device-Info': iosInfo.utsname.machine,
-      };
-
-      String jsonStr = json.encode(iosInfoJson);
-      print(jsonStr);
-
-      await SharedService.setDeviceHeader(iosInfoJson);
-    }
-  }
+  // void getDeviceInfo() async {
+  //   await Future.delayed(Duration(seconds: 1));
+  //
+  //   DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+  //   AndroidDeviceInfo? androidInfo = await deviceInfo.androidInfo;
+  //
+  //   try {
+  //     androidInfo = await deviceInfo.androidInfo;
+  //   } catch (e) {
+  //     print('Error retrieving Android device info: $e');
+  //   }
+  //
+  //   if(androidInfo != null) {
+  //     // print('Device ID: ${androidInfo.id}');
+  //     // print('Manufacturer: ${androidInfo.manufacturer}');
+  //     print('Model: ${androidInfo.model}');
+  //     // print('Device: ${androidInfo.device}');
+  //     // print('Brand: ${androidInfo.brand}');
+  //     // print('Host: ${androidInfo.host}');
+  //     // print('Manufacturer: ${androidInfo.manufacturer}');
+  //     // print('Product: ${androidInfo.product}');
+  //     // print('Version: ${androidInfo.version.baseOS}');
+  //
+  //     Map<String, String> androidInfoJson = {
+  //     // 'id': androidInfo.id,
+  //     // 'manufacturer': androidInfo.manufacturer,
+  //     'Device-Info': androidInfo.model,
+  //     // 'device': androidInfo.device,
+  //     // 'brand': androidInfo.brand,
+  //     // 'host': androidInfo.host,
+  //     // 'product': androidInfo.product,
+  //     // 'version': androidInfo.version.baseOS,
+  //     };
+  //
+  //     String jsonStr = json.encode(androidInfoJson);
+  //     print(jsonStr);
+  //
+  //     await SharedService.setDeviceHeader(androidInfoJson);
+  //   }
+  //
+  //
+  //
+  //   IosDeviceInfo? iosInfo;
+  //
+  //   try {
+  //     iosInfo = await deviceInfo.iosInfo;
+  //   } catch (e) {
+  //     print('Error retrieving iOS device info: $e');
+  //   }
+  //
+  //   if(iosInfo != null) {
+  //     print('Running on ${iosInfo.utsname.machine}');
+  //
+  //     Map<String, String> iosInfoJson = {
+  //       'Device-Info': iosInfo.utsname.machine,
+  //     };
+  //
+  //     String jsonStr = json.encode(iosInfoJson);
+  //     print(jsonStr);
+  //
+  //     await SharedService.setDeviceHeader(iosInfoJson);
+  //   }
+  // }
 
   void checkLoginSession() async {
     await Future.delayed(Duration(seconds: 1));
@@ -222,7 +222,7 @@ class _SplashState extends State<Splash> {
     // deviceCapability();
     // _getAvailableBiometrics();
 
-    getDeviceInfo();
+    // getDeviceInfo();
 
     checkInternet();
 
@@ -254,7 +254,7 @@ class _SplashState extends State<Splash> {
   //     );
 
   Future<void> checkInternet() async {
-    await Future.delayed(Duration(seconds: 1));
+    await Future.delayed(Duration(seconds: 2));
 
     connectivityResult = await Connectivity().checkConnectivity();
     if (connectivityResult == ConnectivityResult.none) {

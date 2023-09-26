@@ -49,7 +49,7 @@ class ProfilePicAPIService {
       print(request.fields);
 
       //send request
-      var response = await request.send().timeout(const Duration(seconds: 5));
+      var response = await request.send();
       print(response.statusCode);
       print(response.reasonPhrase);
 
@@ -73,9 +73,7 @@ class ProfilePicAPIService {
   static Future<http.Response> retrieveProfilePic(String mongoId) async {
 
     // try {
-      Map<String, String> requestHeaders = {
-        // "Content-Type": "application/json",
-      };
+
 
       String query = "${ProfilePicAPI.retrievePictureAPI}/$mongoId";
 
@@ -84,18 +82,23 @@ class ProfilePicAPIService {
 
       print("COOKIE DETAILS retrieve profile picture");
       Map<String, String>? cookieHeaders = await SharedService.cookieDetails();
-      requestHeaders['cookie'] = cookieHeaders!['cookie']!;
-      requestHeaders['Device-Info'] = cookieHeaders['Device-Info']!;
+      print(cookieHeaders);
+      Map<String, String> requestHeaders = {
+      'cookie' : cookieHeaders!['cookie']!,
+      'Device-Info' : cookieHeaders['Device-Info']!,
+      };
+      // requestHeaders['cookie'] = cookieHeaders!['cookie']!;
+      // requestHeaders['Device-Info'] = cookieHeaders['Device-Info']!;
 
 
       // var response = await client.get(url);
       // print(response.body);
 
-      print(requestHeaders);
+      print("REQUEST HEADERS: $requestHeaders");
 
-      var response = await client.get(url, headers: requestHeaders).timeout(const Duration(seconds: 5));
+      var response = await client.get(url, headers: requestHeaders);
 
-      // print("${response.body}");
+      print("${response.body}");
 
       return response;
     // }
@@ -141,7 +144,7 @@ class ProfilePicAPIService {
       print(request.fields);
 
       //send request
-      var response = await request.send().timeout(const Duration(seconds: 5));
+      var response = await request.send();
       print(response.statusCode);
       print(response.reasonPhrase);
 

@@ -42,7 +42,7 @@ class GrievanceAPIService {
       print(body);
 
       var response =
-          await client.post(url, body: body, headers: requestHeaders).timeout(const Duration(seconds: 5));
+          await client.post(url, body: body, headers: requestHeaders);
 
       print("${response.body}");
 
@@ -109,7 +109,7 @@ class GrievanceAPIService {
       print(request.fields);
 
       //send request
-      var response = await request.send().timeout(const Duration(seconds: 5));
+      var response = await request.send();
       print(response.statusCode);
       print(response.reasonPhrase);
 
@@ -187,7 +187,7 @@ class GrievanceAPIService {
 
       print(requestHeaders);
 
-      var response = await client.get(url, headers: requestHeaders).timeout(const Duration(seconds: 5));
+      var response = await client.get(url, headers: requestHeaders);
 
       // print("${response.body}");
 

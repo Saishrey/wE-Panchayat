@@ -97,6 +97,7 @@ class APIService {
           // };
           var response = await ProfilePicAPIService.retrieveProfilePic(mongoId);
           if (response.statusCode == 200) {
+            print("Profile pic retrieved");
             profilePicResponse = response;
           } else {
             print("Error retrieving profile picture");
@@ -114,7 +115,7 @@ class APIService {
     }
   }
 
-  static Future<int> forgotPassword(Map<String, String> body) async {
+  static Future<http.Response> forgotPassword(Map<String, String> body) async {
     // 'username':'abc@gmail.com', 'password':'Asdfg@123',
     // try {
       Map<String, String> requestHeaders = {
@@ -146,7 +147,7 @@ class APIService {
         print("${msg['message']}");
       }
 
-      return response.statusCode;
+      return response;
     // } catch (e) {
     //   print('Error : $e');
     //   return null;
@@ -211,8 +212,8 @@ class APIService {
     }
   }
 
-  static Future<bool> verifyOtp(Map body) async {
-    try {
+  static Future<http.Response> verifyOtp(Map body) async {
+    // try {
       print("Verify otp");
 
       print(body);
@@ -248,15 +249,15 @@ class APIService {
 
         loginResponse = null;
         profilePicResponse = null;
-        return true;
+        return response;
       }
 
       print("Incorrect OTP.");
-      return false;
-    } catch (e) {
-      print('Error : $e');
-      return false;
-    }
+      return response;
+    // } catch (e) {
+    //   print('Error : $e');
+    //   return null;
+    // }
   }
 
   static Future<bool> verifyOtpResetPassword(Map body) async {
@@ -295,8 +296,8 @@ class APIService {
     }
   }
 
-  static Future<bool> updateNewPassword(Map body, BuildContext context) async {
-    try {
+  static Future<http.Response> updateNewPassword(Map body) async {
+    // try {
       print("Update New Password");
 
       print(body);
@@ -315,16 +316,16 @@ class APIService {
       print("${response.body}");
       if (response.statusCode == 200) {
         print("Successfully reset password.");
-        SharedService.logout(context);
-        return true;
+        // SharedService.logout(context);
+        return response;
       }
 
       print("Password reset failed.");
-      return false;
-    } catch (e) {
-      print('Error : $e');
-      return false;
-    }
+      return response;
+    // } catch (e) {
+    //   print('Error : $e');
+    //   return false;
+    // }
   }
 
   static Future<http.Response?> register(RegisterRequestModel model) async {
@@ -346,8 +347,7 @@ class APIService {
       print(model.toJson());
 
       var response = await client
-          .post(url, body: jsonEncode(model.toJson()), headers: requestHeaders)
-          .timeout(const Duration(seconds: 5));
+          .post(url, body: jsonEncode(model.toJson()), headers: requestHeaders);
 
       print("${response.body}");
 

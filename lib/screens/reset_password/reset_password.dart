@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:we_panchayat_dev/models/login_request_model.dart';
 
@@ -207,35 +209,58 @@ class _ResetPasswordState extends State<ResetPassword> {
                                 ),
                                 SizedBox(height: 16),
                                 ElevatedButton(
-                                  onPressed: () {
+                                  onPressed: () async {
                                     if (_formKey.currentState!.validate()) {
                                       Map<String, String> body = {
                                         "password": _password,
                                       };
 
-                                      APIService.updateNewPassword(
-                                              body, context)
-                                          .then((response) {
-                                        if (response) {
-                                          SharedService.logout(context);
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(const SnackBar(
-                                                  content: Text(
-                                                      'New password set successfully. Please Log in.')));
-                                          Navigator.pushAndRemoveUntil(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    const Login()),
-                                            (route) => false,
-                                          );
-                                        } else {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(const SnackBar(
-                                                  content: Text(
-                                                      'Failed to reset password.')));
-                                        }
-                                      });
+                                      var response =
+                                          await APIService.updateNewPassword(body);
+
+
+                                       if (response.statusCode == 200) {
+                                         SharedService.logout(context);
+                                         ScaffoldMessenger.of(context)
+                                             .showSnackBar(const SnackBar(
+                                             content: Text(
+                                                 'New password set successfully. Please Log in.')));
+                                         Navigator.pushAndRemoveUntil(
+                                           context,
+                                           MaterialPageRoute(
+                                               builder: (context) =>
+                                               const Login()),
+                                               (route) => false,
+                                         );
+                                       } else if (response.statusCode == 404) {
+                                        SharedService.logout(context);
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(const SnackBar(
+                                            content: Text(
+                                                'User session has expired.')));
+                                        Navigator.pushAndRemoveUntil(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                              const Login()),
+                                              (route) => false,
+                                        );
+                                      }
+                                       else {
+                                         final jsonData =
+                                         json.decode(response.body);
+                                         String message = jsonData['message'];
+                                         ScaffoldMessenger.of(context)
+                                             .showSnackBar(
+                                             SnackBar(content: Text(message)));
+                                       }
+                                        // } else {
+                                        //   ScaffoldMessenger.of(context)
+                                        //       .showSnackBar(const SnackBar(
+                                        //           content: Text(
+                                        //               'Failed to reset password.')));
+                                        // }
+
                                     }
                                   },
                                   child: Text("Submit",

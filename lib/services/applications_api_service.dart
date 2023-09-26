@@ -41,7 +41,7 @@ class ApplicationsAPIService {
 
       var response = await client.get(url, headers: requestHeaders);
 
-      // print("${response.body}");
+      print("${response.body}");
 
       return applicationsResponseJson(response.body);
       

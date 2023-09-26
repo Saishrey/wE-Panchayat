@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:we_panchayat_dev/models/login_request_model.dart';
@@ -14,6 +15,7 @@ import 'package:we_panchayat_dev/screens/otp/otp.dart';
 import 'package:we_panchayat_dev/screens/reset_password/username_input.dart';
 
 import '../../constants.dart';
+import '../../services/shared_service.dart';
 import '../dialog_boxes.dart';
 
 class Login extends StatefulWidget {
@@ -47,6 +49,7 @@ class _LoginState extends State<Login> {
   @override
   void initState() {
     super.initState();
+    SharedService.getDeviceInfo();
     _previousUsername = "!";
     // _usernameController.addListener(_checkUsernameChanged);
   }
@@ -69,6 +72,8 @@ class _LoginState extends State<Login> {
     }
     return false;
   }
+
+
 
 
   bool _isLoggingIn = false;
@@ -321,13 +326,21 @@ class _LoginState extends State<Login> {
 
                                               }
                                             }
+                                            // else {
+                                            //   ScaffoldMessenger.of(context)
+                                            //       .showSnackBar(
+                                            //     const SnackBar(
+                                            //       content: Text('Invalid credentials.'),
+                                            //     ),
+                                            //   );
+                                            // }
                                             else {
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(
-                                                const SnackBar(
-                                                  content: Text('Invalid credentials.'),
-                                                ),
-                                              );
+                                              final jsonData =
+                                              json.decode(response.body);
+                                              String message = jsonData['message'];
+                                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                                  content: Text(
+                                                      message)));
                                             }
                                           } else {
                                             DialogBoxes.showServerDownDialogBox(context);

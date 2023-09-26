@@ -57,6 +57,7 @@ class _MyAppState extends State<MyApp> {
       DeviceOrientation.portraitDown,
     ]);
 
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'wE-Panchayat',
